@@ -152,10 +152,3 @@ pre-commit install
 | `make lint` | Kiểm tra chất lượng code với Ruff |
 | `make test` | Chạy bộ kiểm thử với Pytest |
 | `make clean` | Dọn dẹp cache và file tạm |
-
----
-
-## 👥 Tác giả & Giấy phép (Credits & License)
-
-- **Trường Đại học Giao thông Vận tải TP.HCM (UTH)**
-- Phân phối theo giấy phép [MIT License](LICENSE).
