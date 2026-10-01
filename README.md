@@ -5,8 +5,7 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 
-> **Repository Template & Bộ khung xương dự án** cho môn học **Thị giác Máy tính (Computer Vision)**  
-> **Đơn vị**: Bộ môn Trí tuệ Nhân tạo / Khoa CNTT - Trường Đại học Giao thông Vận tải TP.HCM (UTH).
+> **Đơn vị**: Trường Đại học Giao thông Vận tải TP.HCM (UTH).
 
 ---
 
@@ -158,5 +157,5 @@ pre-commit install
 
 ## 👥 Tác giả & Giấy phép (Credits & License)
 
-- **Bộ môn Trí tuệ Nhân tạo - Khoa CNTT - UTH**
+- **Trường Đại học Giao thông Vận tải TP.HCM (UTH)**
 - Phân phối theo giấy phép [MIT License](LICENSE).
