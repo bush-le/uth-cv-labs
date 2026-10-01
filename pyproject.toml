@@ -1,0 +1,127 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uth-computer-vision"
+version = "0.1.0"
+description = "Production-grade Computer Vision & MLOps template for UTH AI & Computer Science labs."
+authors = [
+    { name = "UTH AI Lab Team", email = "ai-lab@uth.edu.vn" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Image Processing",
+]
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+# ------------------------------------------------------------------------------
+# Ruff Configuration
+# ------------------------------------------------------------------------------
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "__pypackages__",
+    "dist",
+    "data",
+    "experiments",
+    "notebooks",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "C4",  # flake8-comprehensions
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501", # Line length handled by formatter
+    "B008", # Do not perform function calls in argument defaults (Hydra / Typer pattern)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+
+# ------------------------------------------------------------------------------
+# Black Configuration
+# ------------------------------------------------------------------------------
+[tool.black]
+line-length = 88
+target-version = ['py310']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.pytest_cache
+  | \.venv
+  | data
+  | experiments
+)/
+'''
+
+# ------------------------------------------------------------------------------
+# isort Configuration
+# ------------------------------------------------------------------------------
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+known_first_party = ["src"]
+
+# ------------------------------------------------------------------------------
+# Pytest Configuration
+# ------------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "smoke: Quick sanity smoke test suite (fast execution)",
+    "slow: Tests that take more than a few seconds",
+    "gpu: Tests requiring CUDA-enabled GPU hardware",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+]
+
+# ------------------------------------------------------------------------------
+# Mypy Configuration
+# ------------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = false
+warn_unused_configs = true
+ignore_missing_imports = true
+check_untyped_defs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+exclude = ["notebooks/", "data/", "experiments/"]
