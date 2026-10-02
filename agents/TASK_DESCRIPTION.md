@@ -35,7 +35,7 @@ flowchart TD
 
 ---
 
-## Mẫu Task Description Chuẩn (`task_template.md`)
+## Mẫu Task Description Chuẩn (`TASK_TEMPLATE.md`)
 
 ```markdown
 # Task: [Tên Task Cụ Thể]

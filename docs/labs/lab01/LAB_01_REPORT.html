@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo Thực Hành Lab 1 - UTH Computer Vision Workspace</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --accent: #0284c7;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-page: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0369a1 100%);
+            color: #ffffff;
+            padding: 2.5rem 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(30, 58, 138, 0.25);
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+        }
+
+        header h2 {
+            font-size: 1.25rem;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-bottom: 1.25rem;
+        }
+
+        .meta-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.75rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .card-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Workflow diagram */
+        .workflow-diagram {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 0;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .workflow-node {
+            background: #ffffff;
+            border: 2px solid var(--primary-light);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            min-width: 140px;
+        }
+
+        .workflow-arrow {
+            color: var(--text-muted);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Roadmap Table */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .step-pill {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .code-pill {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        a.code-pill {
+            text-decoration: none;
+            color: var(--primary);
+            border: 1px solid #cbd5e1;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.15s ease;
+        }
+
+        a.code-pill:hover {
+            background-color: #e0f2fe;
+            color: var(--primary-light);
+            border-color: var(--primary-light);
+            text-decoration: underline;
+        }
+
+        /* Visual Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .gallery-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+            background: #f1f5f9;
+        }
+
+        .gallery-card-content {
+            padding: 1rem;
+        }
+
+        .gallery-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.35rem;
+        }
+
+        .gallery-card-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .gallery-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: #64748b;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 0.5rem;
+        }
+
+        .img-hero {
+            width: 100%;
+            max-height: 480px;
+            object-fit: contain;
+            border-radius: 8px;
+            background-color: #0f172a;
+            border: 1px solid var(--border);
+        }
+
+        .callout {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--primary-light);
+            padding: 1rem 1.25rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <header>
+        <h1>Báo Cáo Nghiệm Thu Kỹ Thuật Lab 1</h1>
+        <h2>Xử Lý Ảnh Cơ Bản với OpenCV và Pillow (PIL)</h2>
+        <div class="meta-badges">
+            <span class="badge">Môi trường: Python 3.14.7</span>
+            <span class="badge">OpenCV 5.0.0</span>
+            <span class="badge">Pillow 12.3.0</span>
+            <span class="badge">NumPy 2.5.3</span>
+            <span class="badge badge-success">✓ 10/10 Tests Passed</span>
+        </div>
+    </header>
+
+    <!-- Section 1: Objectives -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">1. Mục Tiêu Bài Thực Hành</h3>
+        </div>
+        <p>Làm quen và thành thạo các thao tác cơ bản trong xử lý ảnh số sử dụng thư viện <strong>OpenCV</strong> và <strong>Pillow</strong> trên Python:</p>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+            <li>Đọc, phân tích siêu dữ liệu, hoán đổi kênh màu chuẩn và lưu ảnh đa định dạng (<code>.png</code>, <code>.bmp</code>, <code>.jpg</code>).</li>
+            <li>Chuyển đổi các không gian màu thông dụng: <strong>Grayscale</strong> (Rec. 601), <strong>HSV</strong> (Cylindrical), <strong>CIE L*a*b*</strong>.</li>
+            <li>Trích xuất vùng quan tâm (<strong>ROI Slicing</strong>) và thay đổi kích thước ảnh (<strong>Resize</strong> tỉ lệ & kích thước cố định).</li>
+            <li>Vẽ các đối tượng đồ họa cơ bản (Line, Bounding Box, Circle) và nhãn văn bản (Text Annotation) phục vụ bài toán Object Detection.</li>
+        </ul>
+    </div>
+
+    <!-- Section 2: Visual Workflow & Roadmap -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">2. Lộ Trình Thực Thi & Sơ Đồ Luồng Xử Lý</h3>
+            <span class="badge badge-success">Clean Architecture</span>
+        </div>
+
+        <h4 style="margin: 0.5rem 0 1rem; color: var(--primary);">2.1. Bảng Lộ Trình Thực Thi Chuẩn Hóa (Execution Roadmap)</h4>
+        <div class="table-responsive" style="margin-bottom: 2rem;">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 70px; text-align: center;">Step</th>
+                        <th style="width: 220px;">Description</th>
+                        <th>What it does</th>
+                        <th style="width: 240px;">Import path</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align: center;"><span class="step-pill">1</span></td>
+                        <td><strong>Import Libraries & Env Check</strong></td>
+                        <td>Khởi tạo thư viện, kiểm tra phiên bản OpenCV, Pillow, NumPy và runtime</td>
+                        <td><span class="code-pill">—</span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;"><span class="step-pill">2</span></td>
+                        <td><strong>Image I/O & Channel Handling</strong></td>
+                        <td>Nạp ảnh BGR/RGB, phân tích siêu dữ liệu, xử lý hoán đổi kênh và lưu ảnh đa định dạng (<code>.png</code>, <code>.bmp</code>, <code>.jpg</code>)</td>
+                        <td><a href="../../../src/data/transforms.py" class="code-pill" title="Mở file src/data/transforms.py">src/data/transforms.py</a></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;"><span class="step-pill">3</span></td>
+                        <td><strong>Color Space Conversions</strong></td>
+                        <td>Chuyển đổi sang Grayscale (Rec. 601), HSV (tách 3 kênh H/S/V), CIE L*a*b* và vẽ lưới 2x2</td>
+                        <td><a href="../../../src/data/transforms.py" class="code-pill" title="Mở file src/data/transforms.py">src/data/transforms.py</a> + <a href="../../../src/common/visualizer.py" class="code-pill" title="Mở file src/common/visualizer.py">src/common/visualizer.py</a></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;"><span class="step-pill">4</span></td>
+                        <td><strong>Cropping & Resizing</strong></td>
+                        <td>Trích xuất ROI (Pascal VOC XYXY), thay đổi kích thước theo tỷ lệ (0.5x, 1.5x) và kích thước cố định (400x300)</td>
+                        <td><a href="../../../src/data/transforms.py" class="code-pill" title="Mở file src/data/transforms.py">src/data/transforms.py</a> + <a href="../../../src/common/visualizer.py" class="code-pill" title="Mở file src/common/visualizer.py">src/common/visualizer.py</a></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;"><span class="step-pill">5</span></td>
+                        <td><strong>Drawings & Annotations</strong></td>
+                        <td>Vẽ đường dẫn hướng (Line), bounding box (Rectangle), tâm (Circle) và nhãn phân loại (Text)</td>
+                        <td><a href="../../../src/data/transforms.py" class="code-pill" title="Mở file src/data/transforms.py">src/data/transforms.py</a></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;"><span class="step-pill">6</span></td>
+                        <td><strong>Pipeline Execution & Verification</strong></td>
+                        <td>Điều phối toàn bộ luồng tự động hóa và lưu trữ 14 artifacts đầu ra</td>
+                        <td><a href="../../../src/pipelines/lab01_pipeline.py" class="code-pill" title="Mở file src/pipelines/lab01_pipeline.py">src/pipelines/lab01_pipeline.py</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h4 style="margin: 0.5rem 0 1rem; color: var(--primary);">2.2. Sơ Đồ Luồng Xử Lý Trực Quan (Visual Workflow Pipeline)</h4>
+        <div style="text-align: center; margin-bottom: 1.25rem;">
+            <img src="../../assets/workflow_lab01.png" alt="Visual Workflow Pipeline" style="width: 100%; border-radius: 8px; border: 1px solid var(--border);">
+        </div>
+
+        <div class="workflow-diagram">
+            <div class="workflow-node" style="border-color: #0284c7; background: #f0f9ff;"><strong>1. Input Layer</strong><br><small style="color: #0369a1;">sample_traffic.jpg</small></div>
+            <div class="workflow-arrow">➔</div>
+            <div class="workflow-node" style="border-color: #64748b; background: #f8fafc;"><strong>2. Clean Arch</strong><br><small style="color: #475569;">src/ (4 modules)</small></div>
+            <div class="workflow-arrow">➔</div>
+            <div class="workflow-node" style="border-color: #8b5cf6; background: #faf5ff;"><strong>3. 5 Processing Stages</strong><br><small style="color: #6d28d9;">Setup &bull; I/O &bull; Colors &bull; Spatial &bull; Draw</small></div>
+            <div class="workflow-arrow">➔</div>
+            <div class="workflow-node" style="border-color: var(--success); background: #f0fdf4;"><strong>4. 14 Artifacts</strong><br><small style="color: var(--success);">experiments/predictions/</small></div>
+            <div class="workflow-arrow">➔</div>
+            <div class="workflow-node" style="border-color: #f59e0b; background: #fffbeb;"><strong>5. QA & Verification</strong><br><small style="color: #92400e;">10/10 Tests &bull; Ruff Clean</small></div>
+        </div>
+    </div>
+
+    <!-- Section 3: Visual Galleries -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">3. Trực Quan Hóa Kết Quả Thực Nghiệm (Visual Gallery)</h3>
+            <span class="badge">14 Artifacts Generated</span>
+        </div>
+
+        <!-- 3.1. Color Spaces -->
+        <h4 style="margin: 1.5rem 0 0.75rem; color: var(--primary);">3.1. Chuyển Đổi Không Gian Màu (Grayscale, HSV, CIE L*a*b*)</h4>
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+            <img src="../../../experiments/predictions/lab01/color_spaces/color_spaces_grid.png" alt="Color Spaces Grid" class="img-hero">
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Biểu đồ lưới 2x2 so sánh 4 không gian màu: Original RGB &bull; Grayscale &bull; HSV &bull; CIE L*a*b*</p>
+        </div>
+
+        <div class="gallery-grid">
+            <div class="gallery-card">
+                <img src="../../../data/samples/sample_traffic.jpg" alt="Ảnh Gốc RGB">
+                <div class="gallery-card-content">
+                    <div class="gallery-card-title">1. Ảnh Gốc (RGB/BGR)</div>
+                    <div class="gallery-card-desc">Ảnh giao thông đầu vào 3 kênh màu kích thước 800x533.</div>
+                    <div class="gallery-card-footer">
+                        <span>Format: JPEG</span>
+                        <span>Size: 81.17 KB</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gallery-card">
+                <img src="../../../experiments/predictions/lab01/color_spaces/grayscale.png" alt="Grayscale">
+                <div class="gallery-card-content">
+                    <div class="gallery-card-title">2. Mức Xám (Grayscale)</div>
+                    <div class="gallery-card-desc">1 kênh độ sáng Y chuẩn Rec. 601, giảm 66.7% dung lượng tính toán.</div>
+                    <div class="gallery-card-footer">
+                        <span>Shape: (533, 800)</span>
+                        <span>Format: PNG</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gallery-card">
+                <img src="../../../experiments/predictions/lab01/color_spaces/hsv.png" alt="HSV">
+                <div class="gallery-card-content">
+                    <div class="gallery-card-title">3. Không Gian HSV</div>
+                    <div class="gallery-card-desc">Tách biệt Sắc thái (H), Độ bão hòa (S), và Cường độ sáng (V).</div>
+                    <div class="gallery-card-footer">
+                        <span>H: [0, 179]</span>
+                        <span>S, V: [0, 255]</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gallery-card">
+                <img src="../../../experiments/predictions/lab01/color_spaces/lab.png" alt="CIE L*a*b*">
+                <div class="gallery-card-content">
+                    <div class="gallery-card-title">4. Không Gian CIE L*a*b*</div>
+                    <div class="gallery-card-desc">Đồng nhất cảm nhận thị giác con người (Perceptually Uniform).</div>
+                    <div class="gallery-card-footer">
+                        <span>Trục: L*, a*, b*</span>
+                        <span>Format: PNG</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3.2. Spatial Transformations -->
+        <h4 style="margin: 2.5rem 0 0.75rem; color: var(--primary);">3.2. Biến Đổi Không Gian: Cắt Xén ROI & Thay Đổi Kích Thước</h4>
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+            <img src="../../../experiments/predictions/lab01/spatial/spatial_transformations_comparison.png" alt="Spatial Comparison" class="img-hero">
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">So sánh trực quan: Ảnh Gốc &bull; Vùng ROI trích xuất &bull; Kích thước cố định 400x300</p>
+        </div>
+
+        <div class="gallery-grid">
+            <div class="gallery-card">
+                <img src="../../../experiments/predictions/lab01/spatial/roi_cropped.jpg" alt="ROI Crop">
+                <div class="gallery-card-content">
+                    <div class="gallery-card-title">ROI Slicing (Pascal VOC)</div>
+                    <div class="gallery-card-desc">Trích xuất đối tượng xe tại tọa độ [200, 186, 600, 453].</div>
+                    <div class="gallery-card-footer">
+                        <span>Output: 400x267 px</span>
+                        <span>Speed: ~0 ms (Zero-copy)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gallery-card">
+                <img src="../../../experiments/predictions/lab01/spatial/resize_scale_0.5x.jpg" alt="Resize 0.5x">
+                <div class="gallery-card-content">
+                    <div class="gallery-card-title">Resize Tỉ Lệ 0.5x (Downscale)</div>
+                    <div class="gallery-card-desc">Thu nhỏ 50% kích thước sử dụng nội suy cv2.INTER_AREA.</div>
+                    <div class="gallery-card-footer">
+                        <span>Output: 400x267 px</span>
+                        <span>Inter: INTER_AREA</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gallery-card">
+                <img src="../../../experiments/predictions/lab01/spatial/resize_fixed_400x300.jpg" alt="Resize 400x300">
+                <div class="gallery-card-content">
+                    <div class="gallery-card-title">Resize Cố Định (400x300)</div>
+                    <div class="gallery-card-desc">Đổi kích thước về chính xác W=400, H=300 chuẩn đầu vào mạng nơ-ron.</div>
+                    <div class="gallery-card-footer">
+                        <span>Output: 400x300 px</span>
+                        <span>Inter: INTER_LINEAR</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3.3. Drawings & Annotations -->
+        <h4 style="margin: 2.5rem 0 0.75rem; color: var(--primary);">3.3. Vẽ Hình Cơ Bản & Chèn Văn Bản Chú Thích (Annotations)</h4>
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+            <img src="../../../experiments/predictions/lab01/annotations/annotations_comparison.png" alt="Annotations Comparison" class="img-hero">
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">So sánh trực quan: Ảnh Thô Ban Đầu vs Ảnh Đã Vẽ & Chú Thích Toàn Diện</p>
+        </div>
+
+        <div style="text-align: center;">
+            <img src="../../../experiments/predictions/lab01/annotations/annotated_sample.jpg" alt="Annotated Image Full" style="width: 100%; border-radius: 8px; border: 2px solid var(--border);">
+            <div class="callout" style="text-align: left; margin-top: 1rem;">
+                <strong>Chi tiết các phần tử đồ họa được tích hợp:</strong>
+                <ul style="margin-left: 1.5rem; margin-top: 0.25rem;">
+                    <li><strong style="color: #16a34a;">Vạch dẫn hướng (Line)</strong>: Đường thẳng xanh lá BGR [0, 255, 0], thickness=3, khử răng cưa <code>LINE_AA</code>.</li>
+                    <li><strong style="color: #dc2626;">Bounding Box (Rectangle)</strong>: Hộp bao màu đỏ bao quanh xe mục tiêu.</li>
+                    <li><strong style="color: #d97706;">Trọng tâm (Circle)</strong>: Hình tròn màu cam bán kính 25px kèm điểm tâm đỏ đặc đánh dấu tọa độ (400, 319).</li>
+                    <li><strong>Text Annotation</strong>: Nhãn nhận diện <em>"UTH CV Lab 1: Object ROI"</em> và <em>"Target Centroid"</em> với phông <code>FONT_HERSHEY_SIMPLEX</code>.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 4: Verification -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">4. Kết Quả Kiểm Thử Tự Động (Verification & DoD)</h3>
+            <span class="badge badge-success">100% Pass</span>
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bộ Kiểm Thử</th>
+                        <th>Số Test Cases</th>
+                        <th>Trạng Thái</th>
+                        <th>Thời Gian Chạy</th>
+                        <th>Ghi Chú</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Unit Tests</strong> (<code>tests/test_transforms.py</code>)</td>
+                        <td>8 tests</td>
+                        <td><span class="badge badge-success">PASSED</span></td>
+                        <td>~0.22s</td>
+                        <td>Xác thực tính bất biến BGR/RGB, biên ROI, kích thước âm, format I/O</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Smoke Tests</strong> (<code>@pytest.mark.smoke</code>)</td>
+                        <td>2 tests</td>
+                        <td><span class="badge badge-success">PASSED</span></td>
+                        <td>~0.05s</td>
+                        <td>Khởi tạo đối tượng, chuyển đổi nhanh dưới 5 giây</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Codebase Linter & Style</strong> (<code>Ruff</code>)</td>
+                        <td>Toàn bộ <code>src/</code> và <code>tests/</code></td>
+                        <td><span class="badge badge-success">PASSED</span></td>
+                        <td>~0.01s</td>
+                        <td>0 warnings, 0 errors, tuân thủ PEP 484 Type Hints và chuẩn docstring</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Section 5: References & Technical Documentation -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">5. Tài Liệu Tham Khảo (References & Technical Documentation)</h3>
+            <span class="badge">Official Standards & Docs</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem; margin-top: 1rem;">
+            <!-- 5.1 Libraries -->
+            <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem;">
+                <div style="font-weight: 700; color: var(--primary); margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <span>5.1. Thư Viện Cốt Lõi & API Docs</span>
+                    <span class="badge" style="background: #e0f2fe; color: #0284c7;">LIBRARIES</span>
+                </div>
+                <ul style="font-size: 0.85rem; color: var(--text-muted); padding-left: 1.2rem; line-height: 1.6; margin: 0;">
+                    <li><a href="https://docs.opencv.org/5.x/d7/dbd/group__imgproc.html" target="_blank" style="color: var(--primary); font-weight: 600;">OpenCV imgproc Module</a> &bull; API chuyển đổi không gian màu, resize và vẽ đồ họa.</li>
+                    <li><a href="https://docs.opencv.org/5.x/d4/da8/group__imgcodecs.html" target="_blank" style="color: var(--primary); font-weight: 600;">OpenCV imgcodecs</a> &bull; Giải mã BGR và ghi đa định dạng (.png, .bmp, .jpg).</li>
+                    <li><a href="https://pillow.readthedocs.io/en/stable/reference/Image.html" target="_blank" style="color: var(--primary); font-weight: 600;">Pillow Image Handbook</a> &bull; Đối tượng PIL Image, chế độ RGB và codec.</li>
+                    <li><a href="https://numpy.org/doc/stable/user/basics.indexing.html" target="_blank" style="color: var(--primary); font-weight: 600;">NumPy Array Slicing</a> &bull; Trích xuất ROI và tính toán mảng vector hóa.</li>
+                    <li><a href="https://matplotlib.org/stable/api/pyplot_summary.html" target="_blank" style="color: var(--primary); font-weight: 600;">Matplotlib Pyplot</a> &bull; Biểu đồ lưới so sánh đa chiều và xuất figure.</li>
+                </ul>
+            </div>
+
+            <!-- 5.2 Standards -->
+            <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem;">
+                <div style="font-weight: 700; color: #7c3aed; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <span>5.2. Tiêu Chuẩn & Không Gian Màu</span>
+                    <span class="badge" style="background: #f5f3ff; color: #7c3aed;">STANDARDS</span>
+                </div>
+                <ul style="font-size: 0.85rem; color: var(--text-muted); padding-left: 1.2rem; line-height: 1.6; margin: 0;">
+                    <li><strong>ITU-R BT.601 (Rec. 601)</strong> &bull; Chuẩn chuyển đổi Grayscale: <code>Y = 0.299R + 0.587G + 0.114B</code>.</li>
+                    <li><strong>CIE 1976 (L*a*b*)</strong> &bull; Không gian màu đồng đều tri giác (Perceptually Uniform Color Space).</li>
+                    <li><strong>HSV Hexcone Model</strong> &bull; Mô hình nón màu phân tách sắc thái màu (H), độ bão hòa (S) và độ sáng (V).</li>
+                </ul>
+            </div>
+
+            <!-- 5.3 Conventions -->
+            <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem;">
+                <div style="font-weight: 700; color: var(--success); margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <span>5.3. Quy Ước Thị Giác Máy Tính</span>
+                    <span class="badge badge-success">CONVENTIONS</span>
+                </div>
+                <ul style="font-size: 0.85rem; color: var(--text-muted); padding-left: 1.2rem; line-height: 1.6; margin: 0;">
+                    <li><strong>Pascal VOC XYXY Format</strong> &bull; Tọa độ hộp bao <code>[xmin, ymin, xmax, ymax]</code> (0-indexed).</li>
+                    <li><strong>OpenCV BGR Legacy Layout</strong> &bull; Thứ tự kênh màu BGR nguồn gốc từ frame grabbers và Intel IPL.</li>
+                    <li><strong>RGB Default in Deep Learning</strong> &bull; Thứ tự kênh màu RGB chuẩn hóa trên Pillow, PyTorch và torchvision.</li>
+                </ul>
+            </div>
+
+            <!-- 5.4 Internal Links -->
+            <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem;">
+                <div style="font-weight: 700; color: #d97706; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
+                    <span>5.4. Mã Nguồn Module Nội Bộ</span>
+                    <span class="badge" style="background: #fef3c7; color: #d97706;">ARCHITECTURE</span>
+                </div>
+                <ul style="font-size: 0.85rem; color: var(--text-muted); padding-left: 1.2rem; line-height: 1.6; margin: 0;">
+                    <li><a href="../../../src/data/transforms.py" class="code-pill">src/data/transforms.py</a> &bull; Vectorized Image Transforms</li>
+                    <li><a href="../../../src/common/visualizer.py" class="code-pill">src/common/visualizer.py</a> &bull; Multi-Plot Visualization Engine</li>
+                    <li><a href="../../../src/common/logger.py" class="code-pill">src/common/logger.py</a> &bull; Standardized Structured Logging</li>
+                    <li><a href="../../../src/pipelines/lab01_pipeline.py" class="code-pill">src/pipelines/lab01_pipeline.py</a> &bull; Automated Pipeline Controller</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>UTH Computer Vision Workspace &bull; Bài Thực Hành Chương 1: OpenCV & Pillow</p>
+        <p style="margin-top: 0.25rem;">Báo cáo được khởi tạo tự động theo tiêu chuẩn AI-First Engineering Lifecycle.</p>
+    </footer>
+</div>
+
+</body>
+</html>

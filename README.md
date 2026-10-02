@@ -3,9 +3,6 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
-
-> **Đơn vị**: Trường Đại học Giao thông Vận tải TP.HCM (UTH).
-
 ---
 
 ## 📌 Giới thiệu Tổng quan (Overview)
@@ -50,13 +47,17 @@ Repository này là bộ **khung xương dự án mẫu (Pure Project Scaffoldin
 │   ├── processed/
 │   │   └── .gitkeep
 │   ├── samples/
-│   │   └── .gitkeep
+│   │   └── sample_traffic.jpg         # Ảnh mẫu đầu vào thực hành
 │   └── README.md                      # Hướng dẫn tổ chức dữ liệu
 ├── docs/                              # Tài liệu & Báo cáo lab
-│   ├── assets/
-│   │   └── .gitkeep
+│   ├── assets/                        # Tài nguyên ảnh, sơ đồ workflow
 │   └── labs/
-│       └── template.md                # File mẫu báo cáo lab
+│       ├── README.md                  # Danh mục tổng hợp tất cả bài lab
+│       ├── TEMPLATE.md                # File mẫu báo cáo lab
+│       └── lab01/                     # Không gian tài liệu độc lập Lab 01
+│           ├── LAB_01_DESCRIPTION.md  # Đề bài & tiêu chí đánh giá
+│           ├── LAB_01_REPORT.md       # Báo cáo kỹ thuật chi tiết
+│           └── LAB_01_REPORT.html     # Báo cáo giao diện web tương tác
 ├── experiments/                       # Nơi lưu trữ artifacts (Ignored by Git)
 │   ├── checkpoints/
 │   │   └── .gitkeep

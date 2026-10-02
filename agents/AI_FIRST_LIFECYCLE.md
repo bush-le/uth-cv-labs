@@ -54,7 +54,7 @@ Mục tiêu: Chuyển đổi định nghĩa bài toán thành bản thiết kế
 | :--- | :--- |
 | **Architecture System** | Sơ đồ khối tổng thể thể hiện tương tác giữa Data, Model, Training và Evaluation. |
 | **Modules** | Phân chia trách nhiệm thành các package độc lập trong `src/`: `common`, `data`, `models`, `pipelines`. |
-| **Folder Structure** | Ánh xạ chính xác các file mã nguồn và cấu hình theo chuẩn của repository `uth-cv-labs`. |
+| **Folder Structure** | Ánh xạ chính xác các file mã nguồn và cấu hình theo chuẩn cấu trúc của dự án. |
 | **Dataflow** | Luồng biến đổi dữ liệu: Raw Image → Tensor BCHW → Augmentation → Backbone Features → Prediction → Loss/Metrics. |
 | **Interfaces / API** | Chữ ký hàm (function signatures), class signatures, tensor shapes `(B, C, H, W)` và kiểu dữ liệu đầu vào/đầu ra. |
 | **Milestones** | Lộ trình chia theo mốc: M1 (Data & Baseline), M2 (Model Improvement), M3 (Evaluation & Benchmark). |
@@ -119,7 +119,10 @@ Mục tiêu: Chuyển đổi định nghĩa bài toán thành bản thiết kế
 ---
 
 ### 9. DOCUMENT (Tài liệu hóa & Báo cáo Thí nghiệm)
-- Hoàn thiện báo cáo kỹ thuật dựa trên file mẫu tại `docs/labs/template.md`.
+- Hoàn thiện báo cáo kỹ thuật dựa trên file mẫu quy chuẩn của dự án:
+  - **Báo cáo chuyên sâu (`*.md` & `*.html`)**: Chứa đầy đủ Sơ đồ Luồng Công việc Toàn diện (Mermaid code + hình ảnh vector) và Mục Tài Liệu Tham Khảo (References) 4 nhóm chuẩn.
+  - **Chuẩn hóa Jupyter Notebook (`notebooks/**/*.ipynb`)**: Mở đầu bằng Cell 0 (Mục tiêu) và Cell 1 gồm Bảng Lộ trình Thực thi 4 cột chuẩn (`| Step | Description | What it does | Import path |`) kèm ngay phía dưới là Mục Liên kết Nhanh Tài Liệu & Báo Cáo liên quan. Tuyệt đối KHÔNG chèn sơ đồ luồng workflow hay references học thuật vào notebook để giữ notebook gọn nhẹ, tương tác mượt mà theo quy chuẩn tại [`AI_REFERENCE.md`](AI_REFERENCE.md).
+  - **Bảo mật & Điều hướng (`Ctrl + Click`)**: 100% liên kết mã nguồn và tài liệu phải sử dụng đường dẫn tương đối chuẩn (`../../src/...`), tuyệt đối KHÔNG hardcode đường dẫn tuyệt đối chứa username hệ thống (`file:///home/...`).
 - Ghi nhận đầy đủ:
   - Bảng số liệu định lượng (Quantitative Results): Loss, Accuracy, mAP, FPS.
   - Hình ảnh trực quan hóa định tính (Qualitative Visualizations) từ `experiments/predictions/`.

@@ -1,0 +1,248 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 920" width="100%" height="auto" style="max-width: 1200px; display: block; margin: 12px auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+<defs>
+    <!-- Arrow marker solid blue -->
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb" />
+    </marker>
+    <!-- Arrow marker dashed slate -->
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" />
+    </marker>
+    <!-- Arrow marker indigo -->
+    <marker id="arrow-indigo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#4f46e5" />
+    </marker>
+    <!-- Arrow marker emerald -->
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#16a34a" />
+    </marker>
+    <!-- Arrow marker amber -->
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#d97706" />
+    </marker>
+    <!-- Arrow marker cyan -->
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0284c7" />
+    </marker>
+    <!-- Card Drop Shadow -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.07" flood-color="#000000" />
+    </filter>
+  </defs>
+<rect width="1200" height="920" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
+
+    <g id="header">
+      <rect x="0" y="0" width="1200" height="54" rx="12" fill="#0f172a" />
+      <rect x="0" y="42" width="1200" height="12" fill="#0f172a" />
+      <text x="25" y="34" font-size="15" font-weight="700" fill="#ffffff" letter-spacing="0.5">LAB 1: COMPREHENSIVE PIPELINE ARCHITECTURE (CLEAN ARCHITECTURE FLOW)</text>
+      <rect x="1035" y="14" width="140" height="26" rx="13" fill="#2563eb" />
+      <text x="1105" y="31" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">5 TIERS • 14 ARTIFACTS</text>
+    </g>
+
+        <g>
+          <rect x="390" y="68" width="380" height="86" rx="10" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.8" />
+          <path d="M 390 78 Q 390 68 400 68 L 760 68 Q 770 68 770 78 L 770 100 L 390 100 Z" fill="#e0f2fe" />
+          <text x="404" y="89" font-size="11.5" font-weight="700" fill="#0369a1">1. DỮ LIỆU ĐẦU VÀO (INPUT LAYER)</text>
+          <rect x="707" y="75" width="51" height="18" rx="9" fill="#0284c7" />
+          <text x="732.5" y="87" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">INPUT</text>
+        </g>
+<g id="RAW" filter="url(#shadow)">
+<rect x="405" y="104" width="350" height="42" rx="8" fill="#ffffff" stroke="#0284c7" stroke-width="1.6" />
+<rect x="687" y="110" width="60" height="15" rx="7.5" fill="#0284c7" />
+<text x="717.0" y="121" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">RAW DATA</text>
+<text x="417" y="125" font-size="11.5" font-weight="700" fill="#0f172a">sample_traffic.jpg</text>
+<text x="417" y="140" font-size="9.5" fill="#475569">800x533 JPEG • 3 channels (RGB / BGR 8-bit uint8)</text>
+</g>
+
+        <g>
+          <rect x="25" y="175" width="285" height="540" rx="10" fill="#f8fafc" stroke="#64748b" stroke-width="1.8" />
+          <path d="M 25 185 Q 25 175 35 175 L 300 175 Q 310 175 310 185 L 310 207 L 25 207 Z" fill="#f1f5f9" />
+          <text x="39" y="196" font-size="11.5" font-weight="700" fill="#334155">2. KIẾN TRÚC MÃ NGUỒN (src/)</text>
+          <rect x="233" y="182" width="65" height="18" rx="9" fill="#64748b" />
+          <text x="265.5" y="194" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">MODULES</text>
+        </g>
+<g id="TRANS" filter="url(#shadow)">
+<rect x="40" y="220" width="255" height="58" rx="8" fill="#ffffff" stroke="#3b82f6" stroke-width="1.6" />
+<rect x="227" y="226" width="60" height="15" rx="7.5" fill="#2563eb" />
+<text x="257.0" y="237" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">CORE OPS</text>
+<text x="52" y="241" font-size="11" font-weight="700" fill="#0f172a">src/data/transforms.py</text>
+<text x="52" y="256" font-size="9.5" fill="#475569">100% Vectorized Transformations</text>
+<text x="52" y="270" font-size="9.5" fill="#475569">ROI Slicing • Color Spaces • Drawings</text>
+</g>
+<g id="VIS" filter="url(#shadow)">
+<rect x="40" y="310" width="255" height="58" rx="8" fill="#ffffff" stroke="#6366f1" stroke-width="1.6" />
+<rect x="233" y="316" width="54" height="15" rx="7.5" fill="#4f46e5" />
+<text x="260.0" y="327" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">VISUALS</text>
+<text x="52" y="331" font-size="11" font-weight="700" fill="#0f172a">src/common/visualizer.py</text>
+<text x="52" y="346" font-size="9.5" fill="#475569">Matplotlib Multi-Plot Engines</text>
+<text x="52" y="360" font-size="9.5" fill="#475569">2x2 Color Grids • Spatial Comparisons</text>
+</g>
+<g id="LOG" filter="url(#shadow)">
+<rect x="40" y="400" width="255" height="58" rx="8" fill="#ffffff" stroke="#64748b" stroke-width="1.6" />
+<rect x="233" y="406" width="54" height="15" rx="7.5" fill="#475569" />
+<text x="260.0" y="417" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">LOGGING</text>
+<text x="52" y="421" font-size="11" font-weight="700" fill="#0f172a">src/common/logger.py</text>
+<text x="52" y="436" font-size="9.5" fill="#475569">Standardized Logging System</text>
+<text x="52" y="450" font-size="9.5" fill="#475569">Timed Execution &amp; File State Logs</text>
+</g>
+<g id="PIPE" filter="url(#shadow)">
+      <rect x="40" y="520" width="255" height="68" rx="8" fill="#ffffff" stroke="#0284c7" stroke-width="1.6" />
+      <rect x="188" y="526" width="98" height="15" rx="7.5" fill="#0284c7" />
+      <text x="237" y="537" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">ORCHESTRATOR</text>
+      <text x="52" y="537" font-size="9.5" font-weight="bold" fill="#64748b">src/pipelines/</text>
+      <text x="52" y="551" font-size="11.5" font-weight="700" fill="#0369a1">lab01_pipeline.py</text>
+      <text x="52" y="567" font-size="9.5" fill="#475569">Automated End-to-End Orchestrator</text>
+      <text x="52" y="580" font-size="9" fill="#64748b">14 Artifacts Generation &amp; Validation</text>
+    </g>
+
+        <g>
+          <rect x="340" y="175" width="480" height="540" rx="10" fill="#fdfaff" stroke="#8b5cf6" stroke-width="1.8" />
+          <path d="M 340 185 Q 340 175 350 175 L 810 175 Q 820 175 820 185 L 820 207 L 340 207 Z" fill="#f5f3ff" />
+          <text x="354" y="196" font-size="11.5" font-weight="700" fill="#6d28d9">3. TIẾN TRÌNH XỬ LÝ (CORE PROCESSING STAGES)</text>
+          <rect x="736" y="182" width="72" height="18" rx="9" fill="#8b5cf6" />
+          <text x="772.0" y="194" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">5 STAGES</text>
+        </g>
+<g id="S1" filter="url(#shadow)">
+<rect x="355" y="218" width="450" height="54" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.6" />
+<rect x="743" y="224" width="54" height="15" rx="7.5" fill="#7c3aed" />
+<text x="770.0" y="235" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">STAGE 1</text>
+<text x="367" y="239" font-size="11.5" font-weight="700" fill="#0f172a">Yêu cầu 1: Environment &amp; Setup</text>
+<text x="367" y="254" font-size="9.5" fill="#475569">OpenCV 5.0.0 • Pillow 12.3.0 • NumPy 2.5.3</text>
+<text x="367" y="268" font-size="9.5" fill="#475569">Matplotlib inline runtime check</text>
+</g>
+<g id="S2" filter="url(#shadow)">
+<rect x="355" y="308" width="450" height="54" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.6" />
+<rect x="743" y="314" width="54" height="15" rx="7.5" fill="#7c3aed" />
+<text x="770.0" y="325" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">STAGE 2</text>
+<text x="367" y="329" font-size="11.5" font-weight="700" fill="#0f172a">Yêu cầu 2: Image I/O &amp; Formats</text>
+<text x="367" y="344" font-size="9.5" fill="#475569">cv2 BGR vs PIL RGB Channel Swap</text>
+<text x="367" y="358" font-size="9.5" fill="#475569">Multi-format Export (.png, .bmp, .jpg)</text>
+</g>
+<g id="S3" filter="url(#shadow)">
+<rect x="355" y="398" width="450" height="54" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.6" />
+<rect x="743" y="404" width="54" height="15" rx="7.5" fill="#7c3aed" />
+<text x="770.0" y="415" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">STAGE 3</text>
+<text x="367" y="419" font-size="11.5" font-weight="700" fill="#0f172a">Yêu cầu 3: Color Space Conversions</text>
+<text x="367" y="434" font-size="9.5" fill="#475569">Grayscale Rec. 601 • HSV (H/S/V) • CIE Lab</text>
+<text x="367" y="448" font-size="9.5" fill="#475569">Grid Comparison 2x2 Multi-plot Visualization</text>
+</g>
+<g id="S4" filter="url(#shadow)">
+<rect x="355" y="488" width="450" height="54" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.6" />
+<rect x="743" y="494" width="54" height="15" rx="7.5" fill="#7c3aed" />
+<text x="770.0" y="505" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">STAGE 4</text>
+<text x="367" y="509" font-size="11.5" font-weight="700" fill="#0f172a">Yêu cầu 4: Spatial Transformations</text>
+<text x="367" y="524" font-size="9.5" fill="#475569">ROI Slicing Pascal VOC [x1, y1, x2, y2]</text>
+<text x="367" y="538" font-size="9.5" fill="#475569">Multi-scale Resizing (0.5x, 1.5x, 400x300)</text>
+</g>
+<g id="S5" filter="url(#shadow)">
+<rect x="355" y="578" width="450" height="54" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.6" />
+<rect x="743" y="584" width="54" height="15" rx="7.5" fill="#7c3aed" />
+<text x="770.0" y="595" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">STAGE 5</text>
+<text x="367" y="599" font-size="11.5" font-weight="700" fill="#0f172a">Yêu cầu 5: Geometric Drawings &amp; Annotations</text>
+<text x="367" y="614" font-size="9.5" fill="#475569">Guide Line • Bounding Box • Centroid Circle</text>
+<text x="367" y="628" font-size="9.5" fill="#475569">Multiline Text Annotation Header</text>
+</g>
+
+        <g>
+          <rect x="845" y="175" width="330" height="540" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.8" />
+          <path d="M 845 185 Q 845 175 855 175 L 1165 175 Q 1175 175 1175 185 L 1175 207 L 845 207 Z" fill="#dcfce7" />
+          <text x="859" y="196" font-size="11.5" font-weight="700" fill="#15803d">4. 14 ARTIFACTS (predictions/lab01/)</text>
+          <rect x="1091" y="182" width="72" height="18" rx="9" fill="#16a34a" />
+          <text x="1127.0" y="194" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">14 FILES</text>
+        </g>
+<g id="ART_FMT" filter="url(#shadow)">
+<rect x="860" y="308" width="300" height="54" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+<rect x="1098" y="314" width="54" height="15" rx="7.5" fill="#16a34a" />
+<text x="1125.0" y="325" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">FORMATS</text>
+<text x="872" y="329" font-size="11" font-weight="700" fill="#0f172a">converted/ (3 artifacts)</text>
+<text x="872" y="344" font-size="9.5" fill="#475569">sample.png • sample.bmp • sample_copy.jpg</text>
+<text x="872" y="358" font-size="9.5" fill="#475569">Multi-codec verified files</text>
+</g>
+<g id="ART_COL" filter="url(#shadow)">
+<rect x="860" y="398" width="300" height="54" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+<rect x="1104" y="404" width="48" height="15" rx="7.5" fill="#16a34a" />
+<text x="1128.0" y="415" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">COLORS</text>
+<text x="872" y="419" font-size="11" font-weight="700" fill="#0f172a">color_spaces/ (4 artifacts)</text>
+<text x="872" y="434" font-size="9.5" fill="#475569">grayscale.png • hsv.png • lab.png</text>
+<text x="872" y="448" font-size="9.5" fill="#475569">color_spaces_grid.png (2x2 Multi-plot)</text>
+</g>
+<g id="ART_SPA" filter="url(#shadow)">
+<rect x="860" y="488" width="300" height="54" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+<rect x="1098" y="494" width="54" height="15" rx="7.5" fill="#16a34a" />
+<text x="1125.0" y="505" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">SPATIAL</text>
+<text x="872" y="509" font-size="11" font-weight="700" fill="#0f172a">spatial/ (5 artifacts)</text>
+<text x="872" y="524" font-size="9.5" fill="#475569">roi_cropped.jpg • resize_0.5x • resize_1.5x</text>
+<text x="872" y="538" font-size="9.5" fill="#475569">resize_400x300.jpg • comparison.png</text>
+</g>
+<g id="ART_ANN" filter="url(#shadow)">
+<rect x="860" y="578" width="300" height="54" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+<rect x="1092" y="584" width="60" height="15" rx="7.5" fill="#16a34a" />
+<text x="1122.0" y="595" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">DRAWINGS</text>
+<text x="872" y="599" font-size="11" font-weight="700" fill="#0f172a">annotations/ (2 artifacts)</text>
+<text x="872" y="614" font-size="9.5" fill="#475569">annotated_sample.jpg (Primitives drawn)</text>
+<text x="872" y="628" font-size="9.5" fill="#475569">annotations_comparison.png (Side-by-side)</text>
+</g>
+
+        <g>
+          <rect x="25" y="740" width="1150" height="155" rx="10" fill="#fffbeb" stroke="#d97706" stroke-width="1.8" />
+          <path d="M 25 750 Q 25 740 35 740 L 1165 740 Q 1175 740 1175 750 L 1175 772 L 25 772 Z" fill="#fef3c7" />
+          <text x="39" y="761" font-size="11.5" font-weight="700" fill="#92400e">5. KIỂM ĐỊNH CHẤT LƯỢNG &amp; TÀI LIỆU BÀN GIAO (QUALITY ASSURANCE &amp; DELIVERY)</text>
+          <rect x="1091" y="747" width="72" height="18" rx="9" fill="#d97706" />
+          <text x="1127.0" y="759" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">VERIFIED</text>
+        </g>
+<g id="TESTS" filter="url(#shadow)">
+<rect x="45" y="785" width="340" height="85" rx="8" fill="#ffffff" stroke="#d97706" stroke-width="1.6" />
+<rect x="305" y="791" width="72" height="15" rx="7.5" fill="#16a34a" />
+<text x="341.0" y="802" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">10/10 PASS</text>
+<text x="57" y="806" font-size="11.5" font-weight="700" fill="#0f172a">Bộ Unit Tests (test_transforms.py)</text>
+<text x="57" y="821" font-size="9.5" fill="#475569">10/10 Pytest Passed (0.24s)</text>
+<text x="57" y="835" font-size="9.5" fill="#475569">• Vectorized shape &amp; dtype checks</text>
+<text x="57" y="849" font-size="9.5" fill="#475569">• Color roundtrip &amp; ROI bounds assertions</text>
+<text x="57" y="863" font-size="9.5" fill="#475569">• Mathematical pixel transformations verified</text>
+</g>
+<g id="LINT" filter="url(#shadow)">
+<rect x="415" y="785" width="340" height="85" rx="8" fill="#ffffff" stroke="#d97706" stroke-width="1.6" />
+<rect x="675" y="791" width="72" height="15" rx="7.5" fill="#0284c7" />
+<text x="711.0" y="802" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">CLEAN CODE</text>
+<text x="427" y="806" font-size="11.5" font-weight="700" fill="#0f172a">Ruff Code Quality &amp; Linter</text>
+<text x="427" y="821" font-size="9.5" fill="#475569">All checks passed! (0 warnings)</text>
+<text x="427" y="835" font-size="9.5" fill="#475569">• Clean Architecture separation enforced</text>
+<text x="427" y="849" font-size="9.5" fill="#475569">• PEP 8, Docstrings, Type Annotations</text>
+<text x="427" y="863" font-size="9.5" fill="#475569">• Zero lint errors across src/ &amp; tests/</text>
+</g>
+<g id="HTML_REP" filter="url(#shadow)">
+<rect x="785" y="785" width="370" height="85" rx="8" fill="#ffffff" stroke="#d97706" stroke-width="1.6" />
+<rect x="1081" y="791" width="66" height="15" rx="7.5" fill="#7c3aed" />
+<text x="1114.0" y="802" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">DELIVERED</text>
+<text x="797" y="806" font-size="11.5" font-weight="700" fill="#0f172a">Báo Cáo Thực Nghiệm Bàn Giao</text>
+<text x="797" y="821" font-size="9.5" fill="#475569">docs/labs/LAB_01_REPORT.html • LAB_01_REPORT.md</text>
+<text x="797" y="835" font-size="9.5" fill="#475569">• Interactive Visual Report with CSS Dashboard</text>
+<text x="797" y="849" font-size="9.5" fill="#475569">• Reproducibility Guide &amp; Code References</text>
+<text x="797" y="863" font-size="9.5" fill="#475569">• Execution verification checklist completed</text>
+</g>
+<g id="arrows">
+<path d="M 580 146 L 580 216" stroke="#2563eb" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)" />
+<path d="M 580 272 L 580 306" stroke="#2563eb" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)" />
+<path d="M 580 362 L 580 396" stroke="#2563eb" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)" />
+<path d="M 580 452 L 580 486" stroke="#2563eb" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)" />
+<path d="M 580 542 L 580 576" stroke="#2563eb" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)" />
+<path d="M 400 632 C 280 670, 168 660, 168 588" stroke="#0284c7" stroke-width="2.2" stroke-dasharray="6,4" fill="none" marker-end="url(#arrow-cyan)" />
+<rect x="200" y="650" width="135" height="18" rx="9" fill="#e0f2fe" stroke="#0284c7" stroke-width="1" />
+<text x="267" y="663" font-size="9" font-weight="bold" fill="#0369a1" text-anchor="middle">Pipeline Completed Loop</text>
+<path d="M 295 249 C 320 249, 320 335, 353 335" stroke="#3b82f6" stroke-width="1.8" stroke-dasharray="5,4" fill="none" marker-end="url(#arrow-blue)" />
+<path d="M 295 249 C 320 249, 320 425, 353 425" stroke="#3b82f6" stroke-width="1.8" stroke-dasharray="5,4" fill="none" marker-end="url(#arrow-blue)" />
+<path d="M 295 249 C 320 249, 320 515, 353 515" stroke="#3b82f6" stroke-width="1.8" stroke-dasharray="5,4" fill="none" marker-end="url(#arrow-blue)" />
+<path d="M 295 249 C 320 249, 320 605, 353 605" stroke="#3b82f6" stroke-width="1.8" stroke-dasharray="5,4" fill="none" marker-end="url(#arrow-blue)" />
+<path d="M 295 339 L 353 339" stroke="#6366f1" stroke-width="1.8" stroke-dasharray="5,4" fill="none" marker-end="url(#arrow-indigo)" />
+<path d="M 295 339 C 325 339, 325 515, 353 515" stroke="#6366f1" stroke-width="1.8" stroke-dasharray="5,4" fill="none" marker-end="url(#arrow-indigo)" />
+<path d="M 168 458 L 168 518" stroke="#64748b" stroke-width="1.8" stroke-dasharray="5,4" fill="none" marker-end="url(#arrow-slate)" />
+<path d="M 805 335 L 858 335" stroke="#16a34a" stroke-width="2.2" fill="none" marker-end="url(#arrow-green)" />
+<path d="M 805 425 L 858 425" stroke="#16a34a" stroke-width="2.2" fill="none" marker-end="url(#arrow-green)" />
+<path d="M 805 515 L 858 515" stroke="#16a34a" stroke-width="2.2" fill="none" marker-end="url(#arrow-green)" />
+<path d="M 805 605 L 858 605" stroke="#16a34a" stroke-width="2.2" fill="none" marker-end="url(#arrow-green)" />
+<path d="M 168 586 C 168 670, 215 680, 215 783" stroke="#d97706" stroke-width="2.2" stroke-dasharray="5,4" fill="none" marker-end="url(#arrow-amber)" />
+<path d="M 1010 632 L 1010 738" stroke="#d97706" stroke-width="2.5" fill="none" marker-end="url(#arrow-amber)" />
+<rect x="945" y="670" width="130" height="20" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1" />
+<text x="1010" y="684" font-size="9.5" font-weight="bold" fill="#92400e" text-anchor="middle">QA Verification Feed</text>
+</g>
+</svg>
