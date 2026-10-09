@@ -19,7 +19,7 @@ docs/labs/
 │   ├── LAB_01_REPORT.md    # Báo cáo kỹ thuật chi tiết
 │   └── LAB_01_REPORT.html  # Báo cáo trực quan HTML tương tác
 │
-├── lab02/                  # 🟡 LAB 2: TIỀN XỬ LÝ & LỌC ẢNH KHÔNG GIAN (Sắp tới)
+├── lab02/                  # 🟢 LAB 2: TIỀN XỬ LÝ & LỌC ẢNH KHÔNG GIAN
 │   ├── LAB_02_DESCRIPTION.md
 │   ├── LAB_02_REPORT.md
 │   └── LAB_02_REPORT.html
@@ -35,7 +35,7 @@ docs/labs/
 | Lab | Tên Chủ Đề Thực Hành | Trạng Thái | Thư Mục Tài Liệu | Pipeline Điều Phối | Notebook Thực Hành |
 | :---: | :--- | :---: | :--- | :--- | :--- |
 | **Lab 1** | **Xử lý ảnh cơ bản với OpenCV & Pillow** | ✅ **Hoàn thành** (10/10 Tests) | [`lab01/`](lab01/LAB_01_REPORT.md) | [`lab01_pipeline.py`](../../src/pipelines/lab01_pipeline.py) | [`lab_01.ipynb`](../../notebooks/labs/lab_01.ipynb) |
-| **Lab 2** | **Lọc ảnh không gian & Nâng cao chất lượng ảnh** | ⏳ *Sẵn sàng khởi tạo* | `lab02/` | `lab02_pipeline.py` | `lab_02.ipynb` |
+| **Lab 2** | **Lọc ảnh không gian & Nâng cao chất lượng ảnh** | ✅ **Hoàn thành** (32/32 Tests) | [`lab02/`](lab02/LAB_02_REPORT.md) | [`lab02_pipeline.py`](../../src/pipelines/lab02_pipeline.py) | [`lab_02.ipynb`](../../notebooks/labs/lab_02.ipynb) |
 | **Lab 3** | **Biến đổi hình thái học & Tách biên (Edge Detection)** | ⏳ *Sẵn sàng khởi tạo* | `lab03/` | `lab03_pipeline.py` | `lab_03.ipynb` |
 
 ---

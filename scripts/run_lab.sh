@@ -34,6 +34,11 @@ case "${LAB}" in
         ${PYTHON} -m src.pipelines.lab01_pipeline
         echo "Lab 1 execution complete! Artifacts saved to experiments/predictions/lab01/"
         ;;
+    2|"02"|"lab2"|"lab02"|"lab-02")
+        echo "Executing Lab 2 Pipeline..."
+        ${PYTHON} -m src.pipelines.lab02_pipeline
+        echo "Lab 2 execution complete! Artifacts saved to experiments/predictions/lab02/"
+        ;;
     *)
         echo "Error: Lab ${LAB} is not yet implemented or unrecognized."
         exit 1

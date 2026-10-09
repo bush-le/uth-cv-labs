@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Báo Cáo Thực Hành Lab 02 - Toán Tử Điểm Ảnh &amp; Lọc Tuyến Tính</title>
+<style>
+    :root {
+        --primary: #1e3a8a;
+        --primary-light: #3b82f6;
+        --accent: #0284c7;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --bg-page: #f8fafc;
+        --bg-card: #ffffff;
+        --border: #e2e8f0;
+        --text-dark: #0f172a;
+        --text-muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: var(--bg-page);
+        color: var(--text-dark);
+        line-height: 1.6;
+        padding: 2rem 1rem;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header {
+        background: linear-gradient(135deg, #1e3a8a 0%, #0369a1 100%);
+        color: #ffffff;
+        padding: 2.5rem 2rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 25px -5px rgba(30, 58, 138, 0.25);
+    }
+    header h1 { font-size: 2rem; margin-bottom: 0.5rem; font-weight: 800; letter-spacing: -0.025em; }
+    header h2 { font-size: 1.25rem; font-weight: 400; opacity: 0.9; }
+    header .meta { margin-top: 1rem; font-size: 0.9rem; opacity: 0.85; }
+    .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .card-header {
+        display: flex; align-items: center; justify-content: space-between;
+        flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;
+        border-bottom: 2px solid var(--border); padding-bottom: 0.75rem;
+    }
+    .card-title { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+    .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; }
+    .badge-success { background: #d1fae5; color: #065f46; }
+    .badge-info { background: #dbeafe; color: #1e40af; }
+    p { margin-bottom: 0.75rem; }
+    ul, ol { margin-left: 1.5rem; margin-bottom: 0.75rem; }
+    li { margin-bottom: 0.35rem; }
+    code {
+        background: #f1f5f9; padding: 0.15rem 0.4rem; border-radius: 4px;
+        font-size: 0.88em; font-family: "SFMono-Regular", Consolas, monospace; color: #be123c;
+    }
+    .workflow-diagram {
+        display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; justify-content: center;
+        padding: 1.25rem; background: #f8fafc; border-radius: 8px; margin-bottom: 1.5rem;
+    }
+    .workflow-node {
+        background: #ffffff; border: 2px solid var(--primary-light); border-radius: 8px;
+        padding: 0.7rem 0.9rem; text-align: center; font-size: 0.82rem; font-weight: 600;
+        color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.04); min-width: 130px;
+    }
+    .workflow-node.accent { border-color: var(--accent); color: var(--accent); }
+    .workflow-node.success { border-color: var(--success); color: #047857; }
+    .workflow-arrow { color: var(--text-muted); font-weight: bold; font-size: 1.2rem; }
+    .table-responsive { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; margin-top: 0.5rem; }
+    th, td { padding: 0.7rem 0.9rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { background-color: #f8fafc; color: var(--text-dark); font-weight: 700; }
+    tr:hover { background-color: #f8fafc; }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-top: 1rem; }
+    .gallery-item { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #fff; }
+    .gallery-item img { width: 100%; display: block; background: #f1f5f9; }
+    .gallery-item .caption { padding: 0.75rem 1rem; font-size: 0.85rem; }
+    .gallery-item .caption strong { color: var(--primary); }
+    .gallery-item .caption span { display: block; color: var(--text-muted); margin-top: 0.15rem; }
+    .callout {
+        background: #eff6ff; border-left: 4px solid var(--primary-light);
+        padding: 0.9rem 1.1rem; border-radius: 6px; margin: 1rem 0; font-size: 0.92rem;
+    }
+    .callout.warn { background: #fffbeb; border-left-color: var(--warning); }
+    pre.mermaid-src {
+        background: #0f172a; color: #7dd3fc; padding: 1rem; border-radius: 8px;
+        overflow-x: auto; font-size: 0.82rem; margin-top: 0.75rem;
+    }
+    pre.kernel {
+        background: #0f172a; color: #e2e8f0; padding: 0.9rem 1.1rem; border-radius: 8px;
+        font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.9rem;
+        display: inline-block; margin: 0.5rem 0.75rem 0.5rem 0;
+    }
+    a { color: var(--accent); }
+    h4.sub { margin: 1.5rem 0 0.5rem; color: var(--primary); font-size: 1.02rem; }
+    footer { text-align: center; color: var(--text-muted); font-size: 0.85rem; margin: 2rem 0 1rem; }
+</style>
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <h1>Báo Cáo Thực Hành Lab 02</h1>
+        <h2>Toán Tử Điểm Ảnh &amp; Lọc Tuyến Tính (Point Operations &amp; Linear Filtering)</h2>
+        <div class="meta">Python 3.12.7 · OpenCV 5.0.0 · NumPy 2.2.6 · Matplotlib 3.11 · pytest 32/32 Passed<br>Ảnh mẫu: <code>data/samples/image-2.jpg</code> (1920×1080)</div>
+    </header>
+
+    <!-- 1. Objectives -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">1. Mục Tiêu Bài Thực Hành</h3>
+            <span class="badge badge-info">Lab 02</span>
+        </div>
+        <ol>
+            <li>Hiểu và cài đặt các <strong>toán tử điểm ảnh</strong>: thay đổi độ sáng, độ tương phản, biến đổi âm bản, cắt ngưỡng.</li>
+            <li>Hiểu bản chất <strong>phép tích chập (convolution)</strong> và cách kernel quyết định kết quả đầu ra.</li>
+            <li>Cài đặt và so sánh các <strong>bộ lọc tuyến tính</strong>: lọc trung bình, lọc Gaussian, làm nét.</li>
+            <li>Áp dụng các <strong>bộ phát hiện biên</strong> (Sobel, Prewitt) qua đạo hàm bậc 1.</li>
+            <li>Nắm <strong>quy luật tổng hệ số kernel</strong> và mối liên hệ giữa đạo hàm — kernel — hành vi bộ lọc.</li>
+        </ol>
+    </div>
+
+    <!-- 2. Workflow -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">2. Lộ Trình Thực Thi &amp; Sơ Đồ Luồng Xử Lý</h3>
+        </div>
+
+        <div class="workflow-diagram">
+            <div class="workflow-node">Ảnh đầu vào</div>
+            <div class="workflow-arrow">&#8594;</div>
+            <div class="workflow-node">Point Operations</div>
+            <div class="workflow-arrow">&#8594;</div>
+            <div class="workflow-node">Linear Filters</div>
+            <div class="workflow-arrow">&#8594;</div>
+            <div class="workflow-node accent">Edge Detection</div>
+            <div class="workflow-arrow">&#8594;</div>
+            <div class="workflow-node accent">Kernel Sum Rule</div>
+            <div class="workflow-arrow">&#8594;</div>
+            <div class="workflow-node accent">Non-linear Filters</div>
+            <div class="workflow-arrow">&#8594;</div>
+            <div class="workflow-node success">Comparison Grid</div>
+        </div>
+
+        <pre class="mermaid-src">flowchart TD
+    INPUT["data/samples/image-2.jpg (1920x1080 BGR)"] --&gt; S1["YC1-4: Point Operations"]
+    S1 --&gt; S2["YC5-7: Linear Filters (Mean, Gaussian, Sharpen)"]
+    S2 --&gt; S3["YC8: Edge Detection (Sobel, Prewitt)"]
+    S3 --&gt; S4["YC9: Kernel Sum Rule (0.5 / 1 / 2 / 0)"]
+    S4 --&gt; S5["YC10: Non-linear Filters (Median, Bilateral)"]
+    S5 --&gt; S6["YC11: Comparison Grid + Histogram"]
+    S6 --&gt; OUT["experiments/predictions/lab02/"]</pre>
+
+        <h4 class="sub">2.1. Bảng Lộ Trình Thực Thi Chuẩn Hóa (Execution Roadmap)</h4>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr><th>Step</th><th>Description</th><th>What it does</th><th>Import path</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>Setup &amp; Nạp ảnh</td><td>Nạp thư viện, đọc ảnh mẫu BGR, tạo grayscale</td><td>&mdash;</td></tr>
+                    <tr><td>2</td><td>Point Operations (YC1–4)</td><td>Brightness <code>f+β</code>, Contrast <code>α·f</code>, Negative <code>255-f</code>, Threshold</td><td><a href="../../../src/data/filters.py">src/data/filters.py</a></td></tr>
+                    <tr><td>3</td><td>Linear Filters (YC5–7)</td><td>Mean (box), Gaussian, Sharpen <code>Identity − Laplacian</code></td><td><a href="../../../src/data/filters.py">src/data/filters.py</a></td></tr>
+                    <tr><td>4</td><td>Edge Detection (YC8)</td><td>Sobel X/Y, Prewitt X/Y, gradient magnitude</td><td><a href="../../../src/data/filters.py">src/data/filters.py</a></td></tr>
+                    <tr><td>5</td><td>Kernel Sum Rule (YC9)</td><td>Kiểm chứng <code>output = c·Σkernel</code> với tổng <code>0.5/1/2/0</code></td><td><a href="../../../src/data/filters.py">src/data/filters.py</a></td></tr>
+                    <tr><td>6</td><td>Non-linear Filters (YC10)</td><td>Median và Bilateral trên ảnh nhiễu muối tiêu</td><td><a href="../../../src/data/filters.py">src/data/filters.py</a></td></tr>
+                    <tr><td>7</td><td>Comparison (YC11)</td><td>Lưới so sánh tổng hợp toàn bộ bộ lọc</td><td><a href="../../../src/pipelines/lab02_pipeline.py">src/pipelines/lab02_pipeline.py</a></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 2b. Threshold rationale -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">2b. Ghi Chú Phương Pháp: Chọn Ngưỡng T</h3>
+        </div>
+        <h4 class="sub">YC4 — Vì sao chọn T = 80 / 127 / 180?</h4>
+        <ul>
+            <li><code>127</code> là <strong>trung điểm</strong> của dải cường độ <code>[0, 255]</code> — mốc "trung tính" để tham chiếu.</li>
+            <li><code>80</code> và <code>180</code> lệch <strong>±50</strong> quanh trung điểm, đại diện ngưỡng <strong>thấp</strong> và <strong>cao</strong>.</li>
+            <li>Đây chỉ là 3 mốc <strong>minh hoạ xu hướng</strong>; đề bài chỉ yêu cầu "thử nhiều giá trị T".</li>
+        </ul>
+    </div>
+
+    <!-- 3. Kernel rules -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">3. Quy Tắc Tổng Hệ Số Kernel</h3>
+        </div>
+        <p>Trên một vùng ảnh <strong>phẳng</strong> (mọi pixel = <code>c</code>), tích chập cho <code>output = c × (tổng hệ số kernel)</code>.</p>
+        <div class="table-responsive">
+            <table>
+                <thead><tr><th>Tổng kernel</th><th>Ý nghĩa</th><th>Output (c=100)</th><th>Kỳ vọng</th></tr></thead>
+                <tbody>
+                    <tr><td><code>0.5</code></td><td>Giảm độ sáng / scale</td><td>50</td><td>50</td></tr>
+                    <tr><td><code>1.0</code></td><td>Bảo toàn độ sáng</td><td>100</td><td>100</td></tr>
+                    <tr><td><code>2.0</code></td><td>Tăng độ sáng</td><td>200</td><td>200</td></tr>
+                    <tr><td><code>0.0</code></td><td>Xoá vùng phẳng, chỉ giữ biên</td><td>0</td><td>0</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="callout warn">
+            <strong>Lưu ý quan trọng:</strong> tổng kernel bằng <code>1</code> chỉ đảm bảo bảo toàn độ sáng, <em>không</em> tự động nghĩa là làm nét.
+            Mean và Gaussian cũng có tổng <code>1</code> nhưng <strong>làm mờ</strong>. Điều kiện để kernel <strong>thực sự làm nét</strong>: tổng = 1 <strong>VÀ</strong> có hệ số âm.
+        </div>
+    </div>
+
+    <!-- 4. Edge detection: Sobel vs Prewitt -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">4. Phát Hiện Biên: Sobel vs Prewitt</h3>
+        </div>
+        <p>Đạo hàm bậc 1 theo hai phương, kernel <strong>tổng = 0</strong> nên triệt tiêu vùng phẳng và chỉ giữ lại biên.</p>
+        <pre class="kernel">Sobel X          Prewitt X
+[-1  0  1]       [-1  0  1]
+[-2  0  2]       [-1  0  1]
+[-1  0  1]       [-1  0  1]
+  tổng = 0         tổng = 0</pre>
+        <ul>
+            <li><strong>Vì sao kết quả gần như giống nhau?</strong> Hai kernel <strong>chỉ khác duy nhất ở trọng số hàng giữa</strong> (<code>2</code> so với <code>1</code>); các hàng còn lại y hệt.</li>
+            <li><strong>Cấu trúc biên trùng khớp:</strong> tương quan giữa <code>Sobel|G|</code> và <code>Prewitt|G|</code> đo được <strong>≈ 0.996</strong>.</li>
+            <li><strong>Khác biệt chủ yếu là biên độ:</strong> Sobel nhấn hàng giữa nên biên độ trung bình lớn hơn (≈ 39.5 so với ≈ 28.9, tức ~1.37×).</li>
+            <li><strong>Sobel</strong> nhấn trọng số hàng giữa → làm mịt nhẹ theo phương vuông góc → <strong>ít nhạy nhiễu hơn</strong>; <strong>Prewitt</strong> hệ số đều <code>1</code> → <strong>đơn giản và tính nhanh hơn</strong>.</li>
+            <li><strong>Độ lớn gradient:</strong> <code>|G| = √(Gx² + Gy²)</code> (dùng <code>cv2.magnitude</code>), hiển thị đã <strong>chuẩn hoá percentile 99</strong> để không bị tối đen.</li>
+        </ul>
+        <div class="callout">
+            <strong>Laplacian</strong> <code>[0 1 0; 1 -4 1; 0 1 0]</code> có tổng = 0 là <strong>bộ phát hiện biên</strong> (đạo hàm bậc 2),
+            KHÔNG phải bộ làm nét. Muốn làm nét từ Laplacian: lấy <code>Ảnh gốc − Laplacian</code>, vì <code>Identity (tổng 1) − Laplacian (tổng 0) = tổng 1</code>.
+        </div>
+    </div>
+
+    <!-- 5. Visual Gallery -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">5. Trực Quan Hóa Kết Quả Thực Nghiệm (Visual Gallery)</h3>
+        </div>
+        <div class="gallery">
+            <div class="gallery-item">
+                <img src="../../../experiments/predictions/lab02/point_ops/brightness_comparison.png" alt="Brightness">
+                <div class="caption"><strong>YC1 · Brightness</strong><span>β = ±50, clipping [0,255]</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="../../../experiments/predictions/lab02/point_ops/contrast_comparison.png" alt="Contrast">
+                <div class="caption"><strong>YC2 · Contrast</strong><span>α = 0.5 và 1.8</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="../../../experiments/predictions/lab02/point_ops/negative_comparison.png" alt="Negative">
+                <div class="caption"><strong>YC3 · Negative</strong><span>g = 255 − f</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="../../../experiments/predictions/lab02/point_ops/threshold_comparison.png" alt="Threshold">
+                <div class="caption"><strong>YC4 · Threshold</strong><span>Nhị phân hoá theo ngưỡng T</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="../../../experiments/predictions/lab02/linear_filters/blur_comparison_grid.png" alt="Blur comparison">
+                <div class="caption"><strong>YC5–6 · Mean &amp; Gaussian</strong><span>Mean 7x7/21x21 · Gaussian σ=3.0 (k19) / σ=7.0 (k43)</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="../../../experiments/predictions/lab02/linear_filters/sharpen_comparison.png" alt="Sharpen">
+                <div class="caption"><strong>YC7 · Sharpen</strong><span>Identity − Laplacian, tổng kernel = 1</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="../../../experiments/predictions/lab02/edge_detection/edge_detection_grid.png" alt="Edge detection">
+                <div class="caption"><strong>YC8 · Sobel &amp; Prewitt</strong><span>Gx, Gy và gradient magnitude</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="../../../experiments/predictions/lab02/kernel_rules/kernel_sum_rule.png" alt="Kernel sum rule">
+                <div class="caption"><strong>YC9 · Kernel Sum Rule</strong><span>Tổng 0.5 / 1 / 2 / 0 trên vùng phẳng (thang màu cố định 0–255)</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="../../../experiments/predictions/lab02/kernel_rules/kernel_effects_on_image.png" alt="Kernel effects on image">
+                <div class="caption"><strong>YC9 · Kernel trên ảnh màu</strong><span>Σ=0.5 tối · Σ=1.0 giữ nguyên · Σ=2.0 sáng · Σ=0.0 chỉ còn viền</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="../../../experiments/predictions/lab02/nonlinear_filters/nonlinear_comparison_grid.png" alt="Nonlinear">
+                <div class="caption"><strong>YC10 · Median &amp; Bilateral</strong><span>Cùng trên ảnh nhiễu muối tiêu — Median xoá mạnh, Bilateral giữ cạnh</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="../../../experiments/predictions/lab02/comparison/all_filters_grid.png" alt="All filters">
+                <div class="caption"><strong>YC11 · Comparison</strong><span>Lưới so sánh tổng hợp toàn bộ bộ lọc</span></div>
+            </div>
+            <div class="gallery-item">
+                <img src="../../../experiments/predictions/lab02/comparison/histogram_original.png" alt="Histogram">
+                <div class="caption"><strong>Histogram</strong><span>Phân bố mức xám ảnh gốc</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. Verification -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">6. Kết Quả Kiểm Thử Tự Động (Verification &amp; DoD)</h3>
+            <span class="badge badge-success">100% Pass</span>
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead><tr><th>Bộ Kiểm Thử</th><th>Số Test Cases</th><th>Trạng Thái</th><th>Ghi Chú</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Unit Tests</strong> (<code>tests/test_filters.py</code>)</td><td>22 tests</td><td><span class="badge badge-success">Pass</span></td><td>Point ops, filters, edges, kernel rules, nonlinear</td></tr>
+                    <tr><td><strong>Full Suite</strong> (<code>python -m pytest tests/ -q</code>)</td><td>32 tests</td><td><span class="badge badge-success">Pass</span></td><td>Bao gồm cả Lab 01</td></tr>
+                    <tr><td><strong>Lint</strong> (<code>python -m ruff check src tests</code>)</td><td>&mdash;</td><td><span class="badge badge-success">Pass</span></td><td>All checks passed</td></tr>
+                    <tr><td><strong>Pipeline</strong> (<code>src/pipelines/lab02_pipeline.py</code>)</td><td>19 artifacts</td><td><span class="badge badge-success">Success</span></td><td>Xuất ra <code>experiments/predictions/lab02/</code></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 7. References -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">7. Tài Liệu Tham Khảo (References &amp; Technical Documentation)</h3>
+        </div>
+        <h4 class="sub">7.1. Thư viện Cốt lõi &amp; Tài liệu API Chính thức</h4>
+        <ol>
+            <li><a href="https://docs.opencv.org/5.x/d4/d86/group__imgproc__filter.html">OpenCV Image Filtering</a> — <code>cv2.filter2D</code>, <code>cv2.blur</code>, <code>cv2.GaussianBlur</code>, <code>cv2.medianBlur</code>, <code>cv2.bilateralFilter</code>, <code>cv2.Sobel</code>, <code>cv2.Laplacian</code>.</li>
+            <li><a href="https://numpy.org/doc/stable/user/basics.broadcasting.html">NumPy Broadcasting &amp; Vectorization</a> — tính toán điểm ảnh vector hoá.</li>
+            <li><a href="https://matplotlib.org/stable/api/pyplot_summary.html">Matplotlib Pyplot API</a> — hiển thị lưới ảnh và histogram.</li>
+        </ol>
+        <h4 class="sub">7.2. Tiêu chuẩn Kỹ thuật &amp; Giải thuật Nền tảng</h4>
+        <ol>
+            <li><strong>Gaussian Smoothing</strong> — kernel tách được (separable) thành tích hai vector 1D.</li>
+            <li><strong>Sobel &amp; Prewitt Operators</strong> — xấp xỉ đạo hàm bậc 1, nền tảng của Canny / Harris.</li>
+            <li><strong>Laplacian Operator</strong> — xấp xỉ đạo hàm bậc 2, tổng kernel = 0.</li>
+        </ol>
+        <h4 class="sub">7.3. Quy ước Thị giác Máy tính &amp; Định dạng Dữ liệu</h4>
+        <ol>
+            <li><strong>Kernel Sum Convention</strong> — tổng hệ số quyết định hành vi: <code>0</code> (biên), <code>1</code> (bảo toàn độ sáng).</li>
+            <li><strong>OpenCV BGR Legacy Layout</strong> — ảnh mặc định BGR, đổi sang RGB để hiển thị đúng.</li>
+        </ol>
+        <h4 class="sub">7.4. Liên kết Mã Nguồn Module Dự Án</h4>
+        <ul>
+            <li><a href="../../../src/data/filters.py">src/data/filters.py</a> — Toán tử điểm ảnh, kernel tuyến tính, phát hiện biên, lọc phi tuyến.</li>
+            <li><a href="../../../src/common/visualizer.py">src/common/visualizer.py</a> — Công cụ trực quan hoá.</li>
+            <li><a href="../../../src/pipelines/lab02_pipeline.py">src/pipelines/lab02_pipeline.py</a> — Controller điều phối Lab 2.</li>
+            <li><a href="../../../tests/test_filters.py">tests/test_filters.py</a> — Bộ unit tests Lab 2.</li>
+        </ul>
+    </div>
+
+    <footer>
+        UTH Computer Vision Workspace · Lab 02 Report · Generated 2026-10-09
+    </footer>
+
+</div>
+</body>
+</html>

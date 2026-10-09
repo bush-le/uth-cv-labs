@@ -170,3 +170,114 @@ def plot_color_spaces_grid(
         logger.info("Saved color spaces grid to: %s", path)
 
     return fig
+
+
+def plot_filter_grid(
+    images: Sequence[np.ndarray],
+    titles: Sequence[str],
+    ncols: int = 3,
+    is_bgr: bool = True,
+    save_path: str | Path | None = None,
+    figsize_per_cell: tuple[float, float] = (4.5, 4.0),
+) -> plt.Figure:
+    """Plot a grid of images for filter comparison.
+
+    Arranges a sequence of images into a multi-row grid, useful for
+    comparing many filters (mean, Gaussian, Sobel, Laplacian, etc.)
+    side by side on the same input.
+
+    Args:
+        images: Sequence of image arrays of shape (H, W, 3) or (H, W).
+        titles: Sequence of titles corresponding to each image.
+        ncols: Number of columns in the grid (default 3).
+        is_bgr: If True, converts 3-channel images from BGR to RGB.
+        save_path: Optional path to save the generated figure.
+        figsize_per_cell: (width, height) in inches allocated per grid cell.
+
+    Returns:
+        plt.Figure: Created Matplotlib figure.
+
+    Raises:
+        ValueError: If lengths mismatch or ncols is non-positive.
+    """
+    if len(images) != len(titles):
+        raise ValueError(
+            f"Number of images ({len(images)}) must match titles ({len(titles)})"
+        )
+    if ncols <= 0:
+        raise ValueError(f"ncols must be positive, got {ncols}")
+
+    num_images = len(images)
+    nrows = int(np.ceil(num_images / ncols))
+    fig_w = figsize_per_cell[0] * ncols
+    fig_h = figsize_per_cell[1] * nrows
+    fig, axes = plt.subplots(nrows, ncols, figsize=(fig_w, fig_h), squeeze=False)
+
+    for idx, (img, title) in enumerate(zip(images, titles, strict=True)):
+        ax = axes[idx // ncols][idx % ncols]
+        if img.ndim == 2:
+            # Fixed 0-255 range: a uniform (flat) image has min == max, so
+            # autoscaling would map every pixel to black and hide the result.
+            ax.imshow(img, cmap="gray", vmin=0, vmax=255)
+        elif img.ndim == 3 and is_bgr:
+            ax.imshow(bgr_to_rgb(img))
+        else:
+            ax.imshow(img)
+        ax.set_title(title, fontsize=11, fontweight="semibold")
+        ax.axis("off")
+
+    # Hide unused subplots in the last row
+    for idx in range(num_images, nrows * ncols):
+        axes[idx // ncols][idx % ncols].axis("off")
+
+    plt.tight_layout()
+
+    if save_path:
+        path = Path(save_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(path, dpi=300, bbox_inches="tight")
+        logger.info("Saved filter grid figure to: %s", path)
+
+    return fig
+
+
+def plot_histogram(
+    image: np.ndarray,
+    title: str = "Intensity Histogram",
+    save_path: str | Path | None = None,
+) -> plt.Figure:
+    """Plot the intensity histogram of a grayscale or color image.
+
+    Args:
+        image: Image array of shape (H, W, 3) or (H, W), dtype uint8.
+        title: Title of the plot.
+        save_path: Optional path to save the generated figure.
+
+    Returns:
+        plt.Figure: Created Matplotlib figure.
+    """
+    fig, ax = plt.subplots(figsize=(7, 4))
+
+    if image.ndim == 3:
+        colors = ("b", "g", "r")  # BGR order matches OpenCV channel order
+        for i, color in enumerate(colors):
+            ax.hist(
+                image[:, :, i].ravel(), bins=256, range=(0, 256),
+                color=color, alpha=0.5, label=color.upper(),
+            )
+        ax.legend(loc="upper right")
+    else:
+        ax.hist(image.ravel(), bins=256, range=(0, 256), color="gray")
+
+    ax.set_title(title, fontsize=13, fontweight="bold")
+    ax.set_xlabel("Pixel Intensity")
+    ax.set_ylabel("Frequency")
+    plt.tight_layout()
+
+    if save_path:
+        path = Path(save_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(path, dpi=300, bbox_inches="tight")
+        logger.info("Saved histogram to: %s", path)
+
+    return fig
