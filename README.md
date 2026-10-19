@@ -2,153 +2,124 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
-[![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![Tests: pytest](https://img.shields.io/badge/tests-51%20passed-brightgreen.svg)](https://docs.pytest.org/)
+
 ---
 
 ## 📌 Giới thiệu Tổng quan (Overview)
 
-Repository này là bộ **khung xương dự án mẫu (Pure Project Scaffolding & Template)**:
-- Cung cấp cấu trúc thư mục phân tầng, modular và chuẩn hóa theo quy chuẩn kỹ thuật.
-- Không chứa nội dung hoặc bài toán cụ thể nào, sẵn sàng để phục vụ cho các bài thực hành (Labs) trong tương lai.
+Repository này chứa toàn bộ mã nguồn, dữ liệu thực nghiệm, pipeline phân tầng Clean Architecture và hệ thống báo cáo kỹ thuật tương tác đa phương tiện (Markdown & HTML) cho chuỗi bài thực hành **Thị giác Máy tính (Computer Vision)** tại **Trường Đại học Giao thông Vận tải TP.HCM (UTH)**.
+
+### 📋 Tiến Độ Thực Hiện Các Bài Thực Hành (Labs Roadmap)
+
+| Lab | Chủ đề Kỹ thuật | Trạng thái | Pipeline Thực thi | Báo cáo Kỹ thuật | Unit Tests |
+| :---: | :--- | :---: | :--- | :---: | :---: |
+| **Lab 01** | **Xử lý ảnh cơ bản & Không gian màu** (OpenCV, Pillow, BGR/RGB/HSV/LAB, ROI, Annotations) | ✅ **100%** | [`lab01_pipeline.py`](src/pipelines/lab01_pipeline.py) | [Markdown](docs/labs/lab01/LAB_01_REPORT.md) · [HTML](docs/labs/lab01/LAB_01_REPORT.html) | 10 passed |
+| **Lab 02** | **Toán tử điểm ảnh & Lọc không gian** (Brightness/Contrast/Negative, Gaussian, Sobel/Prewitt, Bilateral/Median) | ✅ **100%** | [`lab02_pipeline.py`](src/pipelines/lab02_pipeline.py) | [Markdown](docs/labs/lab02/LAB_02_REPORT.md) · [HTML](docs/labs/lab02/LAB_02_REPORT.html) | 17 passed |
+| **Lab 03** | **Canny Edge Detector Chuyên sâu** (5-stage Canny, Noise Robustness, Pratt FOM, Hough Shapes, Di Zenzo Tensor) | ✅ **100%** | [`lab03_pipeline.py`](src/pipelines/lab03_pipeline.py) | [Markdown](docs/labs/lab03/LAB_03_REPORT.md) · [HTML](docs/labs/lab03/LAB_03_REPORT.html) | 16 passed |
+| **Lab 04** | **So sánh tương đồng ảnh dùng Wavelet Hashing** (2D DWT Haar/db4, Quantization, ROC/PR Curves, Top-k Retrieval, MIH) | ✅ **100%** | [`lab04_pipeline.py`](src/pipelines/lab04_pipeline.py) | [Markdown](docs/labs/lab04/LAB_04_REPORT.md) · [HTML](docs/labs/lab04/LAB_04_REPORT.html) | 8 passed |
 
 ---
 
-## 🗂️ Cấu trúc Thư mục (Directory Layout)
+## 🗂️ Cấu trúc Thư mục Tổng thể (Architecture Layout)
 
 ```text
 .
 ├── agents/                            # Hệ thống quy trình kỹ thuật & Second Brain cho AI Agent
 │   ├── README.md                      # Cổng nhận thức trung tâm & bản đồ điều phối
 │   ├── WORKFLOW_OVERVIEW.md           # Tổng quan luồng thực thi khép kín
-│   ├── AI_FIRST_LIFECYCLE.md          # 9 giai đoạn vĩ mô (Define -> Document)
-│   ├── AGENT_INTERACTION_LOOP.md      # Chu trình tương tác vi mô 7 bước
-│   ├── CONTEXT_MANAGEMENT.md          # Quản trị ngữ cảnh & anti-hallucination
-│   ├── BEHAVIORAL_LAYER.md            # Đặc tả hành vi qua Prompting Schema
-│   ├── TASK_DESCRIPTION.md            # Đặc tả tác vụ (Plan -> Pipeline -> DoD)
-│   ├── PROGRESS_TRACKING.md           # Quản trị tiến độ Kanban & Single-WIP
+│   ├── AI_FIRST_LIFECYCLE.md          # 9 giai đoạn phát triển chuẩn
 │   ├── PIPELINE_SEPARATION.md         # Phân tách 5 pipelines Clean Architecture
-│   ├── AI_REFERENCE.md                # Quy chuẩn, bất biến CV/DL & Conventional Commits
-│   ├── CODEBASE_AUDIT.md              # Kiểm toán mã nguồn 3 tầng & an toàn CV
-│   ├── TESTING_STRATEGY.md            # Chiến lược kiểm thử 2 chế độ (Smoke vs Normal)
-│   └── TROUBLESHOOTING.md             # Quy trình xử lý sự cố & gỡ lỗi RCA 5 bước
+│   ├── AI_REFERENCE.md                # Bất biến CV/DL, chuẩn PEP 484 & docstrings
+│   └── CODEBASE_AUDIT.md              # Kiểm toán mã nguồn & an toàn CV
 ├── configs/                           # Quản lý cấu hình bằng Hydra / YAML
-│   ├── config.yaml                    # File cấu hình entrypoint mẫu
-│   ├── dataset/
-│   │   └── default.yaml               # Cấu hình dataset mẫu
-│   ├── model/
-│   │   └── template.yaml              # Cấu hình model mẫu
-│   └── experiment/
-│       └── template.yaml              # Cấu hình thực nghiệm mẫu
-├── data/                              # Dữ liệu phân tầng (Ignored by Git)
-│   ├── raw/
-│   │   └── .gitkeep
-│   ├── interim/
-│   │   └── .gitkeep
-│   ├── processed/
-│   │   └── .gitkeep
-│   ├── samples/
-│   │   └── sample_traffic.jpg         # Ảnh mẫu đầu vào thực hành
-│   └── README.md                      # Hướng dẫn tổ chức dữ liệu
+│   ├── experiment/
+│   │   ├── lab03_canny.yaml           # Cấu hình siêu tham số Lab 03 Canny
+│   │   └── lab04_wavelet.yaml         # Cấu hình siêu tham số Lab 04 Wavelet Hashing
+│   └── ...
+├── data/                              # Dữ liệu phân tầng
+│   └── samples/                       # Ảnh mẫu kiểm chuẩn (Self-contained & Git-tracked)
+│       ├── image-2.jpg                # Ảnh mẫu cho Lab 01 & Lab 02
+│       ├── sample_traffic.jpg         # Ảnh giao thông cho Lab 01
+│       ├── lab03/                     # 9 ảnh mẫu kiểm chuẩn đặc thù cho Lab 03
+│       └── lab04/                     # 6 ảnh mẫu danh mục chuẩn cho Lab 04
 ├── docs/                              # Tài liệu & Báo cáo lab
-│   ├── assets/                        # Tài nguyên ảnh, sơ đồ workflow
-│   └── labs/
-│       ├── README.md                  # Danh mục tổng hợp tất cả bài lab
-│       ├── TEMPLATE.md                # File mẫu báo cáo lab
-│       └── lab01/                     # Không gian tài liệu độc lập Lab 01
-│           ├── LAB_01_DESCRIPTION.md  # Đề bài & tiêu chí đánh giá
-│           ├── LAB_01_REPORT.md       # Báo cáo kỹ thuật chi tiết
-│           └── LAB_01_REPORT.html     # Báo cáo giao diện web tương tác
+│   └── labs/                          # Báo cáo kỹ thuật chi tiết của từng bài Lab
+│       ├── lab01/                     # Markdown & HTML Report Lab 01
+│       ├── lab02/                     # Markdown & HTML Report Lab 02
+│       ├── lab03/                     # Markdown & HTML Report Lab 03
+│       └── lab04/                     # Markdown & HTML Report Lab 04
 ├── experiments/                       # Nơi lưu trữ artifacts (Ignored by Git)
-│   ├── checkpoints/
-│   │   └── .gitkeep
-│   ├── logs/
-│   │   └── .gitkeep
-│   └── predictions/
-│       └── .gitkeep
-├── notebooks/                         # Thư mục Jupyter Notebooks
-│   ├── exploratory/
-│   │   └── template.ipynb             # Notebook mẫu cho khảo sát dữ liệu (EDA)
-│   ├── labs/
-│   │   └── template.ipynb             # Notebook mẫu cho thực hành lab
-│   └── README.md                      # Hướng dẫn sử dụng notebook
+│   ├── logs/                          # Metrics summary JSON
+│   └── predictions/                   # Biểu đồ và ảnh đầu ra của từng lab
+│       ├── lab01/
+│       ├── lab02/
+│       ├── lab03/
+│       └── lab04/
 ├── requirements/                      # Quản lý dependencies theo môi trường
-│   ├── base.txt                       # Dependencies cơ bản
-│   ├── deeplearning.txt               # Deep learning dependencies
-│   ├── dev.txt                        # Development & testing dependencies
-│   └── tracking.txt                   # Experiment tracking dependencies
-├── scripts/                           # Shell scripts mẫu
-│   ├── download_weights.sh            # Script tải pretrained weights mẫu
-│   ├── setup_env.sh                   # Script khởi tạo môi trường
-│   └── run_lab.sh                     # Script chạy lab mẫu
+│   ├── base.txt                       # OpenCV, NumPy, Matplotlib, Pillow, Scikit-Image, SciPy, PyWavelets
+│   └── dev.txt                        # Pytest, Ruff, Pre-commit
+├── scripts/                           # Shell scripts tự động hóa
+│   └── run_lab.sh                     # Script chạy lab tự động (1, 2, 3, 4, all)
 ├── src/                               # Package mã nguồn chính (Clean Architecture)
-│   ├── __init__.py
 │   ├── common/                        # Tiện ích dùng chung
-│   │   ├── __init__.py
-│   │   ├── logger.py                  # Module logger mẫu
-│   │   ├── metrics.py                 # Module tính chỉ số mẫu
-│   │   └── visualizer.py              # Module trực quan hóa mẫu
-│   ├── data/                          # Dataset & DataModule
-│   │   ├── __init__.py
-│   │   ├── transforms.py              # Module tiền xử lý & transforms mẫu
-│   │   └── datamodule.py              # Module Dataset & DataLoader mẫu
-│   ├── models/                        # Kiến trúc mô hình
-│   │   ├── __init__.py
-│   │   ├── classical/                 # Mô hình xử lý ảnh cổ điển
-│   │   │   └── __init__.py
-│   │   └── deep/                      # Mô hình học sâu
-│   │       └── __init__.py
-│   └── pipelines/                     # Pipeline thực thi
-│       ├── __init__.py
-│       ├── train.py                   # Script huấn luyện mẫu
-│       ├── evaluate.py                # Script đánh giá mẫu
-│       └── infer.py                   # Script suy luận mẫu
-├── tests/                             # Bộ kiểm thử mẫu
-│   ├── __init__.py
-│   ├── conftest.py                    # Test fixtures mẫu
-│   ├── test_data.py                   # Test data mẫu
-│   └── test_models.py                 # Test model mẫu
-├── .editorconfig
-├── .gitattributes
-├── .gitignore
-├── .pre-commit-config.yaml
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-├── Makefile
-├── pyproject.toml
-├── README.md
-└── requirements.txt
+│   │   ├── logger.py                  # Logger chuẩn hóa, không dùng print()
+│   │   └── visualizer.py              # Suite trực quan hóa đa phương tiện
+│   ├── data/
+│   │   ├── transforms.py              # Xử lý ảnh không gian, kênh màu, annotations
+│   │   └── filters.py                 # Bộ lọc tuyến tính và phi tuyến tính
+│   ├── models/classical/
+│   │   ├── canny.py                   # Canny 5-stage, Di Zenzo tensor, Pratt FOM
+│   │   └── wavelet_hash.py            # DWT 2D, Wavelet Hashing, Hamming distance, ROC
+│   └── pipelines/                     # Master pipelines điều phối
+│       ├── lab01_pipeline.py
+│       ├── lab02_pipeline.py
+│       ├── lab03_pipeline.py
+│       └── lab04_pipeline.py
+├── tests/                             # Bộ kiểm thử 51 unit tests
+│   ├── test_transforms.py
+│   ├── test_filters.py
+│   ├── test_canny.py
+│   └── test_wavelet_hash.py
+└── README.md
 ```
 
 ---
 
-## 🚀 Hướng dẫn Cài đặt & Sử dụng (Setup)
+## 🚀 Hướng dẫn Cài đặt & Sử dụng (Quickstart)
 
-### 1. Khởi tạo Môi trường (Environment Setup)
+### 1. Khởi tạo Môi trường
 
 ```bash
 # 1. Tạo và kích hoạt virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
 
-# 2. Cài đặt dependencies
+# 2. Cài đặt toàn bộ dependencies
 pip install --upgrade pip
-pip install -r requirements.txt
-pip install -r requirements/dev.txt -r requirements/tracking.txt
-
-# 3. Kích hoạt pre-commit hooks (nếu dùng git)
-pre-commit install
+pip install -r requirements/base.txt
+pip install -r requirements/dev.txt
 ```
 
----
+### 2. Chạy Các Bài Thực Hành
 
-## 🛠️ Makefile Commands
+```bash
+# Chạy từng bài lab đơn lẻ:
+bash scripts/run_lab.sh 1
+bash scripts/run_lab.sh 2
+bash scripts/run_lab.sh 3
+bash scripts/run_lab.sh 4
 
-| Lệnh | Mô tả |
-| :--- | :--- |
-| `make help` | Hiển thị các lệnh hỗ trợ |
-| `make install` | Cài đặt dependencies cơ bản |
-| `make install-dev` | Cài đặt công cụ dev, test và tracking |
-| `make format` | Định dạng code bằng Ruff và Black |
-| `make lint` | Kiểm tra chất lượng code với Ruff |
-| `make test` | Chạy bộ kiểm thử với Pytest |
-| `make clean` | Dọn dẹp cache và file tạm |
+# Chạy toàn bộ tất cả bài lab (Lab 1 đến Lab 4):
+bash scripts/run_lab.sh all
+```
+
+### 3. Kiểm thử & Kiểm toán Mã nguồn
+
+```bash
+# Chạy toàn bộ 51 unit tests
+pytest tests/
+
+# Kiểm tra chất lượng mã nguồn với linter
+ruff check src tests
+```

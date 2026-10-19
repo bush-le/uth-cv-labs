@@ -1,0 +1,65 @@
+# Configuration for Lab 03: Canny Edge Detector
+lab_id: "lab03"
+experiment_name: "canny_edge_detection"
+seed: 42
+
+output_dirs:
+  predictions: "experiments/predictions/lab03"
+  logs: "experiments/logs/lab03"
+  samples: "data/samples/lab03"
+
+default_params:
+  sigma: 1.0
+  low_threshold: 50
+  high_threshold: 150
+  aperture_size: 3
+  l2_gradient: false
+
+tuning_grid:
+  sigmas: [0.5, 1.0, 2.0, 3.5]
+  threshold_pairs:
+    sensitive: [30, 90]
+    standard: [50, 150]
+    strict: [100, 200]
+    wide_ratio: [20, 180]
+
+preprocessing:
+  noise:
+    median_ksize: 5
+    gaussian_ksize: [5, 5]
+    gaussian_sigma: 1.5
+    bilateral_d: 9
+    bilateral_sigma_color: 75
+    bilateral_sigma_space: 75
+  low_contrast:
+    clahe_clip_limit: 3.0
+    clahe_tile_grid_size: [8, 8]
+  dense_texture:
+    bilateral_d: 9
+    bilateral_sigma_color: 100
+    bilateral_sigma_space: 100
+
+segmentation:
+  morph_kernel_size: [3, 3]
+  closing_iterations: 2
+  dilation_iterations: 1
+
+shape_detection:
+  hough_lines:
+    rho: 1.0
+    theta_degrees: 1.0
+    threshold: 40
+    min_line_length: 30
+    max_line_gap: 10
+  hough_circles:
+    dp: 1.2
+    min_dist: 40
+    param1: 100
+    param2: 25
+    min_radius: 15
+    max_radius: 80
+  contour_approx:
+    epsilon_factor: 0.03
+
+auto_canny:
+  sigma_factor: 0.33

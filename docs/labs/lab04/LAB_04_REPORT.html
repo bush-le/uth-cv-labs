@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Báo cáo Kỹ thuật & Trực quan - Lab 04: So Sánh Sự Tương Đồng Ảnh Sử Dụng Wavelet | UTH Computer Vision</title>
+  
+  <!-- Google Fonts & MathJax -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    :root {
+      --bg-primary: #0a0f1d;
+      --bg-secondary: #111827;
+      --bg-card: rgba(17, 24, 39, 0.85);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-cyan: #06b6d4;
+      --accent-blue: #3b82f6;
+      --accent-purple: #8b5cf6;
+      --accent-emerald: #10b981;
+      --accent-rose: #f43f5e;
+      --accent-amber: #f59e0b;
+      --gradient-brand: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
+      --glass-blur: blur(16px);
+      --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: rgba(255, 255, 255, 0.9);
+      --border-color: rgba(0, 0, 0, 0.08);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.25s ease, border-color 0.25s ease;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.65;
+      padding-bottom: 80px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: var(--glass-blur);
+    }
+
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.5px;
+      background: var(--gradient-brand);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .theme-toggle {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 9999px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hero-banner {
+      padding: 48px 0 32px;
+      text-align: center;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 6px 16px;
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      color: var(--accent-cyan);
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .hero-title {
+      font-size: 2.75rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      letter-spacing: -1px;
+    }
+
+    .hero-subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 850px;
+      margin: 0 auto 28px;
+    }
+
+    .meta-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .meta-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .meta-item strong {
+      color: var(--accent-cyan);
+    }
+
+    /* Tab Navigation */
+    .tab-navigation {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 36px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .tab-btn {
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      position: relative;
+      white-space: nowrap;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-cyan);
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--gradient-brand);
+      border-radius: 3px 3px 0 0;
+    }
+
+    .tab-panel {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 32px;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: var(--glass-blur);
+    }
+
+    .card-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+    }
+
+    .card-title-icon {
+      color: var(--accent-cyan);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 992px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .hero-title { font-size: 2rem; }
+    }
+
+    .figure-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .figure-box img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-bottom: 1px solid var(--border-color);
+      background: #000;
+    }
+
+    .figure-caption {
+      padding: 12px 18px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin: 20px 0;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--accent-cyan);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    pre {
+      background: #050811;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      color: #38bdf8;
+      margin: 16px 0;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(6, 182, 212, 0.1);
+      color: var(--accent-cyan);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    .metric-callout {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 12px;
+      color: var(--accent-emerald);
+      margin: 16px 0;
+    }
+
+    .metric-callout strong {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .math-block {
+      background: rgba(255, 255, 255, 0.02);
+      border-left: 4px solid var(--accent-cyan);
+      padding: 14px 20px;
+      margin: 16px 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    footer {
+      margin-top: 60px;
+      text-align: center;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      padding-top: 32px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header>
+    <div class="container nav-bar">
+      <div class="brand-logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M2 12h20"></path>
+          <path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6"></path>
+          <path d="m4 8 4-4 4 4 4-4 4 4"></path>
+        </svg>
+        UTH Computer Vision · Lab 04 Report
+      </div>
+      <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">
+        <span id="themeIcon">☀️</span> Chuyển Theme
+      </button>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <div class="badge-pill">Báo Cáo Nghiệm Thu Khoa Học &amp; Kỹ Thuật</div>
+      <h1 class="hero-title">So Sánh Sự Tương Đồng Của Các Hình Ảnh Sử Dụng Wavelet, Python</h1>
+      <p class="hero-subtitle">
+        Phân Tích Đa Phân Giải 2D DWT, Lượng Tử Hóa Hệ Số, Đo Lường Khoảng Cách Hamming,
+        Khảo Sát Tính Bền Vững Đa Biến Đổi &amp; Đánh Giá Đường Cong ROC / AUC
+      </p>
+
+      <div class="meta-grid">
+        <div class="meta-item"><strong>Học phần:</strong> Thị giác Máy tính (Computer Vision)</div>
+        <div class="meta-item"><strong>Đơn vị:</strong> Trường Đại học Giao thông Vận tải TP.HCM (UTH)</div>
+        <div class="meta-item"><strong>Tác giả:</strong> Nhóm Nghiên cứu CV UTH</div>
+        <div class="meta-item"><strong>Kiểm định:</strong> 100% Pass Unit Tests (8/8)</div>
+        <div class="meta-item"><strong>Hiệu năng:</strong> Latency 0.13 ms/image (Fast wHash)</div>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-navigation">
+      <button class="tab-btn active" onclick="switchTab(event, 'tab-theory')">1. Lý Thuyết &amp; 2D DWT</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-variants')">2. wHash &amp; Biến Thể Slide</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-heatmap')">3. Ma Trận Khoảng Cách &amp; Top-k</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-robustness')">4. Tính Bền Vững (Robustness)</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-roc')">5. Ground Truth &amp; ROC / AUC</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-extended')">6. 4 Chuyên Đề Mở Rộng</button>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 1: LÝ THUYẾT & 2D DWT                                               -->
+    <!-- ======================================================================= -->
+    <div id="tab-theory" class="tab-panel active">
+      <div class="card">
+        <h2 class="card-title"><span class="card-title-icon">✦</span> 1. Cơ Sở Toán Học: Biến Đổi Wavelet Rời Rạc 2 Chiều (2D DWT)</h2>
+        <p>
+          Trong khi Fourier Transform (FFT) và Cosine Transform (DCT) hoàn toàn đánh mất thông tin về vị trí không gian của các tần số, 
+          <strong>Biến đổi Wavelet 2D (2D Discrete Wavelet Transform)</strong> cung cấp khả năng <strong>định vị đồng thời cả không gian và tần số</strong> 
+          qua nguyên lý Phân tích Đa phân giải (Multi-Resolution Analysis - MRA).
+        </p>
+
+        <div class="figure-box">
+          <img src="../../../experiments/predictions/lab04/ex1_wavelet_decomposition.png" alt="Phân rã 2D DWT">
+          <div class="figure-caption">
+            Hình 1: Phân tách 4 dải tần của ảnh Camera qua 2 cấp độ phân giải bằng sóng mẹ Daubechies <code>db4</code>: Băng xấp xỉ $LL_2$ và các băng chi tiết $LH, HL, HH$.
+          </div>
+        </div>
+
+        <div class="grid-4" style="margin-top: 20px;">
+          <div class="card" style="margin-bottom: 0; background: rgba(6, 182, 212, 0.05);">
+            <h3 style="color: var(--accent-cyan); font-size: 1.1rem; margin-bottom: 6px;">Băng LL (Approximation)</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+              Tần số thấp theo cả 2 trục. Chứa hầu hết năng lượng và hình hài nền tảng của bức ảnh; là cốt lõi để sinh mã băm wHash.
+            </p>
+          </div>
+          <div class="card" style="margin-bottom: 0; background: rgba(59, 130, 246, 0.05);">
+            <h3 style="color: var(--accent-blue); font-size: 1.1rem; margin-bottom: 6px;">Băng LH (Horizontal)</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+              Tần số thấp theo trục X, cao theo trục Y. Làm nổi bật các đường viền, gờ cạnh chạy theo phương ngang.
+            </p>
+          </div>
+          <div class="card" style="margin-bottom: 0; background: rgba(139, 92, 246, 0.05);">
+            <h3 style="color: var(--accent-purple); font-size: 1.1rem; margin-bottom: 6px;">Băng HL (Vertical)</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+              Tần số cao theo trục X, thấp theo trục Y. Làm nổi bật các đường viền và kết cấu chạy dọc thẳng đứng.
+            </p>
+          </div>
+          <div class="card" style="margin-bottom: 0; background: rgba(16, 185, 129, 0.05);">
+            <h3 style="color: var(--accent-emerald); font-size: 1.1rem; margin-bottom: 6px;">Băng HH (Diagonal)</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+              Tần số cao theo cả 2 trục. Chứa đựng các góc nhọn, đường chéo và các thành phần nhiễu hạt tần số cao.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 2: wHash & BIẾN THỂ SLIDE                                           -->
+    <!-- ======================================================================= -->
+    <div id="tab-variants" class="tab-panel">
+      <div class="card">
+        <h2 class="card-title"><span class="card-title-icon">✦</span> So Sánh Hai Biến Thể Thuật Toán Trong Slide Bài Giảng</h2>
+        <p>Báo cáo đối chiếu trung thực giữa đoạn mã minh họa cơ bản (Slide 17) và khung chương trình chuẩn công nghiệp (Slide 18):</p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Tiêu chí Kỹ thuật</th>
+                <th>Biến Thể Slide 17 (Minh họa cơ bản)</th>
+                <th>Biến Thể Slide 18 (Chuẩn wHash Công nghiệp)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Chữ ký Hàm</strong></td>
+                <td><code>wavelet_hash(image, wavelet='db4', level=3)</code></td>
+                <td><code>wavelet_hash(image, wavelet='db4', level=1, bits=8)</code></td>
+              </tr>
+              <tr>
+                <td><strong>Phạm vi Hệ số</strong></td>
+                <td>Làm phẳng toàn bộ $LL_3$ và các tuple chi tiết $LH, HL, HH$</td>
+                <td><strong>Chỉ trích xuất băng xấp xỉ $LL_1$</strong> (bỏ băng chi tiết)</td>
+              </tr>
+              <tr>
+                <td><strong>Phương pháp Lượng tử hóa</strong></td>
+                <td>Lượng tử hóa bước nhảy `step=2` và lấy modulo 2</td>
+                <td><strong>Lượng tử hóa trung vị (Median Thresholding)</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Độ dài Mã Băm</strong></td>
+                <td>5,782 bits (dài, cồng kềnh, dễ nhiễm nhiễu)</td>
+                <td><strong style="color: var(--accent-cyan);">64 bits</strong> ($8 \times 8$ bit matrix tối ưu bộ nhớ)</td>
+              </tr>
+              <tr>
+                <td><strong>Thời gian Thực thi (Latency)</strong></td>
+                <td>0.91 ms / ảnh</td>
+                <td><strong style="color: var(--accent-emerald);">0.13 ms / ảnh</strong> (Nhanh gấp ~7 lần)</td>
+              </tr>
+              <tr>
+                <td><strong>Khả năng Kháng Nhiễu</strong></td>
+                <td>Dễ bị biến động do giữ lại băng tần $HH$ chứa nhiễu</td>
+                <td>Kháng nhiễu cực tốt vì bộ lọc thông thấp đã loại bỏ nhiễu</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style="margin-top: 24px; margin-bottom: 12px;">Đoạn Mã Lõi: Triển Khai Vector Hóa Chuẩn Slide 18</h3>
+        <pre><code>def wavelet_hash(image, wavelet='db4', level=1, bits=8):
+    img_gray = _load_image_grayscale(image)
+    resized = cv2.resize(img_gray, (bits * 4, bits * 4), interpolation=cv2.INTER_AREA)
+    
+    # 2D DWT Decomposition
+    coeffs = pywt.wavedec2(resized, wavelet=wavelet, level=level)
+    ll_band = coeffs[0]  # Approximation Subband LL
+    
+    # Resize LL band to exactly (bits, bits)
+    ll_resized = cv2.resize(ll_band, (bits, bits), interpolation=cv2.INTER_AREA)
+    
+    # Median Quantization
+    hash_matrix = (ll_resized > np.median(ll_resized)).astype(np.uint8)
+    return hash_matrix.flatten()  # 64-bit array</code></pre>
+      </div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 3: MA TRẬN KHOẢNG CÁCH & TOP-K RETRIEVAL                           -->
+    <!-- ======================================================================= -->
+    <div id="tab-heatmap" class="tab-panel">
+      <div class="card">
+        <h2 class="card-title"><span class="card-title-icon">✦</span> Ma Trận Nhiệt Khoảng Cách Hamming Đôi Một (12 Ảnh)</h2>
+        
+        <div class="figure-box">
+          <img src="../../../experiments/predictions/lab04/ex2_pairwise_heatmap.png" alt="Heatmap Matrix">
+          <div class="figure-caption">
+            Hình 2: Ma trận khoảng cách Hamming đối xứng giữa 12 ảnh (6 ảnh gốc và 6 biến thể chỉnh sáng tương ứng).
+          </div>
+        </div>
+
+        <div class="metric-callout">
+          <div>
+            <strong>Khoảng Cách Giữa Các Cặp Cùng Loại:</strong> Chỉ từ <strong>0 đến 2 bits</strong>.<br>
+            <strong>Khoảng Cách Giữa Các Cặp Khác Loại:</strong> Dao động từ <strong>18 đến 38 bits</strong>.<br>
+            <strong>Độ Phân Cách (Separation Margin):</strong> Đạt <strong>16 bits</strong>, tạo khoảng cách an toàn tuyệt đối chống báo động giả!
+          </div>
+        </div>
+
+        <h2 class="card-title" style="margin-top: 32px;"><span class="card-title-icon">✦</span> Hệ Thống Truy Vấn Ảnh Tương Đồng (Top-3 Retrieval)</h2>
+        <div class="figure-box">
+          <img src="../../../experiments/predictions/lab04/ex2_top_k_retrieval.png" alt="Top-k Retrieval">
+          <div class="figure-caption">
+            Hình 3: Kết quả truy vấn Top-3 ảnh gần nhất với Query <code>camera_orig</code>: Ảnh biến thể <code>camera_bright</code> đứng ngay đầu với khoảng cách chỉ 2 bits.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 4: TÍNH BỀN VỮNG (ROBUSTNESS)                                        -->
+    <!-- ======================================================================= -->
+    <div id="tab-robustness" class="tab-panel">
+      <div class="card">
+        <h2 class="card-title"><span class="card-title-icon">✦</span> Khảo Sát Tính Bền Vững Đa Thuật Toán (wHash vs pHash vs dHash vs aHash)</h2>
+        
+        <div class="figure-box">
+          <img src="../../../experiments/predictions/lab04/ex3_distorted_samples.png" alt="Distorted Samples">
+          <div class="figure-caption">Hình 4: Các mẫu ảnh bị suy thoái quang học và biến đổi hình học trong bộ kiểm thử chuẩn hóa.</div>
+        </div>
+
+        <div class="figure-box">
+          <img src="../../../experiments/predictions/lab04/ex3_robustness_comparison.png" alt="Robustness Comparison">
+          <div class="figure-caption">
+            Hình 5: Biểu đồ cột đối đầu độ biến thiên khoảng cách Hamming dưới 12 phép biến đổi suy thoái.
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Phép Biến Đổi Ảnh Suy Thoái</th>
+                <th>wHash (Wavelet db4)</th>
+                <th>pHash (DCT)</th>
+                <th>dHash (Difference)</th>
+                <th>aHash (Average)</th>
+                <th>Đánh Giá Kỹ Thuật</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Độ Sáng Tăng / Giảm (&plusmn;30%)</strong></td>
+                <td><strong style="color: var(--accent-emerald);">0 - 2 bits</strong></td>
+                <td>0 - 2 bits</td>
+                <td>0 - 1 bit</td>
+                <td>0 bit</td>
+                <td>Kháng thay đổi độ chói đồng nhất tuyệt vời.</td>
+              </tr>
+              <tr>
+                <td><strong>Nén JPEG Chất Lượng Thấp (Q=20)</strong></td>
+                <td><strong style="color: var(--accent-emerald);">0 bit</strong></td>
+                <td>0 bit</td>
+                <td>2 bits</td>
+                <td>0 bit</td>
+                <td>wHash miễn nhiễm 100% trước nhiễu khối nén JPEG.</td>
+              </tr>
+              <tr>
+                <td><strong>Nhiễu Gaussian Nặng (&sigma;=25)</strong></td>
+                <td><strong style="color: var(--accent-emerald);">0 bit</strong></td>
+                <td>0 bit</td>
+                <td>7 bits</td>
+                <td>0 bit</td>
+                <td>wHash gom toàn bộ nhiễu vào băng tần $HH$, mã băm không đổi.</td>
+              </tr>
+              <tr>
+                <td><strong>Cắt Xén Viền (Center Crop 80%)</strong></td>
+                <td><strong style="color: var(--accent-cyan);">14 bits</strong></td>
+                <td>20 bits</td>
+                <td>14 bits</td>
+                <td>6 bits</td>
+                <td><strong>wHash vượt trội pHash</strong> (14 vs 20 bits) nhờ tính cục bộ.</td>
+              </tr>
+              <tr>
+                <td><strong>Xoay Góc Lớn (45&deg;)</strong></td>
+                <td><strong style="color: var(--accent-cyan);">12 bits</strong></td>
+                <td>26 bits</td>
+                <td>30 bits</td>
+                <td>11 bits</td>
+                <td><strong>wHash bền hơn pHash gấp 2 lần</strong> (12 vs 26 bits).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 5: GROUND TRUTH & ROC / AUC                                         -->
+    <!-- ======================================================================= -->
+    <div id="tab-roc" class="tab-panel">
+      <div class="card">
+        <h2 class="card-title"><span class="card-title-icon">✦</span> Đánh Giá Định Lượng Ground Truth &amp; Phân Tích Đường Cong ROC (Slide 18)</h2>
+        <p>Thực nghiệm trên 276 cặp ảnh nhị phân: 36 cặp dương bản (cùng nguồn gốc) và 240 cặp âm bản (khác nguồn gốc):</p>
+
+        <div class="figure-box">
+          <img src="../../../experiments/predictions/lab04/ex4_roc_pr_curves.png" alt="ROC and PR Curves">
+          <div class="figure-caption">
+            Hình 6: Đường cong ROC đạt diện tích hoàn hảo $\text{AUC} = 1.0000$ và Đường cong Precision-Recall tại điểm cân bằng tối ưu.
+          </div>
+        </div>
+
+        <div class="grid-3" style="margin-top: 20px;">
+          <div class="card" style="margin-bottom: 0;">
+            <h3 style="color: var(--accent-emerald);">AUC Metric</h3>
+            <p style="font-size: 2.2rem; font-weight: 800; margin: 8px 0;">1.0000</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Phân tách lý tưởng 100% giữa hai phân phối khoảng cách tương đồng và khác biệt.</p>
+          </div>
+          <div class="card" style="margin-bottom: 0;">
+            <h3 style="color: var(--accent-cyan);">Độ Chính Xác (Accuracy)</h3>
+            <p style="font-size: 2.2rem; font-weight: 800; margin: 8px 0;">100.00%</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Không có bất kỳ sai sót phân loại nào trên toàn bộ 276 cặp ảnh thử nghiệm.</p>
+          </div>
+          <div class="card" style="margin-bottom: 0;">
+            <h3 style="color: var(--accent-purple);">Ngưỡng Tối Ưu (&tau;*)</h3>
+            <p style="font-size: 2.2rem; font-weight: 800; margin: 8px 0;">4 bits</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Xác lập điểm Youden's J cực đại: Recall = 100%, Specificity = 100%, Precision = 100%.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 6: 4 CHUYÊN ĐỀ MỞ RỘNG                                              -->
+    <!-- ======================================================================= -->
+    <div id="tab-extended" class="tab-panel">
+      <!-- Q1 & Q2 -->
+      <div class="grid-2">
+        <div class="card">
+          <h2 class="card-title"><span class="card-title-icon">✦</span> Q1: Bất Biến Xoay Góc (Multi-Angle wHash)</h2>
+          <div class="figure-box">
+            <img src="../../../experiments/predictions/lab04/ext_q1_rotation_invariance.png" alt="Rotation Invariance">
+            <div class="figure-caption">Hình 7: Multi-Angle wHash kéo khoảng cách tại các góc 90&deg;, 180&deg;, 270&deg; từ 50 bits về đúng 0 bit tuyệt đối.</div>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">
+            Lưu trữ 4 mã băm đại diện cho 4 góc quay chuẩn ($0^\circ, 90^\circ, 180^\circ, 270^\circ$), giải quyết hoàn toàn hạn chế nhạy xoay góc của lưới DWT.
+          </p>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title"><span class="card-title-icon">✦</span> Q2: Truy Vấn Hàng Triệu Ảnh (Multi-Index Hashing)</h2>
+          <div class="figure-box">
+            <img src="../../../experiments/predictions/lab04/ext_q2_large_scale_indexing.png" alt="Large Scale Indexing">
+            <div class="figure-caption">Hình 8: So sánh thời gian truy vấn giữa Linear Scan $\mathcal{O}(N)$ và Multi-Index Hashing khi tăng số lượng mã băm.</div>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">
+            Dựa trên nguyên lý chuồng bồ câu, chia mã băm 64-bit thành 4 khối con 16-bit tra cứu bảng băm $\mathcal{O}(1)$, tăng tốc độ truy vấn hơn 20 lần tại quy mô $N = 100,000$.
+          </p>
+        </div>
+      </div>
+
+      <!-- Q3 & Q4 -->
+      <div class="card">
+        <h2 class="card-title"><span class="card-title-icon">✦</span> Q3: So Sánh Đối Đầu Wavelet Hash vs Deep Visual Embeddings</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Tiêu Chí Kỹ Thuật</th>
+                <th>Wavelet Perceptual Hash (wHash)</th>
+                <th>Deep Visual Embeddings (ResNet-50 / CLIP ViT)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Bản chất Biểu diễn</strong></td>
+                <td>Đặc trưng tần số - không gian cục bộ (Low-level perception)</td>
+                <td>Đặc trưng ngữ nghĩa trừu tượng cấp cao (High-level semantics)</td>
+              </tr>
+              <tr>
+                <td><strong>Kích thước Lưu trữ</strong></td>
+                <td><strong style="color: var(--accent-emerald);">Cực nhỏ: 64 bits (8 Bytes)</strong></td>
+                <td>Lớn: 512 - 2048 floats 32-bit (2 - 8 KB)</td>
+              </tr>
+              <tr>
+                <td><strong>Chi phí Phần cứng</strong></td>
+                <td><strong>Chỉ cần CPU</strong> (&lt; 0.15 ms/ảnh)</td>
+                <td>Cần GPU tăng tốc (15 - 50 ms/ảnh)</td>
+              </tr>
+              <tr>
+                <td><strong>Ngữ cảnh Tối ưu</strong></td>
+                <td><strong>Phát hiện vi phạm bản quyền, Deduplication MLOps</strong></td>
+                <td><strong>Tìm kiếm ngữ nghĩa (Semantic Search), Phân loại</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2026 Trường Đại học Giao thông Vận tải TP.HCM (UTH) · Viện Sau Đại học &amp; Khoa CNTT</p>
+      <p style="margin-top: 6px; font-size: 0.8rem;">Báo cáo Kỹ thuật &amp; Trực quan Lab 04 - Computer Vision Courseware</p>
+    </footer>
+  </div>
+
+  <!-- Interactive Script -->
+  <script>
+    function switchTab(evt, tabId) {
+      const tabs = document.querySelectorAll('.tab-panel');
+      tabs.forEach(tab => tab.classList.remove('active'));
+
+      const btns = document.querySelectorAll('.tab-btn');
+      btns.forEach(btn => btn.classList.remove('active'));
+
+      document.getElementById(tabId).classList.add('active');
+      evt.currentTarget.classList.add('active');
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    }
+  </script>
+</body>
+</html>
