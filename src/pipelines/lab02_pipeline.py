@@ -332,10 +332,16 @@ def run_lab02(
     # Add salt-and-pepper noise (reproducible) to showcase median strength
     img_noisy = add_salt_pepper_noise(img_bgr, amount=0.03, seed=DEFAULT_SEED)
     img_median = apply_median_filter(img_noisy, ksize=3)
-    img_bilateral = apply_bilateral_filter(img_noisy, d=9, sigma_color=75, sigma_space=75)
+    img_bilateral = apply_bilateral_filter(
+        img_noisy, d=9, sigma_color=75, sigma_space=75
+    )
 
-    artifacts["noisy"] = save_image_cv(img_noisy, nonlinear_dir / "salt_pepper_noisy.jpg")
-    artifacts["median"] = save_image_cv(img_median, nonlinear_dir / "median_denoised.jpg")
+    artifacts["noisy"] = save_image_cv(
+        img_noisy, nonlinear_dir / "salt_pepper_noisy.jpg"
+    )
+    artifacts["median"] = save_image_cv(
+        img_median, nonlinear_dir / "median_denoised.jpg"
+    )
     artifacts["bilateral"] = save_image_cv(
         img_bilateral, nonlinear_dir / "bilateral_filtered.jpg"
     )

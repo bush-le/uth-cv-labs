@@ -162,7 +162,8 @@ def test_sharpen_kernel_sum_is_one() -> None:
     sharpen = get_sharpen_kernel()
     assert abs(kernel_sum(sharpen) - 1.0) < 1e-6
     assert kernel_sum(sharpen) == pytest.approx(
-        kernel_sum(np.array([[0, 0, 0], [0, 1, 0], [0, 0, 0]])) - kernel_sum(get_laplacian_kernel())
+        kernel_sum(np.array([[0, 0, 0], [0, 1, 0], [0, 0, 0]]))
+        - kernel_sum(get_laplacian_kernel())
     )
 
 
@@ -216,7 +217,9 @@ def test_salt_pepper_reproducible(dummy_bgr_image: np.ndarray) -> None:
 
 def test_bilateral_preserves_edges(dummy_bgr_image: np.ndarray) -> None:
     """Verify bilateral filter keeps a hard edge between the two color patches."""
-    filtered = apply_bilateral_filter(dummy_bgr_image, d=9, sigma_color=75, sigma_space=75)
+    filtered = apply_bilateral_filter(
+        dummy_bgr_image, d=9, sigma_color=75, sigma_space=75
+    )
     # Center of the blue patch stays blue-ish, center of red patch stays red-ish
     assert filtered[10, 10, 0] > filtered[30, 30, 0]
     assert filtered[30, 30, 2] > filtered[10, 10, 2]
