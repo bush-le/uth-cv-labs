@@ -26,7 +26,7 @@ install:
 	$(PYTHON) -m pip install -r requirements.txt
 
 install-dev:
-	$(PYTHON) -m pip install -r requirements/dev.txt -r requirements/tracking.txt
+	$(PYTHON) -m pip install -r requirements/dev.txt
 
 install-all:
 	$(PYTHON) -m pip install -e .[all]
