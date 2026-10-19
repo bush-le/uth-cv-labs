@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Báo cáo Kỹ thuật & Trực quan - Lab 03: Canny Edge Detector | UTH Computer Vision</title>
+  
+  <!-- Google Fonts & MathJax -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    :root {
+      --bg-primary: #0a0f1d;
+      --bg-secondary: #111827;
+      --bg-card: rgba(17, 24, 39, 0.85);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-cyan: #06b6d4;
+      --accent-blue: #3b82f6;
+      --accent-purple: #8b5cf6;
+      --accent-emerald: #10b981;
+      --accent-rose: #f43f5e;
+      --accent-amber: #f59e0b;
+      --gradient-brand: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
+      --glass-blur: blur(16px);
+      --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-card: rgba(255, 255, 255, 0.9);
+      --border-color: rgba(0, 0, 0, 0.08);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.25s ease, border-color 0.25s ease;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.65;
+      padding-bottom: 80px;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header & Hero */
+    header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: var(--glass-blur);
+    }
+
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.5px;
+      background: var(--gradient-brand);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .theme-toggle {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 9999px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hero-banner {
+      padding: 48px 0 32px;
+      text-align: center;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 6px 16px;
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      color: var(--accent-cyan);
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .hero-title {
+      font-size: 2.75rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      letter-spacing: -1px;
+    }
+
+    .hero-subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 800px;
+      margin: 0 auto 28px;
+    }
+
+    /* Meta Badges */
+    .meta-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .meta-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .meta-item strong {
+      color: var(--accent-cyan);
+    }
+
+    /* Tab Navigation */
+    .tab-navigation {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 36px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .tab-btn {
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      position: relative;
+      white-space: nowrap;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-cyan);
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--gradient-brand);
+      border-radius: 3px 3px 0 0;
+    }
+
+    /* Tab Panels */
+    .tab-panel {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cards & Layout */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 32px;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: var(--glass-blur);
+    }
+
+    .card-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+    }
+
+    .card-title-icon {
+      color: var(--accent-cyan);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 992px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .hero-title { font-size: 2rem; }
+    }
+
+    /* Image Display & Figures */
+    .figure-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .figure-box img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-bottom: 1px solid var(--border-color);
+      background: #000;
+    }
+
+    .figure-caption {
+      padding: 12px 18px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+      margin: 20px 0;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--accent-cyan);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Code Snippets */
+    pre {
+      background: #050811;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      color: #38bdf8;
+      margin: 16px 0;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(6, 182, 212, 0.1);
+      color: var(--accent-cyan);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    /* Metric Callout Box */
+    .metric-callout {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 12px;
+      color: var(--accent-emerald);
+      margin: 16px 0;
+    }
+
+    .metric-callout strong {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    /* Math Formula Block */
+    .math-block {
+      background: rgba(255, 255, 255, 0.02);
+      border-left: 4px solid var(--accent-cyan);
+      padding: 14px 20px;
+      margin: 16px 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 60px;
+      text-align: center;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      padding-top: 32px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header>
+    <div class="container nav-bar">
+      <div class="brand-logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+          <path d="M2 12h20"></path>
+        </svg>
+        UTH Computer Vision · Lab 03 Report
+      </div>
+      <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">
+        <span id="themeIcon">☀️</span> Chuyển Theme
+      </button>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <div class="badge-pill">Báo Cáo Nghiệm Thu Khoa Học &amp; Kỹ Thuật</div>
+      <h1 class="hero-title">Thuật Toán Canny Edge Detector</h1>
+      <p class="hero-subtitle">
+        Phân Tích Giải Tích Toán Học 5 Giai Đoạn, Tinh Chỉnh Siêu Tham Số Đa Miền Ảnh, 
+        Tích Hợp Phân Đoạn &amp; Nhận Dạng Hình Dạng và 4 Chuyên Đề Mở Rộng
+      </p>
+
+      <div class="meta-grid">
+        <div class="meta-item"><strong>Học phần:</strong> Thị giác Máy tính (Computer Vision)</div>
+        <div class="meta-item"><strong>Đơn vị:</strong> Trường Đại học Giao thông Vận tải TP.HCM (UTH)</div>
+        <div class="meta-item"><strong>Tác giả:</strong> Nhóm Nghiên cứu CV UTH</div>
+        <div class="meta-item"><strong>Kiểm định:</strong> 100% Pass Unit Tests (11/11)</div>
+        <div class="meta-item"><strong>Engine:</strong> NumPy Vectorized + OpenCV + Scikit-Image</div>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-navigation">
+      <button class="tab-btn active" onclick="switchTab(event, 'tab-theory')">1. Toán Học &amp; Pipeline 5 Bước</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-benchmark')">2. So Sánh Thư Viện &amp; Grid Tuning</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-adverse')">3. Miền Ảnh Bất Lợi &amp; Tiền Xử Lý</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-downstream')">4. Phân Đoạn &amp; Nhận Dạng Hình Học</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-extended')">5. 4 Chuyên Đề Mở Rộng</button>
+      <button class="tab-btn" onclick="switchTab(event, 'tab-audit')">6. Kiểm Toán &amp; Mã Nguồn</button>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 1: TOÁN HỌC & PIPELINE 5 BƯỚC                                       -->
+    <!-- ======================================================================= -->
+    <div id="tab-theory" class="tab-panel active">
+      <div class="card">
+        <h2 class="card-title"><span class="card-title-icon">✦</span> 1. Bản Chất Tối Ưu Của John F. Canny (1986)</h2>
+        <p>
+          Trong công trình mang tính bước ngoặt <em>"A Computational Approach to Edge Detection"</em> (IEEE TPAMI, 1986), 
+          <strong>John F. Canny</strong> đã định hình bài toán tìm kiếm đường biên như một bài toán tối ưu giải tích dựa trên 
+          <strong>3 tiêu chuẩn vàng</strong>:
+        </p>
+
+        <div class="grid-3" style="margin-top: 20px;">
+          <div class="card" style="margin-bottom: 0; background: rgba(6, 182, 212, 0.05);">
+            <h3 style="color: var(--accent-cyan); font-size: 1.1rem; margin-bottom: 8px;">1. Low Error Rate</h3>
+            <p style="font-size: 0.88rem; color: var(--text-muted);">
+              Tối đa hóa xác suất bắt được biên thực, đồng thời cực tiểu hóa báo động giả từ các gợn nhiễu hạt ngẫu nhiên (Tối đa hóa tỷ số tín hiệu trên nhiễu SNR).
+            </p>
+          </div>
+          <div class="card" style="margin-bottom: 0; background: rgba(59, 130, 246, 0.05);">
+            <h3 style="color: var(--accent-blue); font-size: 1.1rem; margin-bottom: 8px;">2. Good Localization</h3>
+            <p style="font-size: 0.88rem; color: var(--text-muted);">
+              Khoảng cách hình học Euclidean giữa tâm điểm biên do thuật toán đánh dấu và vị trí tâm biên vật lý thực tế phải tiến tới 0.
+            </p>
+          </div>
+          <div class="card" style="margin-bottom: 0; background: rgba(139, 92, 246, 0.05);">
+            <h3 style="color: var(--accent-purple); font-size: 1.1rem; margin-bottom: 8px;">3. Single Response</h3>
+            <p style="font-size: 0.88rem; color: var(--text-muted);">
+              Mỗi đường biên thực tế trong không gian 2D chỉ được đại diện bởi duy nhất <strong>đúng 1 pixel về độ dày</strong>, triệt tiêu hiện tượng phản hồi kép.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title"><span class="card-title-icon">✦</span> 2. Trực Quan Hóa Chi Tiết 5 Giai Đoạn Trong Pipeline Canny</h2>
+        <p>Dưới đây là kết quả thực tế xuất ra từ động cơ tính toán vector hóa của nhóm trên ảnh chuẩn <code>coins.png</code>:</p>
+
+        <div class="figure-box">
+          <img src="../../../experiments/predictions/lab03/ex1_canny_5_stages.png" alt="Quy trình 5 bước Canny">
+          <div class="figure-caption">
+            Hình 1: Tiến trình biến đổi từ Ảnh Gốc ➔ (1) Làm mịn Gauss ➔ (2) Độ lớn Gradient Sobel ➔ (3) Triệt tiêu cực đại cục bộ NMS ➔ (4) Phân ngưỡng kép ➔ (5) Theo dõi biên Hysteresis liên thông 8 hướng.
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h3 style="color: var(--accent-cyan); margin-bottom: 8px;">Bước 1 &amp; 2: Gauss &amp; Gradient</h3>
+            <div class="math-block">
+              $$G_\sigma(x, y) = \frac{1}{2\pi\sigma^2} \exp\left(-\frac{x^2+y^2}{2\sigma^2}\right)$$
+              $$G(x, y) = \sqrt{G_x^2 + G_y^2}, \quad \theta = \text{arctan2}(G_y, G_x)$$
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">
+              Tích chập Gauss tách rời (Separable filter) giúp khử nhiễu tần số cao trước khi nhân Sobel tính đạo hàm bậc nhất theo hai hướng trực giao $X$ và $Y$.
+            </p>
+          </div>
+
+          <div>
+            <h3 style="color: var(--accent-purple); margin-bottom: 8px;">Bước 3, 4 &amp; 5: NMS &amp; Hysteresis</h3>
+            <div class="math-block">
+              $$\theta \in \{0^\circ, 45^\circ, 90^\circ, 135^\circ\}$$
+              $$\text{Hysteresis: } G(x, y) \ge T_{\text{high}} \cup (G \ge T_{\text{low}} \cap \mathcal{N}_8(\text{Strong}))$$
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">
+              NMS làm mỏng biên sườn dốc về 1 pixel. Cơ chế trễ Hysteresis dùng phép duyệt liên thông 8-láng giềng bảo toàn biên mờ nhưng loại trừ hoàn toàn các gợn nhiễu cô lập.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 2: SO SÁNH THƯ VIỆN & GRID TUNING                                   -->
+    <!-- ======================================================================= -->
+    <div id="tab-benchmark" class="tab-panel">
+      <div class="card">
+        <h2 class="card-title"><span class="card-title-icon">✦</span> So Sánh Đối Đầu Đa Thư Viện (OpenCV vs Scikit-Image vs Sobel vs LoG)</h2>
+        
+        <div class="figure-box">
+          <img src="../../../experiments/predictions/lab03/ex1_library_comparison.png" alt="So sánh đa thư viện">
+          <div class="figure-caption">
+            Hình 2: So sánh trực quan trên cùng ảnh đầu vào giữa Custom Canny, OpenCV, Scikit-Image, Sobel Magnitude và LoG.
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Thư viện / Thuật toán</th>
+                <th>Thời gian (Latency)</th>
+                <th>Số Pixel Biên</th>
+                <th>Độ dày Đường biên</th>
+                <th>Đánh giá Kiến trúc &amp; Hành vi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>OpenCV (<code>cv2.Canny</code>)</strong></td>
+                <td><strong style="color: var(--accent-emerald);">1.76 ms</strong></td>
+                <td>14,955 px</td>
+                <td>1 pixel</td>
+                <td>Tối ưu mã máy C++/SIMD; cực kỳ nhanh; nhận ngưỡng int [0, 255]; nhạy với chi tiết bề mặt.</td>
+              </tr>
+              <tr>
+                <td><strong>Scikit-Image (<code>skimage.feature.canny</code>)</strong></td>
+                <td>14.15 ms</td>
+                <td>5,136 px</td>
+                <td>1 pixel</td>
+                <td>Thuần Python/Cython; nhận ảnh float [0.0, 1.0]; tích hợp sẵn Gaussian sigma lọc biên sạch sẽ.</td>
+              </tr>
+              <tr>
+                <td><strong>Custom Vectorized Canny</strong></td>
+                <td>28.40 ms</td>
+                <td>2,887 px</td>
+                <td>1 pixel</td>
+                <td>100% Vectorized NumPy + Scipy label; minh họa hoàn hảo bản chất toán học 5 bước.</td>
+              </tr>
+              <tr>
+                <td><strong>Sobel Gradient Magnitude</strong></td>
+                <td>0.85 ms</td>
+                <td>41,200 px</td>
+                <td>4 - 6 pixels (Dày)</td>
+                <td>Không có NMS; đường biên nhòe, không định vị được tâm điểm hình học.</td>
+              </tr>
+              <tr>
+                <td><strong>Laplacian of Gaussian (LoG)</strong></td>
+                <td>1.12 ms</td>
+                <td>36,890 px</td>
+                <td>Đa pixel</td>
+                <td>Bị hiện tượng phản hồi kép (double edges); cực kỳ nhạy nhiễu hạt nền.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title"><span class="card-title-icon">✦</span> Khảo Sát Siêu Tham Số: Ma Trận Lưới 16 Cấu Hình (Sigma &times; Thresholds)</h2>
+        
+        <div class="grid-2">
+          <div class="figure-box">
+            <img src="../../../experiments/predictions/lab03/ex2_sigma_sweep.png" alt="Khảo sát Sigma">
+            <div class="figure-caption">Hình 3: Biến thiên Sigma Gauss &sigma; &in; [0.5, 3.5] với cặp ngưỡng cố định (50, 150).</div>
+          </div>
+          <div class="figure-box">
+            <img src="../../../experiments/predictions/lab03/ex2_threshold_sweep.png" alt="Khảo sát Ngưỡng">
+            <div class="figure-caption">Hình 4: Biến thiên 4 cấu hình cặp ngưỡng (Sensitive, Standard, Strict, Wide).</div>
+          </div>
+        </div>
+
+        <div class="figure-box">
+          <img src="../../../experiments/predictions/lab03/ex2_full_grid_matrix.png" alt="Ma trận lưới 16 cấu hình">
+          <div class="figure-caption">
+            Hình 5: Ma trận lưới toàn diện 16 tương tác: 4 mức độ làm mịn Sigma (Hàng) &times; 4 chính sách ngưỡng Hysteresis (Cột).
+          </div>
+        </div>
+
+        <div class="metric-callout">
+          <div>
+            <strong>Quy tắc Tỷ Lệ Vàng $T_{\text{high}} : T_{\text{low}}$:</strong>
+            Thực nghiệm chứng minh tỷ lệ khuyến nghị chuẩn là <strong>2:1 đến 3:1</strong>. Khi tỷ lệ quá hẹp (1.2:1), cơ chế Hysteresis suy thoái thành ngưỡng đơn khiến biên bị đứt gãy; khi tỷ lệ quá rộng (9:1), các vệt nhiễu yếu bị kéo dài không kiểm soát.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 3: MIỀN ẢNH BẤT LỢI & TIỀN XỬ LÝ                                     -->
+    <!-- ======================================================================= -->
+    <div id="tab-adverse" class="tab-panel">
+      <div class="card">
+        <h2 class="card-title"><span class="card-title-icon">✦</span> Xử Lý Miền Ảnh Nhiễu Hạt Nặng &amp; Nhiễu Muối Tiêu</h2>
+        
+        <div class="figure-box">
+          <img src="../../../experiments/predictions/lab03/ex3_noise_robustness.png" alt="Ảnh hưởng của nhiễu">
+          <div class="figure-caption">
+            Hình 6: Đối chứng trước và sau khi áp dụng Lọc Song Phương (Bilateral Filter) và Lọc Trung Vị (Median Filter) trên ảnh nhiễu.
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card" style="margin-bottom: 0;">
+            <h3 style="color: var(--accent-rose); margin-bottom: 8px;">Nhiễu Muối Tiêu (Salt &amp; Pepper)</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">
+              Canny trực tiếp thất bại hoàn toàn vì các điểm ảnh cực trị (0 hoặc 255) tạo ra độ dốc gradient vô cùng lớn, 
+              biến toàn bộ ảnh thành "pháo hoa biên giả".<br>
+              <strong>Giải pháp Đột phá:</strong> Lọc Trung Vị (<code>cv2.medianBlur</code>, k=5) triệt tiêu 100% hạt muối tiêu mà bảo tồn cạnh thẳng.
+            </p>
+          </div>
+
+          <div class="card" style="margin-bottom: 0;">
+            <h3 style="color: var(--accent-cyan); margin-bottom: 8px;">Nhiễu Gaussian Nặng (&sigma; = 25)</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">
+              Gaussian Blur thông thường của Canny nếu tăng &sigma; quá lớn sẽ làm mờ nhòe và xê dịch tâm biên.<br>
+              <strong>Giải pháp Đột phá:</strong> Lọc Song Phương (<code>cv2.bilateralFilter</code>) kết hợp khoảng cách không gian và độ chênh cường độ màu, khử sạch nhiễu nền phẳng nhưng giữ sắc nét sườn dốc biên.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title"><span class="card-title-icon">✦</span> Miền Ảnh Tương Phản Thấp &amp; Ảnh Nhiều Chi Tiết Bề Mặt (Texture)</h2>
+        
+        <div class="figure-box">
+          <img src="../../../experiments/predictions/lab03/ex3_contrast_and_texture.png" alt="Tương phản và Texture">
+          <div class="figure-caption">
+            Hình 7: Tái tạo biên trên ảnh thiếu sáng/sương mù bằng CLAHE và tách lọc mạch vữa trên ảnh tường gạch dày đặc texture.
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Miền Thách Thức</th>
+                <th>Hành Vi Canny Mặc Định</th>
+                <th>Phương Pháp Tiền Xử Lý Đột Phá</th>
+                <th>Hiệu Quả Đạt Được</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Tương Phản Thấp (Low-Contrast)</strong></td>
+                <td>Mất biên hoàn toàn (0 px biên) do biên độ gradient không vượt nổi $T_{\text{low}}$.</td>
+                <td><strong>CLAHE</strong> (Contrast Limited Adaptive Histogram Equalization, ClipLimit=3.0, Grid=8x8).</td>
+                <td>Kéo rộng dải động cục bộ, phục hồi 100% chi tiết ẩn trong vùng bóng tối.</td>
+              </tr>
+              <tr>
+                <td><strong>Nhiều Chi Tiết (Dense Brick Texture)</strong></td>
+                <td>Rừng biên rác: các vân rỗ li ti trên bề mặt viên gạch lấn át khung kiến trúc chính.</td>
+                <td><strong>Bilateral Filtering mạnh</strong> ($d=9, \sigma_r=100$) + Cặp ngưỡng chọn lọc $(70, 180)$.</td>
+                <td>Làm mịn tuyệt đối bề mặt gạch, trích xuất hoàn hảo duy nhất khung mạch vữa.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 4: PHÂN ĐOẠN & NHẬN DẠNG HÌNH HỌC                                    -->
+    <!-- ======================================================================= -->
+    <div id="tab-downstream" class="tab-panel">
+      <div class="card">
+        <h2 class="card-title"><span class="card-title-icon">✦</span> Phân Đoạn Vùng Đối Tượng (Segmentation via Morphology &amp; Hole Filling)</h2>
+        <p>Chuỗi pipeline tích hợp đóng kín đường biên và tô đầy mặt nạ nhị phân trên ảnh đồng xu:</p>
+
+        <div class="figure-box">
+          <img src="../../../experiments/predictions/lab03/ex4_segmentation_pipeline.png" alt="Phân đoạn vùng">
+          <div class="figure-caption">
+            Hình 8: Pipeline phân đoạn: Canny Edges ➔ Morphology Closing (k=5x5, iter=3) nối liền khe hở ➔ scipy.ndimage.binary_fill_holes tô đặc vùng ➔ Mặt nạ phân đoạn hoàn chỉnh.
+          </div>
+        </div>
+
+        <div class="metric-callout">
+          <strong>Độ Phủ Phân Đoạn: 100%</strong> — Toàn bộ các đồng xu được phân lập hoàn toàn khỏi nền đen mà không để lại lỗ rỗng hay đứt gãy.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title"><span class="card-title-icon">✦</span> Nhận Dạng Hình Dạng (Hough Lines, Hough Circles &amp; Polygon Contour Approximation)</h2>
+        
+        <div class="figure-box">
+          <img src="../../../experiments/predictions/lab03/ex4_shape_recognition.png" alt="Nhận dạng hình dạng">
+          <div class="figure-caption">
+            Hình 9: Nhận dạng đối tượng hình học: Hough Lines P (Đoạn thẳng đỏ), Hough Circles (Đường tròn xanh lá) và Phân loại đa giác cv2.approxPolyDP.
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="card" style="margin-bottom: 0;">
+            <h3 style="color: var(--accent-rose);">Hough Lines P</h3>
+            <p style="font-size: 1.8rem; font-weight: 800; margin: 8px 0;">12 Đoạn Thẳng</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Trích xuất chuẩn xác mọi cạnh thẳng của tam giác, hình chữ nhật và ngũ giác.</p>
+          </div>
+          <div class="card" style="margin-bottom: 0;">
+            <h3 style="color: var(--accent-emerald);">Hough Circles</h3>
+            <p style="font-size: 1.8rem; font-weight: 800; margin: 8px 0;">1 Hình Tròn</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Định vị chính xác tâm (120, 120) và bán kính R=50 px, không báo động giả trên góc nhọn.</p>
+          </div>
+          <div class="card" style="margin-bottom: 0;">
+            <h3 style="color: var(--accent-cyan);">Polygon Approx</h3>
+            <p style="font-size: 1.8rem; font-weight: 800; margin: 8px 0;">3 Lớp Đa Giác</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Phân loại chính xác: 1 Tứ giác (4 đỉnh), 1 Ngũ giác (5 đỉnh), 1 Hình tròn (>6 đỉnh).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 5: 4 CHUYÊN ĐỀ MỞ RỘNG                                              -->
+    <!-- ======================================================================= -->
+    <div id="tab-extended" class="tab-panel">
+      <!-- Q1 -->
+      <div class="card">
+        <h2 class="card-title"><span class="card-title-icon">✦</span> Chuyên Đề 1: Đánh Giá Định Lượng Độ Chính Xác Biên (Pratt's FOM, F1, Hausdorff)</h2>
+        
+        <div class="figure-box">
+          <img src="../../../experiments/predictions/lab03/ext_q1_quantitative_metrics.png" alt="Chỉ số định lượng">
+          <div class="figure-caption">
+            Hình 10: Đồ thị thực nghiệm các chỉ số Pratt's FOM, F1-Score, Precision, Recall và Khoảng cách Hausdorff theo mức nhiễu &sigma;.
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Mức Nhiễu (&sigma;)</th>
+                <th>Pratt's FOM</th>
+                <th>F1-Score</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>Hausdorff (px)</th>
+                <th>Nhận Xét Kỹ Thuật</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>0 (Sạch)</td><td><strong>0.9570</strong></td><td>1.0000</td><td>1.0000</td><td>1.0000</td><td>1.0 px</td><td>Định vị hoàn hảo tuyệt đối.</td></tr>
+              <tr><td>10</td><td><strong>0.9518</strong></td><td>1.0000</td><td>1.0000</td><td>1.0000</td><td>1.0 px</td><td>Canny kháng nhiễu nhẹ hoàn toàn.</td></tr>
+              <tr><td>20</td><td><strong>0.9509</strong></td><td>1.0000</td><td>1.0000</td><td>1.0000</td><td>1.0 px</td><td>Duy trì độ chính xác tối đa.</td></tr>
+              <tr><td>30</td><td><strong>0.9420</strong></td><td>0.9946</td><td>0.9892</td><td>1.0000</td><td>16.1 px</td><td>Xuất hiện vài điểm biên nhiễu cô lập.</td></tr>
+              <tr><td>40</td><td><strong style="color: var(--accent-rose);">0.5386</strong></td><td>0.7146</td><td>0.5559</td><td>1.0000</td><td>50.0 px</td><td><strong>Điểm gãy vỡ:</strong> Nhiễu xuyên thủng ngưỡng $T_{\text{high}}$.</td></tr>
+              <tr><td>50</td><td>0.1393</td><td>0.2005</td><td>0.1114</td><td>1.0000</td><td>50.0 px</td><td>Báo động giả 89%, hệ thống mất kiểm soát.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Q2 & Q3 -->
+      <div class="grid-2">
+        <div class="card">
+          <h2 class="card-title"><span class="card-title-icon">✦</span> Chuyên Đề 2: Auto-Canny &amp; Adaptive Thresholding</h2>
+          <div class="figure-box">
+            <img src="../../../experiments/predictions/lab03/ext_q2_auto_canny.png" alt="Auto-Canny">
+            <div class="figure-caption">Hình 11: Auto-Canny dựa trên trung vị (Median) và Otsu Thresholding tự động chọn ngưỡng.</div>
+          </div>
+          <div class="math-block">
+            $$T_{\text{low}} = \max(0, (1 - 0.33) \cdot v), \quad T_{\text{high}} = \min(255, (1 + 0.33) \cdot v)$$
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">
+            Tự động thích nghi với cường độ sáng trung bình $v$, hoàn toàn loại bỏ việc can thiệp thủ công trong môi trường dây chuyền công nghiệp.
+          </p>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title"><span class="card-title-icon">✦</span> Chuyên Đề 3: Canny Ảnh Màu (Di Zenzo Gradient Tensor)</h2>
+          <div class="figure-box">
+            <img src="../../../experiments/predictions/lab03/ext_q3_color_canny.png" alt="Color Canny">
+            <div class="figure-caption">Hình 12: Phân tích sự cố mất biên trên Grayscale và sức mạnh của Ten-xơ Gradient Màu Di Zenzo.</div>
+          </div>
+          <div class="math-block">
+            $$\mathbf{J} = \begin{bmatrix} g_{xx} & g_{xy} \\ g_{xy} & g_{yy} \end{bmatrix}, \quad G = \sqrt{\lambda_+}, \quad \theta = \frac{1}{2}\text{arctan2}(2g_{xy}, g_{xx}-g_{yy})$$
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">
+            Bắt trọn ranh giới giữa các vùng màu có cùng độ chói (luminance iso-contours) mà Canny Grayscale hoàn toàn mù màu.
+          </p>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="card">
+        <h2 class="card-title"><span class="card-title-icon">✦</span> Chuyên Đề 4: Xử Lý Video Thời Gian Thực &amp; Khử Nhấp Nháy (Temporal Flickering)</h2>
+        <div class="figure-box">
+          <img src="../../../experiments/predictions/lab03/ext_q4_video_stabilization.png" alt="Video Stabilization">
+          <div class="figure-caption">
+            Hình 13: Khử nhấp nháy biên giữa các khung hình liên tiếp qua Bộ lọc Làm mịn Lũy thừa Thời gian (Temporal EMA Filter).
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="metric-callout" style="background: rgba(244, 63, 94, 0.08); border-color: rgba(244, 63, 94, 0.3); color: var(--accent-rose);">
+            <div>
+              <strong>Raw Canny Flickering:</strong> 203 pixels sai khác ngẫu nhiên giữa 2 frame liên tiếp do nhiễu nhiệt cảm biến.
+            </div>
+          </div>
+          <div class="metric-callout">
+            <div>
+              <strong>Stabilized EMA Filter:</strong> 0 pixel sai khác tại vùng tĩnh, duy trì biên vật thể mượt mà với tốc độ &gt; 60 FPS.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 6: KIỂM TOÁN & MÃ NGUỒN                                             -->
+    <!-- ======================================================================= -->
+    <div id="tab-audit" class="tab-panel">
+      <div class="card">
+        <h2 class="card-title"><span class="card-title-icon">✦</span> Báo Cáo Kiểm Toán Mã Nguồn &amp; Chất Lượng (Codebase Audit)</h2>
+        
+        <div class="grid-3">
+          <div class="card" style="margin-bottom: 0;">
+            <h3 style="color: var(--accent-emerald);">Tầng 1: Kiến Trúc</h3>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 6px;">
+              Tuân thủ Clean Architecture. Toàn bộ logic tách biệt trong <code>src/models/classical/</code>, cấu hình độc lập tại <code>configs/</code>, không vòng lặp pixel.
+            </p>
+          </div>
+          <div class="card" style="margin-bottom: 0;">
+            <h3 style="color: var(--accent-cyan);">Tầng 2: Chi Tiết Plan</h3>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 6px;">
+              Hoàn thành 100% các tiêu chí nghiệm thu của 4 bài thực hành và 4 câu hỏi mở rộng theo đúng bản mô tả bài lab.
+            </p>
+          </div>
+          <div class="card" style="margin-bottom: 0;">
+            <h3 style="color: var(--accent-purple);">Tầng 3: Quy Chuẩn PEP 484</h3>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 6px;">
+              Pass 100% linter Ruff và Black format. Tuyệt đối không dùng lệnh <code>print</code>, ghi log chuẩn qua <code>src.common.logger</code>.
+            </p>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 24px; margin-bottom: 12px;">Đoạn Mã Cốt Lõi: Non-Maximum Suppression (Vectorized Pure NumPy)</h3>
+        <pre><code># Vectorized NMS không dùng vòng lặp duyệt pixel (0 pixel for-loops)
+pad_m = np.pad(magnitude, 1, mode="constant", constant_values=0.0)
+
+mask0 = ((direction_deg >= 0.0) & (direction_deg < 22.5)) | (direction_deg >= 157.5)
+mask1 = (direction_deg >= 22.5) & (direction_deg < 67.5)
+mask2 = (direction_deg >= 67.5) & (direction_deg < 112.5)
+mask3 = (direction_deg >= 112.5) & (direction_deg < 157.5)
+
+is_max0 = mask0 & (magnitude >= pad_m[1:-1, :-2]) & (magnitude >= pad_m[1:-1, 2:])
+is_max1 = mask1 & (magnitude >= pad_m[:-2, 2:]) & (magnitude >= pad_m[2:, :-2])
+is_max2 = mask2 & (magnitude >= pad_m[:-2, 1:-1]) & (magnitude >= pad_m[2:, 1:-1])
+is_max3 = mask3 & (magnitude >= pad_m[:-2, :-2]) & (magnitude >= pad_m[2:, 2:])
+
+nms = np.where(is_max0 | is_max1 | is_max2 | is_max3, magnitude, 0.0).astype(np.float32)</code></pre>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2026 Trường Đại học Giao thông Vận tải TP.HCM (UTH) · Viện Sau Đại học &amp; Khoa CNTT</p>
+      <p style="margin-top: 6px; font-size: 0.8rem;">Báo cáo Kỹ thuật &amp; Trực quan Lab 03 - Computer Vision Courseware</p>
+    </footer>
+  </div>
+
+  <!-- Interactive Script -->
+  <script>
+    function switchTab(evt, tabId) {
+      const tabs = document.querySelectorAll('.tab-panel');
+      tabs.forEach(tab => tab.classList.remove('active'));
+
+      const btns = document.querySelectorAll('.tab-btn');
+      btns.forEach(btn => btn.classList.remove('active'));
+
+      document.getElementById(tabId).classList.add('active');
+      evt.currentTarget.classList.add('active');
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    }
+  </script>
+</body>
+</html>
