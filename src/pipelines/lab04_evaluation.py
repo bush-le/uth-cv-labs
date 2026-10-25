@@ -13,6 +13,7 @@ from src.models.classical.wavelet_hash import (
     apply_geometric_distortion,
     find_top_k_similar,
     hamming_distance,
+    normalized_hamming_distance,
 )
 
 
@@ -112,8 +113,9 @@ def compare_hash_methods(
         distances = {
             split: np.array(
                 [
-                    hamming_distance(hashes[p["left_id"]], hashes[p["right_id"]])
-                    / length
+                    normalized_hamming_distance(
+                        hashes[p["left_id"]], hashes[p["right_id"]]
+                    )
                     for p in rows
                 ]
             )

@@ -17,11 +17,13 @@ Branch `lab-04` chứa bài so sánh ảnh bằng Wavelet hash trên ảnh Chihu
 - [Report Markdown](docs/labs/lab04/LAB_04_REPORT.md) · [Report HTML](docs/labs/lab04/LAB_04_REPORT.html) (nhúng sẵn hình).
 - [Cấu hình dữ liệu](configs/dataset/lab04_pairs.yaml) · [Cấu hình hash/notebook](configs/experiment/lab04_wavelet.yaml).
 
-Cài `pip install -r requirements/base.txt` và `pip install jupyter nbformat nbclient ipykernel`. Chạy `python -m src.data.lab04_pairs` để tạo CSV và biến thể tại `data/processed/lab04_pairs/` trước khi mở notebook. Ảnh nguồn vẫn giữ trong `data/samples/lab04/chihua_muffin/` và `meo_kem/`.
+Cài `pip install -r requirements/base.txt` và `pip install jupyter nbformat nbclient ipykernel markdown`. Chạy `python -m src.data.lab04_pairs` để tạo CSV và biến thể tại `data/processed/lab04_pairs/` trước khi mở notebook. Ảnh nguồn vẫn giữ trong `data/samples/lab04/chihua_muffin/` và `meo_kem/`.
 
-Baseline hiện tại là RGB → băm từng kênh bằng db4 level 1 → LL 8×8 → median riêng từng kênh → ghép R|G|B thành 192 bit, do project lựa chọn. Biến thể bước nhảy trên ảnh xám chỉ dùng làm phép đối chiếu ở bài nâng cao. Notebook chọn ngưỡng trên calibration rồi giữ nguyên để đánh giá evaluation; không dùng `evaluation.similarity_threshold` của pipeline cũ làm ngưỡng kết quả. Tham số biến thể dữ liệu lấy từ cấu hình dữ liệu, không lấy nhánh `robustness_suite` cũ.
+Có thể chạy `python scripts/lab04/run_notebook.py` để thực thi notebook, kiểm tra và xuất hình/số liệu vào `docs/assets/lab04/`. Nếu thay thí nghiệm, cập nhật nhận xét và số liệu trong report Markdown rồi chạy `python scripts/lab04/render_report.py` để tạo HTML có nhúng hình. Các file trong `experiments/` là kết quả tạm và không cần để chạy bài hiện tại.
 
-`src/pipelines/lab04_pipeline.py` là pipeline mở rộng cũ dùng ảnh mẫu khác; nó không tạo notebook/report hiện tại. Luồng đang dùng gồm `src/data/lab04_pairs.py`, các hàm hash trong `src/models/classical/wavelet_hash.py`, đánh giá trong `src/pipelines/lab04_evaluation.py` và các hàm vẽ trong `src/pipelines/lab04_visuals.py` để notebook tập trung vào các bước thực hành.
+Baseline hiện tại là RGB → băm từng kênh bằng db4 level 1 → LL 8×8 → median riêng từng kênh → ghép R|G|B thành 192 bit, do project lựa chọn. Biến thể bước nhảy trên ảnh xám chỉ dùng làm phép đối chiếu ở bài nâng cao. Notebook chọn ngưỡng trên calibration rồi giữ nguyên để đánh giá evaluation. Tham số sinh biến thể lấy từ cấu hình dữ liệu; tham số hash và khảo sát hình học lấy từ cấu hình thí nghiệm.
+
+Luồng thực thi gồm `src/data/lab04_pairs.py`, các hàm hash trong `src/models/classical/wavelet_hash.py`, đánh giá trong `src/pipelines/lab04_evaluation.py` và các hàm vẽ trong `src/pipelines/lab04_visuals.py` để notebook tập trung vào các bước thực hành.
 
 ---
 
@@ -93,23 +95,26 @@ Baseline hiện tại là RGB → băm từng kênh bằng db4 level 1 → LL 8�
 │   ├── common/                        # Tiện ích dùng chung
 │   │   ├── __init__.py
 │   │   ├── logger.py                  # Module logger mẫu
-│   │   ├── metrics.py                 # Module tính chỉ số mẫu
-│   │   └── visualizer.py              # Module trực quan hóa mẫu
+│   │   └── metrics.py                 # Module tính chỉ số mẫu
 │   ├── data/                          # Dataset & DataModule
 │   │   ├── __init__.py
 │   │   ├── transforms.py              # Module tiền xử lý & transforms mẫu
-│   │   └── datamodule.py              # Module Dataset & DataLoader mẫu
+│   │   ├── datamodule.py              # Module Dataset & DataLoader mẫu
+│   │   └── lab04_pairs.py             # Chuẩn bị và nạp các cặp ảnh Lab04
 │   ├── models/                        # Kiến trúc mô hình
 │   │   ├── __init__.py
 │   │   ├── classical/                 # Mô hình xử lý ảnh cổ điển
-│   │   │   └── __init__.py
+│   │   │   ├── __init__.py
+│   │   │   └── wavelet_hash.py         # Wavelet hash, Hamming và Top-k
 │   │   └── deep/                      # Mô hình học sâu
 │   │       └── __init__.py
 │   └── pipelines/                     # Pipeline thực thi
 │       ├── __init__.py
 │       ├── train.py                   # Script huấn luyện mẫu
 │       ├── evaluate.py                # Script đánh giá mẫu
-│       └── infer.py                   # Script suy luận mẫu
+│       ├── infer.py                   # Script suy luận mẫu
+│       ├── lab04_evaluation.py        # Chọn ngưỡng, đánh giá và khảo sát
+│       └── lab04_visuals.py           # Hình minh họa của notebook
 ├── tests/                             # Bộ kiểm thử mẫu
 │   ├── __init__.py
 │   ├── conftest.py                    # Test fixtures mẫu

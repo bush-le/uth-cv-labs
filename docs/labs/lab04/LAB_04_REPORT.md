@@ -14,7 +14,7 @@ Bài làm chọn baseline đó làm cấu hình tham chiếu của project. Note
 
 Môi trường thực thi: python 3.13.15, opencv 5.0.0, numpy 2.5.3, pywavelets 1.8.0, scipy 1.18.1, sklearn 1.9.1. Tất cả chạy CPU.
 
-Cài `requirements/base.txt` và `jupyter nbformat nbclient ipykernel`. Từ thư mục project, chạy `python -m src.data.lab04_pairs` để tạo dữ liệu từ 26 ảnh đã cung cấp, rồi mở notebook và chọn **Restart Kernel → Run All**. Lần chạy notebook không tự sửa ảnh nguồn hoặc tự thay dữ liệu khi thiếu CSV.
+Cài `requirements/base.txt` và `jupyter nbformat nbclient ipykernel markdown`. Từ thư mục project, chạy `python -m src.data.lab04_pairs` để tạo dữ liệu từ 26 ảnh đã cung cấp, rồi mở notebook và chọn **Restart Kernel → Run All**. Có thể dùng `python scripts/lab04/run_notebook.py` để chạy và xuất hình/số liệu. Report Markdown là nguồn chỉnh sửa báo cáo; `python scripts/lab04/render_report.py` xuất bản HTML tương ứng. Lần chạy notebook không tự sửa ảnh nguồn hoặc tự thay dữ liệu khi thiếu CSV.
 
 Seed 42 được dùng khi chia nguồn và sinh nhiễu. Cấu hình dữ liệu ở `configs/dataset/lab04_pairs.yaml`; cấu hình hash/notebook ở `configs/experiment/lab04_wavelet.yaml`. Dependencies đặt phiên bản tối thiểu, nên cần ghi lại môi trường nếu kết quả khác. Thời gian xử lý bên dưới là một lần đo trên các ảnh đã nạp vào RAM, không gồm đọc file.
 
@@ -347,7 +347,7 @@ DTCWT là hướng nghiên cứu để có tính chọn hướng và độ ổn 
 - **Kiến trúc:** dữ liệu và cặp do `src/data/lab04_pairs.py` chuẩn bị; hash ở `src/models/classical/wavelet_hash.py`; chọn ngưỡng/chấm cặp ở `src/pipelines/lab04_evaluation.py`; phần vẽ dài ở `src/pipelines/lab04_visuals.py` để notebook tập trung vào từng bước tính toán.
 - **Đúng phạm vi:** đủ các bước cơ bản, hai bài nâng cao và khảo sát độ bền được ghi rõ là bổ sung. Không gán baseline RGB–LL–median–192 bit thành yêu cầu slide.
 - **Quy chuẩn CV:** đường dẫn theo project root, không ghi đè ảnh nguồn; NumPy RGB `(H,W,3)`, hash `(192,)` uint8; seed nhiễu/split cố định. Các vòng lặp theo ảnh/cặp/thí nghiệm, không lặp từng pixel. Hàm có type hints và docstring. Bài CPU nên không có quy trình GPU/training.
-- **Giới hạn code cũ:** `src/pipelines/lab04_pipeline.py` là pipeline mở rộng cũ dùng ảnh mẫu khác; notebook/report này không được tạo bằng pipeline đó. Các API cũ khác được giữ để tham khảo và hồi quy, chưa audit lại toàn bộ chức năng ngoài phạm vi.
+- **Phạm vi code:** chỉ giữ các hàm phục vụ notebook hiện tại; đã bỏ pipeline mẫu cũ, bộ vẽ trùng và các thuật toán băm bổ sung chưa dùng. Các hướng mở rộng được thảo luận trong report không đồng nghĩa đã có triển khai.
 
 ### 7.2. Kiểm tra thực tế
 
@@ -356,7 +356,7 @@ DTCWT là hướng nghiên cứu để có tính chọn hướng và độ ổn 
 - Kiểm tra ma trận đôi một đối xứng và đường chéo bằng 0; nguồn calibration/evaluation không giao nhau; nhãn cặp đúng nguồn và cùng split.
 - Test dữ liệu kiểm tra tái lập, nhãn, nguồn giữ nguyên; test baseline kiểm tra thứ tự R|G|B, dữ liệu float/uint8, shape không hợp lệ và ảnh hằng.
 - Test chọn ngưỡng có trường hợp evaluation vẫn sai để bảo đảm không tự fit lại ngưỡng theo evaluation.
-- Smoke và normal test, Ruff trên src/tests/notebook và Black trên src/tests được chạy sau lần cập nhật RGB. Pipeline cũ vẫn dùng ảnh mẫu riêng, không chuyển sang bộ dữ liệu mới.
+- Smoke và normal test, Ruff trên src/tests/notebook và Black trên src/tests được chạy sau khi dọn code. Các test riêng cho tính năng cũ đã bỏ được gỡ cùng tính năng; các kiểm tra hash, Hamming, dữ liệu, chọn ngưỡng và Top-k vẫn được giữ.
 
 ### 7.3. Giới hạn diễn giải
 
