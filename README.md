@@ -10,9 +10,16 @@
 
 ## 📌 Giới thiệu Tổng quan (Overview)
 
-Repository này là bộ **khung xương dự án mẫu (Pure Project Scaffolding & Template)**:
-- Cung cấp cấu trúc thư mục phân tầng, modular và chuẩn hóa theo quy chuẩn kỹ thuật.
-- Không chứa nội dung hoặc bài toán cụ thể nào, sẵn sàng để phục vụ cho các bài thực hành (Labs) trong tương lai.
+Branch `lab-03` chứa bài thực hành Canny và bộ khung dự án dùng chung.
+
+- [Notebook thực hành](notebooks/labs/lab_03.ipynb): bản chính cho YC1–4; mở và chọn Restart Kernel → Run All.
+- [Đề và phạm vi](docs/labs/lab03/LAB_03_DESCRIPTION.md).
+- [Report Markdown](docs/labs/lab03/LAB_03_REPORT.md) · [Report HTML](docs/labs/lab03/LAB_03_REPORT.html).
+- [Cấu hình notebook](configs/experiment/lab03_canny.yaml): seed, sigma, ngưỡng, tiền xử lý và Hough.
+
+`src/pipelines/lab03_pipeline.py` là pipeline mở rộng cũ, còn CLAHE và ảnh hình học tự tạo; không dùng để tái tạo report hiện tại. Notebook gọi trực tiếp các thư viện theo phạm vi thực hành đã chọn. Các module và tests trong `src/`, `tests/` được giữ để tham khảo và kiểm tra hồi quy.
+
+Cài `requirements/base.txt` cùng `jupyter nbclient nbformat ipykernel` để chạy notebook. Report HTML nhúng hình nên có thể mở riêng; report Markdown dùng ảnh tại `docs/assets/lab03/`.
 
 ---
 
@@ -20,7 +27,7 @@ Repository này là bộ **khung xương dự án mẫu (Pure Project Scaffoldin
 
 ```text
 .
-├── agents/                            # Hệ thống quy trình kỹ thuật & Second Brain cho AI Agent
+├── .agents/                            # Hệ thống quy trình kỹ thuật & Second Brain cho AI Agent
 │   ├── README.md                      # Cổng nhận thức trung tâm & bản đồ điều phối
 │   ├── WORKFLOW_OVERVIEW.md           # Tổng quan luồng thực thi khép kín
 │   ├── AI_FIRST_LIFECYCLE.md          # 9 giai đoạn vĩ mô (Define -> Document)

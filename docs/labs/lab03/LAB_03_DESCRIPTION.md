@@ -20,7 +20,8 @@
 - **Ngôn ngữ:** Python 3.x
 - **Cài đặt thư viện:**
   ```bash
-  pip install opencv-python scikit-image numpy matplotlib scipy
+  pip install -r requirements/base.txt
+pip install jupyter nbclient nbformat ipykernel
   ```
 
 ---
@@ -79,7 +80,7 @@
   - Khảo sát biến thiên $\sigma$ qua các mức khác nhau (ví dụ: 0.5, 1.0, 2.0, 3.5).
   - Khảo sát các dải cặp ngưỡng $(T_{\text{low}}, T_{\text{high}})$: nhạy cao, chuẩn, khắt khe.
 - **So sánh kết quả với các giá trị mặc định:**
-  - Vẽ lưới ảnh (Grid plot) để quan sát trực quan sự thay đổi so với cấu hình mặc định của thư viện.
+  - Vẽ lưới ảnh (Grid plot) để quan sát trực quan sự thay đổi so với cấu hình tham chiếu của bài (sigma=1, ngưỡng 50/150); đây không phải ngưỡng mặc định của OpenCV.
 
 #### 3. Áp dụng Canny cho các loại ảnh khác nhau:
 - **Thử nghiệm trên 3 loại ảnh:**
@@ -87,15 +88,19 @@
   - Ảnh có độ tương phản thấp (thiếu sáng, mờ sương, dải động hẹp).
   - Ảnh có nhiều chi tiết (tán cây, thảm cỏ, vải dệt, kiến trúc phức tạp).
 - **Đánh giá kết quả và rút ra kết luận:**
-  - So sánh kết quả chạy Canny trực tiếp và chạy Canny sau khi áp dụng tiền xử lý phù hợp (lọc trung vị, cân bằng histogram/CLAHE, lọc song phương).
+  - So sánh kết quả chạy Canny trực tiếp và chạy Canny sau khi áp dụng tiền xử lý phù hợp (lọc trung vị, cân bằng histogram,..).
   - Rút ra kết luận về tầm quan trọng của khâu tiền xử lý.
 
 #### 4. Kết hợp Canny với các kỹ thuật khác:
-- **Kết hợp với các thuật toán phân đoạn để tìm các vùng trong ảnh:**
-  - Sử dụng biên Canny $\rightarrow$ Phép toán hình thái học (Morphology Closing/Dilation nối liền biên) $\rightarrow$ Tô đầy vùng (`scipy.ndimage.binary_fill_holes` / Watershed) để phân tách đối tượng khỏi nền.
-- **Kết hợp với các thuật toán nhận dạng hình dạng để tìm các đối tượng trong ảnh:**
-  - Kết hợp **Canny + Biến đổi Hough** (`cv2.HoughLinesP` / `cv2.HoughCircles`) để phát hiện đường thẳng, hình tròn.
-  - Kết hợp **Canny + `cv2.findContours` + `cv2.approxPolyDP`** để đếm số đỉnh và phân loại hình học đa giác.
+
+- **YC4.1 — Kết hợp phân đoạn để tìm các vùng trong ảnh:**
+  - Dùng ảnh đồng xu `skimage.data.coins()`: Gaussian giảm nhiễu → Canny → closing nối khe hở nhỏ → `scipy.ndimage.binary_fill_holes` tô đầy vùng kín → mask vùng và ảnh giữ lại bằng mask.
+  - Hiển thị ảnh gốc, biên Canny, biên sau closing, mask và vùng ảnh được giữ. Nhận xét vùng bỏ sót do biên hở hoặc vùng sai do nối nhầm biên; không bắt buộc tô màu đối tượng.
+- **YC4.2 — Kết hợp nhận dạng hình dạng để tìm đối tượng:**
+  - Dùng cùng ảnh đồng xu, chọn **Hough Circle Transform** (`cv2.HoughCircles`) để tìm các cấu trúc gần tròn; vẽ đường tròn, đánh số và in số lượng.
+  - `HoughCircles` nhận ảnh xám đã làm mịn, xử lý gradient/Canny bên trong; không truyền ảnh biên Canny như input grayscale. Phân biệt `param1` (ngưỡng cao Canny nội bộ) với `param2` (ngưỡng quyết định tâm tròn).
+  - Giải thích khoảng bán kính, khoảng cách tâm và ngưỡng; đối chiếu kết quả với ảnh gốc. Đây là nhận dạng hình học tròn, không xác nhận ngữ nghĩa đối tượng là tiền xu.
+  - Hough đường thẳng và contour/xấp xỉ đa giác là các hướng mở rộng, không bắt buộc triển khai trong ví dụ đồng xu này.
 
 ---
 
@@ -125,5 +130,5 @@ Theo đúng yêu cầu nghiệm thu, sản phẩm bài lab bao gồm **02 file b
 
 | # | Sản phẩm đầu ra | Tên file quy ước | Mô tả chi tiết yêu cầu |
 |:---:|:---|:---|:---|
-| 1 | **Báo cáo Kỹ thuật Toàn diện** | [`LAB_03_REPORT.md`](file:///home/bush/Projects/CV/uth-cv-labs/docs/labs/lab03/LAB_03_REPORT.md) | File Markdown báo cáo **chi tiết, toàn bộ và hoàn chỉnh nhất có thể**: trình bày cặn kẽ lý thuyết toán học 5 bước Canny, phân tích định tính và định lượng cho cả 4 bài thực hành, trả lời sâu sắc 4 câu hỏi mở rộng kèm công thức, bảng đối chiếu và phân tích khoa học. |
-| 2 | **Báo cáo Trực quan Đa phương tiện** | [`LAB_03_REPORT.html`](file:///home/bush/Projects/CV/uth-cv-labs/docs/labs/lab03/LAB_03_REPORT.html) | File HTML **trực quan nhất, show được chi tiết toàn bộ bài làm để báo cáo và thuyết trình**: giao diện hiện đại, responsive, trực quan hóa từng bước trong pipeline, hiển thị so sánh ảnh kết quả (trước/sau, grid tuning tham số, phân đoạn, nhận dạng hình dạng), bảng so sánh và code snippets có tô màu cú pháp. |
+| 1 | **Báo cáo Kỹ thuật Toàn diện** | [`LAB_03_REPORT.md`](LAB_03_REPORT.md) | File Markdown báo cáo **chi tiết, toàn bộ và hoàn chỉnh nhất có thể**: trình bày cặn kẽ lý thuyết toán học 5 bước Canny, phân tích định tính và định lượng cho cả 4 bài thực hành, trả lời sâu sắc 4 câu hỏi mở rộng kèm công thức, bảng đối chiếu và phân tích khoa học. |
+| 2 | **Báo cáo Trực quan Đa phương tiện** | [`LAB_03_REPORT.html`](LAB_03_REPORT.html) | File HTML **trực quan nhất, show được chi tiết toàn bộ bài làm để báo cáo và thuyết trình**: giao diện hiện đại, responsive, trực quan hóa từng bước trong pipeline, hiển thị so sánh ảnh kết quả (trước/sau, grid tuning tham số, phân đoạn, nhận dạng hình dạng), bảng so sánh và code snippets có tô màu cú pháp. |
