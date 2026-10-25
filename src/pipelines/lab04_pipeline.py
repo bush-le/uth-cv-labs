@@ -1,4 +1,7 @@
-"""End-to-end execution pipeline for Lab 04: Image Similarity Comparison using Wavelet Transform.
+"""Legacy extended Lab04 pipeline using built-in sample images.
+
+The current user-supplied dataset workflow is presented in notebooks/labs/lab_04.ipynb.
+This module is not the source of the current Lab04 report.
 
 Executes all 4 core lab exercises and 4 extended research topics, producing
 visual artifacts in experiments/predictions/lab04/ and metrics in experiments/logs/lab04/.
@@ -112,8 +115,8 @@ class Lab04Pipeline:
         # 1.1 Compute Wavelet 2D Subband Decomposition (LL, LH, HL, HH)
         coeffs = pywt.wavedec2(img, wavelet="db4", level=2)
         ll2 = coeffs[0]
-        (lh2, hl2, hh2) = coeffs[1]
-        (lh1, hl1, hh1) = coeffs[2]
+        lh2, hl2, hh2 = coeffs[1]
+        lh1, hl1, hh1 = coeffs[2]
 
         def norm_subband(arr: np.ndarray) -> np.ndarray:
             max_val = np.max(np.abs(arr))

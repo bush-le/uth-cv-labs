@@ -1,7 +1,7 @@
 """Wavelet Perceptual Hashing (wHash) and Image Similarity Evaluation Suite.
 
 Implements:
-1. Wavelet Hash algorithm adhering to Slide 17 and Slide 18 specifications.
+1. Project-defined Wavelet Hash baseline and a slide-inspired quantization variant.
 2. Classic perceptual hashes (aHash, dHash, pHash) for comparative benchmarking.
 3. Fast vectorized Hamming distance calculation and pairwise distance matrices.
 4. Ground truth classification evaluation (Accuracy, Sensitivity/Recall, Specificity, Precision, F1-Score).
@@ -41,8 +41,8 @@ def _load_image_grayscale(image_input: str | np.ndarray | Image.Image) -> np.nda
     """
     if isinstance(image_input, str):
         # Read with PIL for robust Unicode path handling and match Slide 18
-        pil_img = Image.open(image_input).convert("L")
-        return np.array(pil_img, dtype=np.float32)
+        with Image.open(image_input) as source:
+            return np.array(source.convert("L"), dtype=np.float32)
 
     if isinstance(image_input, Image.Image):
         pil_img = image_input.convert("L")
@@ -52,7 +52,7 @@ def _load_image_grayscale(image_input: str | np.ndarray | Image.Image) -> np.nda
         if image_input.ndim == 2:
             return image_input.astype(np.float32)
         if image_input.ndim == 3:
-            # Assume RGB / BGR
+            # NumPy color arrays follow the OpenCV BGR/BGRA convention.
             if image_input.shape[2] == 3:
                 return cv2.cvtColor(
                     image_input.astype(np.uint8), cv2.COLOR_BGR2GRAY
@@ -71,11 +71,12 @@ def wavelet_hash(
     level: int = 1,
     bits: int = 8,
     mode: str = "median",
+    image_size: tuple[int, int] = (256, 256),
 ) -> np.ndarray:
-    """Calculate the Wavelet Hash (wHash) of an image based on Slide 18 specification.
+    """Calculate the project's LL-based hash; slide 18 does not define this design.
 
     Pipeline:
-        1. Preprocess: Convert image to grayscale and resize to (bits*4, bits*4) or (64, 64).
+        1. Preprocess: Convert to grayscale float32 [0,1] and resize to image_size.
         2. Transform: Compute 2D Discrete Wavelet Transform (pywt.wavedec2).
         3. Extract: Isolate the approximation subband LL containing structural energy.
         4. Quantize: Binarize against the median (or mean) coefficient value.
@@ -87,20 +88,28 @@ def wavelet_hash(
         level: Decomposition level (default 1).
         bits: Hash resolution along each axis, producing a total of (bits * bits) bits (default 8 -> 64 bits).
         mode: Quantization threshold mode ('median' or 'mean'). Default 'median'.
+        image_size: Resize target (width, height), default (256,256).
 
     Returns:
         np.ndarray: 1D uint8 array of 0s and 1s representing the binary hash code.
     """
+    if bits < 1 or level < 1 or mode not in {"median", "mean"}:
+        raise ValueError("Positive bits/level and median/mean mode are required.")
+    if len(image_size) != 2 or min(image_size) < bits:
+        raise ValueError("Image dimensions must be at least the hash side length.")
     img_gray = _load_image_grayscale(image)
-
-    # Standardize input scale (scale proportional to target hash bits)
-    target_scale = max(32, bits * 4)
-    img_resized = cv2.resize(
-        img_gray, (target_scale, target_scale), interpolation=cv2.INTER_AREA
-    )
+    if not img_gray.size or not np.isfinite(img_gray).all():
+        raise ValueError("Image must be nonempty and finite.")
+    if img_gray.min() < 0 or img_gray.max() > 255:
+        raise ValueError("Grayscale image values must be in [0,255] or [0,1].")
+    if img_gray.max() > 1:
+        img_gray = img_gray / 255.0
+    img_resized = cv2.resize(img_gray, tuple(image_size), interpolation=cv2.INTER_AREA)
+    if level > pywt.dwtn_max_level(img_resized.shape, wavelet):
+        raise ValueError("Decomposition level exceeds the useful image/wavelet limit.")
 
     # 2D DWT Decomposition
-    coeffs = pywt.wavedec2(img_resized, wavelet=wavelet, level=level)
+    coeffs = pywt.wavedec2(img_resized, wavelet=wavelet, level=level, mode="symmetric")
 
     # coeffs[0] is the approximation subband cA_level (LL)
     ll_band = coeffs[0]
@@ -121,13 +130,65 @@ def wavelet_hash(
     return hash_code
 
 
+def wavelet_hash_color(
+    image: str | np.ndarray | Image.Image,
+    wavelet: str = "db4",
+    level: int = 1,
+    bits: int = 8,
+    mode: str = "median",
+    image_size: tuple[int, int] = (256, 256),
+) -> np.ndarray:
+    """Hash an RGB image by concatenating independent R, G and B LL hashes.
+
+    Args:
+        image: RGB file/PIL image or RGB NumPy array shaped (H, W, 3).
+        wavelet: Wavelet family passed to each 2D channel hash.
+        level: Decomposition level for each channel.
+        bits: Side length of each channel's bit matrix.
+        mode: Per-channel LL threshold, ``median`` or ``mean``.
+        image_size: Resize target as (width, height).
+
+    Returns:
+        Binary uint8 vector shaped (3 * bits * bits,), ordered R then G then B.
+    """
+    if isinstance(image, str):
+        with Image.open(image) as source:
+            rgb = np.asarray(source.convert("RGB"), dtype=np.uint8)
+    elif isinstance(image, Image.Image):
+        rgb = np.asarray(image.convert("RGB"), dtype=np.uint8)
+    elif isinstance(image, np.ndarray):
+        rgb = image
+    else:
+        raise ValueError("Expected an RGB image path, PIL image, or NumPy array.")
+    if rgb.ndim != 3 or rgb.shape[2] != 3 or not rgb.size:
+        raise ValueError("RGB array must have shape (H, W, 3) and be nonempty.")
+    if not np.issubdtype(rgb.dtype, np.number) or not np.isfinite(rgb).all():
+        raise ValueError("RGB image values must be finite numbers.")
+    if rgb.min() < 0 or rgb.max() > 255:
+        raise ValueError("RGB image values must be in [0,255] or [0,1].")
+    return np.concatenate(
+        [
+            wavelet_hash(
+                rgb[:, :, channel],
+                wavelet=wavelet,
+                level=level,
+                bits=bits,
+                mode=mode,
+                image_size=image_size,
+            )
+            for channel in range(3)
+        ]
+    )
+
+
 def wavelet_hash_slide17(
     image: str | np.ndarray | Image.Image,
     wavelet: str = "db4",
     level: int = 3,
     step: float = 2.0,
+    image_size: tuple[int, int] = (256, 256),
 ) -> list[int]:
-    """Calculate wavelet hash following the exact literal implementation in Slide 17.
+    """Calculate a step-quantized variant inspired by the incomplete slide 17 code.
 
     Flattens all approximation and detail coefficients, quantizes via integer division,
     and returns bits modulo 2.
@@ -137,15 +198,25 @@ def wavelet_hash_slide17(
         wavelet: Wavelet type (default 'db4').
         level: Decomposition level (default 3).
         step: Step size for coefficient quantization.
+        image_size: Resize target (width,height), default (256,256).
 
     Returns:
         list[int]: List of integer bits {0, 1}.
     """
+    if step <= 0 or not np.isfinite(step) or level < 1 or min(image_size) < 1:
+        raise ValueError("Positive finite step, level and image dimensions required.")
     img_gray = _load_image_grayscale(image)
-    # Ensure dimensions are powers of 2 for clean multi-level DWT
-    img_resized = cv2.resize(img_gray, (64, 64), interpolation=cv2.INTER_AREA)
+    if not img_gray.size or not np.isfinite(img_gray).all():
+        raise ValueError("Image must be nonempty and finite.")
+    if img_gray.min() < 0 or img_gray.max() > 255:
+        raise ValueError("Image values must be in [0,255] or [0,1].")
+    if img_gray.max() <= 1:
+        img_gray = img_gray * 255.0
+    img_resized = cv2.resize(img_gray, tuple(image_size), interpolation=cv2.INTER_AREA)
+    if level > pywt.dwtn_max_level(img_resized.shape, wavelet):
+        raise ValueError("Decomposition level exceeds the useful image/wavelet limit.")
 
-    coeffs = pywt.wavedec2(img_resized, wavelet=wavelet, level=level)
+    coeffs = pywt.wavedec2(img_resized, wavelet=wavelet, level=level, mode="symmetric")
 
     # Handle the structure of wavedec2: [cA_n, (cH_n, cV_n, cD_n), ...]
     flat_parts = []
@@ -161,7 +232,7 @@ def wavelet_hash_slide17(
 
     flattened = np.concatenate(flat_parts)
 
-    hash_code = [int(abs(bit) % 2) for bit in flattened]
+    hash_code = (flattened % 2).astype(np.uint8).tolist()
     return hash_code
 
 
@@ -255,11 +326,15 @@ def hamming_distance(
     Returns:
         int: Total number of bit positions where hash1 and hash2 differ.
     """
-    h1 = np.asarray(hash1, dtype=np.uint8)
-    h2 = np.asarray(hash2, dtype=np.uint8)
+    h1 = np.asarray(hash1)
+    h2 = np.asarray(hash2)
 
     if h1.shape != h2.shape:
         raise ValueError(f"Hash lengths mismatch: {h1.shape} vs {h2.shape}")
+    if h1.ndim != 1 or not h1.size:
+        raise ValueError("Hashes must be nonempty one-dimensional arrays.")
+    if not np.isin(h1, [0, 1]).all() or not np.isin(h2, [0, 1]).all():
+        raise ValueError("Hashes must contain only binary values.")
 
     return int(np.count_nonzero(h1 != h2))
 
@@ -276,7 +351,7 @@ def normalized_hamming_distance(
     Returns:
         float: Normalized distance (Hamming Distance / Bit Length).
     """
-    h1 = np.asarray(hash1, dtype=np.uint8)
+    h1 = np.asarray(hash1)
     dist = hamming_distance(h1, hash2)
     return float(dist / len(h1))
 

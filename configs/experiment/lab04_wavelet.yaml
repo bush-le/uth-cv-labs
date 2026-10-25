@@ -9,11 +9,13 @@ output_dirs:
   samples: "data/samples/lab04"
 
 default_params:
+  color_space: "RGB"
+  channel_order: ["R", "G", "B"]
   wavelet: "db4"
   level: 1
   bits: 8
   quantize_mode: "median"
-  image_size: [64, 64]
+  image_size: [256, 256]
 
 wavelet_families:
   - "haar"
@@ -46,3 +48,20 @@ evaluation:
   num_sample_categories: 6
   images_per_category: 4
   similarity_threshold: 12
+
+# Notebook uses these manifests and selects its threshold on calibration only.
+notebook:
+  dataset_dir: data/processed/lab04_pairs
+  top_k: 3
+  retrieval_source_index: 0
+  retrieval_transform: jpeg
+  detail_source_index: 0
+  detail_level: 1
+  quantized_level: 3
+  quantized_step: 2.0
+  comparison_wavelet: haar
+  comparison_level: 2
+  geometric_checks:
+    - ["crop 80%", crop, 0.8]
+    - ["rotate 5°", rotate, 5]
+    - [flip, flip, true]

@@ -10,9 +10,18 @@
 
 ## 📌 Giới thiệu Tổng quan (Overview)
 
-Repository này là bộ **khung xương dự án mẫu (Pure Project Scaffolding & Template)**:
-- Cung cấp cấu trúc thư mục phân tầng, modular và chuẩn hóa theo quy chuẩn kỹ thuật.
-- Không chứa nội dung hoặc bài toán cụ thể nào, sẵn sàng để phục vụ cho các bài thực hành (Labs) trong tương lai.
+Branch `lab-04` chứa bài so sánh ảnh bằng Wavelet hash trên ảnh Chihuahua–muffin và mèo–kem do người học cung cấp.
+
+- [Notebook Lab04](notebooks/labs/lab_04.ipynb): bản thực hành chính, chạy **Restart Kernel → Run All**.
+- [Description](docs/labs/lab04/LAB_04_DESCRIPTION.md) · [Dữ liệu và nhãn](docs/labs/lab04/LAB_04_DATASET.md).
+- [Report Markdown](docs/labs/lab04/LAB_04_REPORT.md) · [Report HTML](docs/labs/lab04/LAB_04_REPORT.html) (nhúng sẵn hình).
+- [Cấu hình dữ liệu](configs/dataset/lab04_pairs.yaml) · [Cấu hình hash/notebook](configs/experiment/lab04_wavelet.yaml).
+
+Cài `pip install -r requirements/base.txt` và `pip install jupyter nbformat nbclient ipykernel`. Chạy `python -m src.data.lab04_pairs` để tạo CSV và biến thể tại `data/processed/lab04_pairs/` trước khi mở notebook. Ảnh nguồn vẫn giữ trong `data/samples/lab04/chihua_muffin/` và `meo_kem/`.
+
+Baseline hiện tại là RGB → băm từng kênh bằng db4 level 1 → LL 8×8 → median riêng từng kênh → ghép R|G|B thành 192 bit, do project lựa chọn. Biến thể bước nhảy trên ảnh xám chỉ dùng làm phép đối chiếu ở bài nâng cao. Notebook chọn ngưỡng trên calibration rồi giữ nguyên để đánh giá evaluation; không dùng `evaluation.similarity_threshold` của pipeline cũ làm ngưỡng kết quả. Tham số biến thể dữ liệu lấy từ cấu hình dữ liệu, không lấy nhánh `robustness_suite` cũ.
+
+`src/pipelines/lab04_pipeline.py` là pipeline mở rộng cũ dùng ảnh mẫu khác; nó không tạo notebook/report hiện tại. Luồng đang dùng gồm `src/data/lab04_pairs.py`, các hàm hash trong `src/models/classical/wavelet_hash.py`, đánh giá trong `src/pipelines/lab04_evaluation.py` và các hàm vẽ trong `src/pipelines/lab04_visuals.py` để notebook tập trung vào các bước thực hành.
 
 ---
 
