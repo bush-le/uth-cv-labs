@@ -57,12 +57,12 @@ aside.dashboard-sidebar {
   top: 0;
   display: flex;
   flex-direction: column;
-  z-index: 900;
+  z-index: 950;
   box-shadow: 4px 0 16px rgba(0,0,0,0.25);
 }
 
 .sidebar-header {
-  padding: 18px 20px;
+  padding: 16px 20px;
   background: #060911;
   border-bottom: 1px solid #1e293b;
 }
@@ -95,7 +95,7 @@ aside.dashboard-sidebar {
 
 /* Sidebar Stepper Quick Controls */
 .sidebar-stepper {
-  padding: 12px 16px;
+  padding: 10px 16px;
   background: #0f172a;
   border-bottom: 1px solid #1e293b;
   display: flex;
@@ -213,21 +213,21 @@ main.dashboard-main {
   flex-direction: column;
 }
 
-/* Master Top Sticky Control Bar */
+/* Tier 1: Master Top Sticky Control Bar */
 .master-topbar {
   position: sticky;
   top: 0;
-  z-index: 800;
+  z-index: 850;
   width: 100%;
-  background: #ffffff;
-  border-bottom: 2px solid var(--border);
-  padding: 10px clamp(16px, 3vw, 40px);
+  background: #091310;
+  border-bottom: 2px solid #22c55e;
+  padding: 8px clamp(16px, 3vw, 36px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .topbar-left {
@@ -247,23 +247,36 @@ main.dashboard-main {
   cursor: pointer;
 }
 
-.topbar-breadcrumb {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-main);
+/* Master Lab Selectors */
+.master-lab-tabs {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
-.topbar-breadcrumb .badge-lab {
-  background: #0f172a;
-  color: #fff;
-  padding: 3px 8px;
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
+.master-lab-tab {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
+
+.master-lab-tab:hover, .master-lab-tab.active {
+  background: #22c55e;
+  color: #091310;
+  border-color: #22c55e;
+}
+
+.master-lab-tab.tab-l2.active { background: #38bdf8; color: #02122b; border-color: #38bdf8; }
+.master-lab-tab.tab-l3.active { background: #4ade80; color: #052e16; border-color: #4ade80; }
+.master-lab-tab.tab-l4.active { background: #c084fc; color: #2e1065; border-color: #c084fc; }
+.master-lab-tab.tab-mat.active { background: #fbbf24; color: #451a03; border-color: #fbbf24; }
 
 .topbar-right {
   display: flex;
@@ -273,9 +286,9 @@ main.dashboard-main {
 }
 
 .btn-ctrl {
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  color: #0f172a;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f8fafc;
   padding: 6px 14px;
   font-size: 12px;
   font-weight: 700;
@@ -284,9 +297,8 @@ main.dashboard-main {
 }
 
 .btn-ctrl:hover {
-  background: #0f172a;
-  color: #ffffff;
-  border-color: #0f172a;
+  background: #ffffff;
+  color: #0f172a;
 }
 
 .btn-ctrl.btn-mode.active-mode {
@@ -294,6 +306,52 @@ main.dashboard-main {
   color: #ffffff;
   border-color: #0284c7;
 }
+
+/* Tier 2: Dynamic Sub-Ribbon for Active Lab Stage Navigation */
+.master-subribbon {
+  position: sticky;
+  top: 48px;
+  z-index: 800;
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 2px solid var(--border);
+  padding: 8px clamp(16px, 3vw, 36px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.master-subribbon::-webkit-scrollbar {
+  height: 4px;
+}
+.master-subribbon::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+.subribbon-btn {
+  white-space: nowrap;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 5px 11px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.subribbon-btn:hover, .subribbon-btn.active {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+.subribbon-btn.l2-ribbon.active { background: #0284c7; border-color: #0284c7; color: #fff; }
+.subribbon-btn.l3-ribbon.active { background: #16a34a; border-color: #16a34a; color: #fff; }
+.subribbon-btn.l4-ribbon.active { background: #7c3aed; border-color: #7c3aed; color: #fff; }
+.subribbon-btn.mat-ribbon.active { background: #d97706; border-color: #d97706; color: #fff; }
 
 /* Stepper Mode (Default: show only active panel without scrolling) */
 body.mode-stepper .content-panel {
@@ -355,7 +413,7 @@ body.mode-scroll .content-panel {
 .panel-header-banner p {
   font-size: 15px;
   margin: 0;
-  max-width: 1000px;
+  max-width: 1100px;
   opacity: 0.92;
 }
 
@@ -652,7 +710,7 @@ dialog#viewer img {
 
 /* Print Styles */
 @media print {
-  aside.dashboard-sidebar, .master-topbar, dialog#viewer {
+  aside.dashboard-sidebar, .master-topbar, .master-subribbon, dialog#viewer {
     display: none !important;
   }
   body.mode-stepper .content-panel {
@@ -679,9 +737,9 @@ dialog#viewer img {
 
       <!-- Stepper Quick Controls -->
       <div class="sidebar-stepper">
-        <button type="button" onclick="prevPanel()" title="Phím tắt: Mũi tên trái (&larr;)">◀ Trước</button>
+        <button type="button" onclick="prevPanel()" title="Phím tắt: &larr; (Mũi tên trái)">◀ Trước</button>
         <span class="stepper-progress">1 / 28</span>
-        <button type="button" onclick="nextPanel()" title="Phím tắt: Mũi tên phải (&rarr;) hoặc Space">Tiếp ▶</button>
+        <button type="button" onclick="nextPanel()" title="Phím tắt: &rarr; (Mũi tên phải) hoặc Space">Tiếp ▶</button>
       </div>
 
       <!-- Treeview of all 28 panels -->
@@ -745,14 +803,19 @@ dialog#viewer img {
 
     <!-- Main Content Area -->
     <main class="dashboard-main">
-      <!-- Master Topbar -->
-      <div class="master-topbar">
+      <!-- Tier 1: Master Top Sticky Control Bar -->
+      <header class="master-topbar">
         <div class="topbar-left">
           <button type="button" class="btn-sidebar-toggle" id="btn-toggle-sidebar">☰ Mục Lục</button>
-          <div class="topbar-breadcrumb">
-            <span class="badge-lab" id="bc-lab">Tổng Quan</span>
-            <span id="bc-title">Toàn Cảnh &amp; KPIs 3 Chuyên Đề</span>
-          </div>
+
+          <!-- Master Lab Tabs -->
+          <nav class="master-lab-tabs" aria-label="Chọn chuyên đề">
+            <button type="button" class="master-lab-tab active" data-lab="overview">🚀 Tổng Quan</button>
+            <button type="button" class="master-lab-tab tab-l2" data-lab="lab02">⚡ Lab 02: Lọc Không Gian</button>
+            <button type="button" class="master-lab-tab tab-l3" data-lab="lab03">🎯 Lab 03: Tách Biên Canny</button>
+            <button type="button" class="master-lab-tab tab-l4" data-lab="lab04">🌊 Lab 04: Wavelet Hash RGB</button>
+            <button type="button" class="master-lab-tab tab-mat" data-lab="matrix">📊 Ma Trận Nghiệm Thu</button>
+          </nav>
         </div>
 
         <div class="topbar-right">
@@ -763,7 +826,12 @@ dialog#viewer img {
           <button type="button" class="btn-ctrl" id="btn-toggle-details" onclick="toggleAllDetails()">Thu gọn chi tiết</button>
           <button type="button" class="btn-ctrl" onclick="window.print()">In / PDF</button>
         </div>
-      </div>
+      </header>
+
+      <!-- Tier 2: Dynamic Sub-Ribbon for Active Lab Stage Navigation -->
+      <nav class="master-subribbon" id="master-subribbon" aria-label="Thanh điều hướng nhanh thí nghiệm con">
+        <!-- Dynamically injected via JavaScript -->
+      </nav>
 
       <!-- Panel 01: Overview -->
       <section class="content-panel active" id="overview">
@@ -797,9 +865,9 @@ dialog#viewer img {
         </div>
 
         <div class="takeaway">
-          <strong>HƯỚNG DẪN XEM BÁO CÁO KHÔNG CẦN LƯỚT:</strong>
+          <strong>HƯỚNG DẪN XEM BÁO CÁO TRỰC QUAN KHÔNG CẦN LƯỚT:</strong>
           <ul style="margin:8px 0 0 20px;padding:0;">
-            <li>Bấm vào từng mục ở <strong>Cột Mục Lục bên trái</strong> để chuyển ngay đến nội dung thí nghiệm tương ứng mà không phải cuộn trang.</li>
+            <li>Bấm vào từng mục ở <strong>Thanh Ribbon Thí Nghiệm Con (ở ngay trên đầu)</strong> hoặc <strong>Cột Danh Mục bên trái</strong> để chuyển ngay đến nội dung thí nghiệm tương ứng mà không phải cuộn trang.</li>
             <li>Dùng phím mũi tên <strong>&rarr; (Phải) / Phím Cách (Space)</strong> để tiến bước kế tiếp; phím <strong>&larr; (Trái)</strong> để lùi bước trước.</li>
             <li>Toàn bộ mã nguồn thực thi, bảng số liệu thực nghiệm và hình ảnh đều được <strong>mở trực quan đầy đủ</strong>.</li>
             <li>Bấm vào bất kỳ hình ảnh nào để <strong>phóng to xem chi tiết</strong> ở độ phân giải gốc.</li>
@@ -1933,52 +2001,81 @@ python scripts/render_unified_report.py</code></pre>
   <script>
 // 28 Sequential Panels
 const panelList = [
-  { id: 'overview', lab: 'Tổng Quan', title: 'Toàn Cảnh & KPIs 3 Chuyên Đề' },
-  { id: 'lab02-flow', lab: 'Lab 02', title: 'Sơ Đồ 5 Nhánh Thí Nghiệm' },
-  { id: 'lab02-prepare', lab: 'Lab 02', title: '01 · Đọc Ảnh & Chuẩn Bị (BGR / Gray)' },
-  { id: 'lab02-point', lab: 'Lab 02', title: '02 · Điểm Ảnh YC1–4 (Sáng, Tương Phản, Âm Bản, Ngưỡng)' },
-  { id: 'lab02-linear', lab: 'Lab 02', title: '03 · Lọc Tuyến Tính YC5–7 (Mean, Gauss, Làm Nét)' },
-  { id: 'lab02-edges', lab: 'Lab 02', title: '04 · Đạo Hàm Biên YC8 (Sobel vs Prewitt)' },
-  { id: 'lab02-kernel', lab: 'Lab 02', title: '05 · Tổng Kernel YC9 (Vùng Phẳng & Ảnh Màu)' },
-  { id: 'lab02-nonlinear', lab: 'Lab 02', title: '06 · Lọc Phi Tuyến YC10 (Median vs Bilateral)' },
-  { id: 'lab02-comparison', lab: 'Lab 02', title: '07 · So Sánh Tổng Hợp YC11 (Master Grid)' },
-  { id: 'lab02-principles', lab: 'Lab 02', title: '08 · Nguyên Lý & Kiểm Thử (22 Tests)' },
-  { id: 'lab03-flow', lab: 'Lab 03', title: 'Sơ Đồ 5 Bước Canny & 2 Hướng' },
-  { id: 'lab03-input', lab: 'Lab 03', title: '01 · Dữ Liệu Đầu Vào (Camera, Brick, Coins)' },
-  { id: 'lab03-libraries', lab: 'Lab 03', title: '02 · YC1 Hai Thư Viện (OpenCV vs Skimage)' },
-  { id: 'lab03-parameters', lab: 'Lab 03', title: '03 · YC2 Quét Tham Số (Sigma & Ngưỡng)' },
-  { id: 'lab03-preprocess', lab: 'Lab 03', title: '04 · YC3 Tiền Xử Lý (Nhiễu, Brick, EqualizeHist)' },
-  { id: 'lab03-regions', lab: 'Lab 03', title: '05 · YC4.1 Phân Đoạn Vùng (Closing + Fill Holes)' },
-  { id: 'lab03-shapes', lab: 'Lab 03', title: '06 · YC4.2 Nhận Dạng Hình Tròn (Hough 24/24 Xu)' },
-  { id: 'lab03-support', lab: 'Lab 03', title: '07 · Câu Hỏi Nghiên Cứu Mở Rộng' },
-  { id: 'lab04-flow', lab: 'Lab 04', title: 'Sơ Đồ 2D DWT db4 & Luồng Quyết Định' },
-  { id: 'lab04-dataset', lab: 'Lab 04', title: '01 · Dữ Liệu & Gán Nhãn (26 Nguồn, 147 Cặp)' },
-  { id: 'lab04-hash', lab: 'Lab 04', title: '02 · YC1 Trích Xuất wHash RGB 192-bit' },
-  { id: 'lab04-hamming', lab: 'Lab 04', title: '03 · YC2 Ma Trận Hamming 26×26' },
-  { id: 'lab04-threshold', lab: 'Lab 04', title: '04 · YC4 Ngưỡng Youden (τ=18) & Đánh Giá 98.77%' },
-  { id: 'lab04-robustness', lab: 'Lab 04', title: '05 · YC3 Khảo Sát Độ Bền Vững (7 Biến Đổi)' },
-  { id: 'lab04-methods', lab: 'Lab 04', title: '06 · Nâng Cao 1 So Sánh 4 Cấu Hình Wavelet' },
-  { id: 'lab04-retrieval', lab: 'Lab 04', title: '07 · Nâng Cao 2 Truy Vấn Top-3 (Top-1 100%)' },
-  { id: 'lab04-support', lab: 'Lab 04', title: '08 · Mở Rộng Cấu Trúc Tìm Kiếm (BK-Tree, MIH)' },
-  { id: 'matrix', lab: 'Tổng Kết', title: 'Ma Trận Nghiệm Thu & So Sánh Chéo 3 Lab' }
+  { id: 'overview', lab: 'overview', labName: 'Tổng Quan', title: 'Toàn Cảnh & KPIs 3 Chuyên Đề' },
+  { id: 'lab02-flow', lab: 'lab02', labName: 'Lab 02', title: 'Sơ Đồ 5 Nhánh Thí Nghiệm' },
+  { id: 'lab02-prepare', lab: 'lab02', labName: 'Lab 02', title: '01 · Đọc Ảnh & Chuẩn Bị (BGR / Gray)' },
+  { id: 'lab02-point', lab: 'lab02', labName: 'Lab 02', title: '02 · Điểm Ảnh YC1–4 (Sáng, Tương Phản, Âm Bản, Ngưỡng)' },
+  { id: 'lab02-linear', lab: 'lab02', labName: 'Lab 02', title: '03 · Lọc Tuyến Tính YC5–7 (Mean, Gauss, Làm Nét)' },
+  { id: 'lab02-edges', lab: 'lab02', labName: 'Lab 02', title: '04 · Đạo Hàm Biên YC8 (Sobel vs Prewitt)' },
+  { id: 'lab02-kernel', lab: 'lab02', labName: 'Lab 02', title: '05 · Tổng Kernel YC9 (Vùng Phẳng & Ảnh Màu)' },
+  { id: 'lab02-nonlinear', lab: 'lab02', labName: 'Lab 02', title: '06 · Lọc Phi Tuyến YC10 (Median vs Bilateral)' },
+  { id: 'lab02-comparison', lab: 'lab02', labName: 'Lab 02', title: '07 · So Sánh Tổng Hợp YC11 (Master Grid)' },
+  { id: 'lab02-principles', lab: 'lab02', labName: 'Lab 02', title: '08 · Nguyên Lý & Kiểm Thử (22 Tests)' },
+  { id: 'lab03-flow', lab: 'lab03', labName: 'Lab 03', title: 'Sơ Đồ 5 Bước Canny & 2 Hướng' },
+  { id: 'lab03-input', lab: 'lab03', labName: 'Lab 03', title: '01 · Dữ Liệu Đầu Vào (Camera, Brick, Coins)' },
+  { id: 'lab03-libraries', lab: 'lab03', labName: 'Lab 03', title: '02 · YC1 Hai Thư Viện (OpenCV vs Skimage)' },
+  { id: 'lab03-parameters', lab: 'lab03', labName: 'Lab 03', title: '03 · YC2 Quét Tham Số (Sigma & Ngưỡng)' },
+  { id: 'lab03-preprocess', lab: 'lab03', labName: 'Lab 03', title: '04 · YC3 Tiền Xử Lý (Nhiễu, Brick, EqualizeHist)' },
+  { id: 'lab03-regions', lab: 'lab03', labName: 'Lab 03', title: '05 · YC4.1 Phân Đoạn Vùng (Closing + Fill Holes)' },
+  { id: 'lab03-shapes', lab: 'lab03', labName: 'Lab 03', title: '06 · YC4.2 Nhận Dạng Hình Tròn (Hough 24/24 Xu)' },
+  { id: 'lab03-support', lab: 'lab03', labName: 'Lab 03', title: '07 · Câu Hỏi Nghiên Cứu Mở Rộng' },
+  { id: 'lab04-flow', lab: 'lab04', labName: 'Lab 04', title: 'Sơ Đồ 2D DWT db4 & Luồng Quyết Định' },
+  { id: 'lab04-dataset', lab: 'lab04', labName: 'Lab 04', title: '01 · Dữ Liệu & Gán Nhãn (26 Nguồn, 147 Cặp)' },
+  { id: 'lab04-hash', lab: 'lab04', labName: 'Lab 04', title: '02 · YC1 Trích Xuất wHash RGB 192-bit' },
+  { id: 'lab04-hamming', lab: 'lab04', labName: 'Lab 04', title: '03 · YC2 Ma Trận Hamming 26×26' },
+  { id: 'lab04-threshold', lab: 'lab04', labName: 'Lab 04', title: '04 · YC4 Ngưỡng Youden (τ=18) & Đánh Giá 98.77%' },
+  { id: 'lab04-robustness', lab: 'lab04', labName: 'Lab 04', title: '05 · YC3 Khảo Sát Độ Bền Vững (7 Biến Đổi)' },
+  { id: 'lab04-methods', lab: 'lab04', labName: 'Lab 04', title: '06 · Nâng Cao 1 So Sánh 4 Cấu Hình Wavelet' },
+  { id: 'lab04-retrieval', lab: 'lab04', labName: 'Lab 04', title: '07 · Nâng Cao 2 Truy Vấn Top-3 (Top-1 100%)' },
+  { id: 'lab04-support', lab: 'lab04', labName: 'Lab 04', title: '08 · Mở Rộng Cấu Trúc Tìm Kiếm (BK-Tree, MIH)' },
+  { id: 'matrix', lab: 'matrix', labName: 'Tổng Kết', title: 'Ma Trận Nghiệm Thu & So Sánh Chéo 3 Lab' }
 ];
 
 let currentIndex = 0;
 let isStepperMode = true;
+
+// Render dynamic sub-ribbon buttons based on active lab
+function updateSubribbon(activeLab) {
+  const ribbonContainer = document.querySelector('#master-subribbon');
+  if (!ribbonContainer) return;
+  ribbonContainer.innerHTML = '';
+
+  const relevantPanels = panelList.filter(p => p.lab === activeLab);
+  relevantPanels.forEach(p => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `subribbon-btn ${activeLab}-ribbon`;
+    btn.textContent = p.title.split('(')[0].trim();
+    if (p.id === panelList[currentIndex].id) btn.classList.add('active');
+    btn.addEventListener('click', () => {
+      const idx = panelList.findIndex(item => item.id === p.id);
+      if (idx !== -1) activatePanel(idx, true);
+    });
+    ribbonContainer.appendChild(btn);
+  });
+}
 
 function activatePanel(index, scrollToTop = true) {
   if (index < 0 || index >= panelList.length) return;
   currentIndex = index;
   const current = panelList[currentIndex];
 
-  // Update Breadcrumb & Indicators
-  const badgeLab = document.querySelector('#bc-lab');
-  const bcTitle = document.querySelector('#bc-title');
-  const progressText = document.querySelectorAll('.stepper-progress');
+  // Update Master Lab Tabs (Top Bar)
+  document.querySelectorAll('.master-lab-tab').forEach(tab => {
+    if (tab.getAttribute('data-lab') === current.lab) {
+      tab.classList.add('active');
+    } else {
+      tab.classList.remove('active');
+    }
+  });
 
-  if (badgeLab) badgeLab.textContent = current.lab;
-  if (bcTitle) bcTitle.textContent = current.title;
-  progressText.forEach(el => el.textContent = `${currentIndex + 1} / ${panelList.length}`);
+  // Update Dynamic Sub-Ribbon
+  updateSubribbon(current.lab);
+
+  // Update Progress Indicator
+  document.querySelectorAll('.stepper-progress').forEach(el => {
+    el.textContent = `${currentIndex + 1} / ${panelList.length}`;
+  });
 
   // Update Sidebar Tree Active States
   document.querySelectorAll('.tree-item').forEach(item => {
@@ -2053,6 +2150,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize Default Mode: Stepper (zero scrolling needed)
   toggleMode('stepper');
   activatePanel(0, false);
+
+  // Bind Master Lab Tabs Clicks
+  document.querySelectorAll('.master-lab-tab').forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      e.preventDefault();
+      const labName = tab.getAttribute('data-lab');
+      const firstPanelIdx = panelList.findIndex(p => p.lab === labName);
+      if (firstPanelIdx !== -1) activatePanel(firstPanelIdx, true);
+    });
+  });
 
   // Bind Treeview Item Clicks
   document.querySelectorAll('.tree-item').forEach(item => {

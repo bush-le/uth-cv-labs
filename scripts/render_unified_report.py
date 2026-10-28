@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Unified Interactive Dashboard Report Generator for Labs 02, 03, and 04.
+"""Unified Interactive Visual Dashboard Generator for Labs 02, 03, and 04.
 
-Generates an edge-to-edge, zero border-radius interactive dashboard report
+Generates an edge-to-edge, zero-border-radius interactive HTML dashboard report
 (LABS_02_03_04_REPORT.html) with:
-1. Stepper / Tabbed Panel Mode (DEFAULT): View each experiment step-by-step
-   without needing to manually scroll/swipe ("không phải lướt tay"), navigated via
-   the left sidebar, top controller, or keyboard arrows (← / → / Space).
+1. Stepper / Two-Tier Tabbed Navigation (DEFAULT): View each experiment step-by-step
+   without needing to manually scroll or swipe ("không phải lướt tay"), navigated via
+   the top master tabs, dynamic sub-ribbon, left sidebar tree, or keyboard arrows (← / → / Space).
 2. Continuous Scroll Mode: Switchable via button to view all sections sequentially.
 3. 100% Full Content Preservation: Every single image (36 base64 images),
    notebook code block (44 pre blocks), mathematical explanation table,
    takeaway, and research extension from Labs 02, 03, and 04 is fully retained
    and visually displayed (<details open> by default).
-4. Synchronized technical Markdown report (LABS_02_03_04_REPORT.md).
+4. Strictly HTML only (no .md generated as requested).
 """
 from __future__ import annotations
 
@@ -44,7 +44,7 @@ def get_base64_img(rel_path: str) -> str:
     return f"data:{mime};base64,{b64}"
 
 
-# Edge-to-Edge Dashboard CSS (Zero border-radius, Stepper & Scroll Modes)
+# Edge-to-Edge Dashboard CSS (Zero border-radius, Two-Tier Ribbon & Stepper Navigation)
 DASHBOARD_CSS = """
 /* Universal Reset & Full Bleed Layout (Zero Border-Radius) */
 *, *::before, *::after {
@@ -98,12 +98,12 @@ aside.dashboard-sidebar {
   top: 0;
   display: flex;
   flex-direction: column;
-  z-index: 900;
+  z-index: 950;
   box-shadow: 4px 0 16px rgba(0,0,0,0.25);
 }
 
 .sidebar-header {
-  padding: 18px 20px;
+  padding: 16px 20px;
   background: #060911;
   border-bottom: 1px solid #1e293b;
 }
@@ -136,7 +136,7 @@ aside.dashboard-sidebar {
 
 /* Sidebar Stepper Quick Controls */
 .sidebar-stepper {
-  padding: 12px 16px;
+  padding: 10px 16px;
   background: #0f172a;
   border-bottom: 1px solid #1e293b;
   display: flex;
@@ -254,21 +254,21 @@ main.dashboard-main {
   flex-direction: column;
 }
 
-/* Master Top Sticky Control Bar */
+/* Tier 1: Master Top Sticky Control Bar */
 .master-topbar {
   position: sticky;
   top: 0;
-  z-index: 800;
+  z-index: 850;
   width: 100%;
-  background: #ffffff;
-  border-bottom: 2px solid var(--border);
-  padding: 10px clamp(16px, 3vw, 40px);
+  background: #091310;
+  border-bottom: 2px solid #22c55e;
+  padding: 8px clamp(16px, 3vw, 36px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .topbar-left {
@@ -288,23 +288,36 @@ main.dashboard-main {
   cursor: pointer;
 }
 
-.topbar-breadcrumb {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-main);
+/* Master Lab Selectors */
+.master-lab-tabs {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
-.topbar-breadcrumb .badge-lab {
-  background: #0f172a;
-  color: #fff;
-  padding: 3px 8px;
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
+.master-lab-tab {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
+
+.master-lab-tab:hover, .master-lab-tab.active {
+  background: #22c55e;
+  color: #091310;
+  border-color: #22c55e;
+}
+
+.master-lab-tab.tab-l2.active { background: #38bdf8; color: #02122b; border-color: #38bdf8; }
+.master-lab-tab.tab-l3.active { background: #4ade80; color: #052e16; border-color: #4ade80; }
+.master-lab-tab.tab-l4.active { background: #c084fc; color: #2e1065; border-color: #c084fc; }
+.master-lab-tab.tab-mat.active { background: #fbbf24; color: #451a03; border-color: #fbbf24; }
 
 .topbar-right {
   display: flex;
@@ -314,9 +327,9 @@ main.dashboard-main {
 }
 
 .btn-ctrl {
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  color: #0f172a;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f8fafc;
   padding: 6px 14px;
   font-size: 12px;
   font-weight: 700;
@@ -325,9 +338,8 @@ main.dashboard-main {
 }
 
 .btn-ctrl:hover {
-  background: #0f172a;
-  color: #ffffff;
-  border-color: #0f172a;
+  background: #ffffff;
+  color: #0f172a;
 }
 
 .btn-ctrl.btn-mode.active-mode {
@@ -335,6 +347,52 @@ main.dashboard-main {
   color: #ffffff;
   border-color: #0284c7;
 }
+
+/* Tier 2: Dynamic Sub-Ribbon for Active Lab Stage Navigation */
+.master-subribbon {
+  position: sticky;
+  top: 48px;
+  z-index: 800;
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 2px solid var(--border);
+  padding: 8px clamp(16px, 3vw, 36px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.master-subribbon::-webkit-scrollbar {
+  height: 4px;
+}
+.master-subribbon::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+.subribbon-btn {
+  white-space: nowrap;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 5px 11px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.subribbon-btn:hover, .subribbon-btn.active {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+.subribbon-btn.l2-ribbon.active { background: #0284c7; border-color: #0284c7; color: #fff; }
+.subribbon-btn.l3-ribbon.active { background: #16a34a; border-color: #16a34a; color: #fff; }
+.subribbon-btn.l4-ribbon.active { background: #7c3aed; border-color: #7c3aed; color: #fff; }
+.subribbon-btn.mat-ribbon.active { background: #d97706; border-color: #d97706; color: #fff; }
 
 /* Stepper Mode (Default: show only active panel without scrolling) */
 body.mode-stepper .content-panel {
@@ -396,7 +454,7 @@ body.mode-scroll .content-panel {
 .panel-header-banner p {
   font-size: 15px;
   margin: 0;
-  max-width: 1000px;
+  max-width: 1100px;
   opacity: 0.92;
 }
 
@@ -693,7 +751,7 @@ dialog#viewer img {
 
 /* Print Styles */
 @media print {
-  aside.dashboard-sidebar, .master-topbar, dialog#viewer {
+  aside.dashboard-sidebar, .master-topbar, .master-subribbon, dialog#viewer {
     display: none !important;
   }
   body.mode-stepper .content-panel {
@@ -706,56 +764,85 @@ dialog#viewer img {
 }
 """
 
-# Interactive JavaScript for Stepper, Tree Navigation, and Keyboard Controls
+# Interactive JavaScript for Stepper, Two-Tier Ribbon Navigation, and Keyboard Controls
 DASHBOARD_JS = """
 // 28 Sequential Panels
 const panelList = [
-  { id: 'overview', lab: 'Tổng Quan', title: 'Toàn Cảnh & KPIs 3 Chuyên Đề' },
-  { id: 'lab02-flow', lab: 'Lab 02', title: 'Sơ Đồ 5 Nhánh Thí Nghiệm' },
-  { id: 'lab02-prepare', lab: 'Lab 02', title: '01 · Đọc Ảnh & Chuẩn Bị (BGR / Gray)' },
-  { id: 'lab02-point', lab: 'Lab 02', title: '02 · Điểm Ảnh YC1–4 (Sáng, Tương Phản, Âm Bản, Ngưỡng)' },
-  { id: 'lab02-linear', lab: 'Lab 02', title: '03 · Lọc Tuyến Tính YC5–7 (Mean, Gauss, Làm Nét)' },
-  { id: 'lab02-edges', lab: 'Lab 02', title: '04 · Đạo Hàm Biên YC8 (Sobel vs Prewitt)' },
-  { id: 'lab02-kernel', lab: 'Lab 02', title: '05 · Tổng Kernel YC9 (Vùng Phẳng & Ảnh Màu)' },
-  { id: 'lab02-nonlinear', lab: 'Lab 02', title: '06 · Lọc Phi Tuyến YC10 (Median vs Bilateral)' },
-  { id: 'lab02-comparison', lab: 'Lab 02', title: '07 · So Sánh Tổng Hợp YC11 (Master Grid)' },
-  { id: 'lab02-principles', lab: 'Lab 02', title: '08 · Nguyên Lý & Kiểm Thử (22 Tests)' },
-  { id: 'lab03-flow', lab: 'Lab 03', title: 'Sơ Đồ 5 Bước Canny & 2 Hướng' },
-  { id: 'lab03-input', lab: 'Lab 03', title: '01 · Dữ Liệu Đầu Vào (Camera, Brick, Coins)' },
-  { id: 'lab03-libraries', lab: 'Lab 03', title: '02 · YC1 Hai Thư Viện (OpenCV vs Skimage)' },
-  { id: 'lab03-parameters', lab: 'Lab 03', title: '03 · YC2 Quét Tham Số (Sigma & Ngưỡng)' },
-  { id: 'lab03-preprocess', lab: 'Lab 03', title: '04 · YC3 Tiền Xử Lý (Nhiễu, Brick, EqualizeHist)' },
-  { id: 'lab03-regions', lab: 'Lab 03', title: '05 · YC4.1 Phân Đoạn Vùng (Closing + Fill Holes)' },
-  { id: 'lab03-shapes', lab: 'Lab 03', title: '06 · YC4.2 Nhận Dạng Hình Tròn (Hough 24/24 Xu)' },
-  { id: 'lab03-support', lab: 'Lab 03', title: '07 · Câu Hỏi Nghiên Cứu Mở Rộng' },
-  { id: 'lab04-flow', lab: 'Lab 04', title: 'Sơ Đồ 2D DWT db4 & Luồng Quyết Định' },
-  { id: 'lab04-dataset', lab: 'Lab 04', title: '01 · Dữ Liệu & Gán Nhãn (26 Nguồn, 147 Cặp)' },
-  { id: 'lab04-hash', lab: 'Lab 04', title: '02 · YC1 Trích Xuất wHash RGB 192-bit' },
-  { id: 'lab04-hamming', lab: 'Lab 04', title: '03 · YC2 Ma Trận Hamming 26×26' },
-  { id: 'lab04-threshold', lab: 'Lab 04', title: '04 · YC4 Ngưỡng Youden (τ=18) & Đánh Giá 98.77%' },
-  { id: 'lab04-robustness', lab: 'Lab 04', title: '05 · YC3 Khảo Sát Độ Bền Vững (7 Biến Đổi)' },
-  { id: 'lab04-methods', lab: 'Lab 04', title: '06 · Nâng Cao 1 So Sánh 4 Cấu Hình Wavelet' },
-  { id: 'lab04-retrieval', lab: 'Lab 04', title: '07 · Nâng Cao 2 Truy Vấn Top-3 (Top-1 100%)' },
-  { id: 'lab04-support', lab: 'Lab 04', title: '08 · Mở Rộng Cấu Trúc Tìm Kiếm (BK-Tree, MIH)' },
-  { id: 'matrix', lab: 'Tổng Kết', title: 'Ma Trận Nghiệm Thu & So Sánh Chéo 3 Lab' }
+  { id: 'overview', lab: 'overview', labName: 'Tổng Quan', title: 'Toàn Cảnh & KPIs 3 Chuyên Đề' },
+  { id: 'lab02-flow', lab: 'lab02', labName: 'Lab 02', title: 'Sơ Đồ 5 Nhánh Thí Nghiệm' },
+  { id: 'lab02-prepare', lab: 'lab02', labName: 'Lab 02', title: '01 · Đọc Ảnh & Chuẩn Bị (BGR / Gray)' },
+  { id: 'lab02-point', lab: 'lab02', labName: 'Lab 02', title: '02 · Điểm Ảnh YC1–4 (Sáng, Tương Phản, Âm Bản, Ngưỡng)' },
+  { id: 'lab02-linear', lab: 'lab02', labName: 'Lab 02', title: '03 · Lọc Tuyến Tính YC5–7 (Mean, Gauss, Làm Nét)' },
+  { id: 'lab02-edges', lab: 'lab02', labName: 'Lab 02', title: '04 · Đạo Hàm Biên YC8 (Sobel vs Prewitt)' },
+  { id: 'lab02-kernel', lab: 'lab02', labName: 'Lab 02', title: '05 · Tổng Kernel YC9 (Vùng Phẳng & Ảnh Màu)' },
+  { id: 'lab02-nonlinear', lab: 'lab02', labName: 'Lab 02', title: '06 · Lọc Phi Tuyến YC10 (Median vs Bilateral)' },
+  { id: 'lab02-comparison', lab: 'lab02', labName: 'Lab 02', title: '07 · So Sánh Tổng Hợp YC11 (Master Grid)' },
+  { id: 'lab02-principles', lab: 'lab02', labName: 'Lab 02', title: '08 · Nguyên Lý & Kiểm Thử (22 Tests)' },
+  { id: 'lab03-flow', lab: 'lab03', labName: 'Lab 03', title: 'Sơ Đồ 5 Bước Canny & 2 Hướng' },
+  { id: 'lab03-input', lab: 'lab03', labName: 'Lab 03', title: '01 · Dữ Liệu Đầu Vào (Camera, Brick, Coins)' },
+  { id: 'lab03-libraries', lab: 'lab03', labName: 'Lab 03', title: '02 · YC1 Hai Thư Viện (OpenCV vs Skimage)' },
+  { id: 'lab03-parameters', lab: 'lab03', labName: 'Lab 03', title: '03 · YC2 Quét Tham Số (Sigma & Ngưỡng)' },
+  { id: 'lab03-preprocess', lab: 'lab03', labName: 'Lab 03', title: '04 · YC3 Tiền Xử Lý (Nhiễu, Brick, EqualizeHist)' },
+  { id: 'lab03-regions', lab: 'lab03', labName: 'Lab 03', title: '05 · YC4.1 Phân Đoạn Vùng (Closing + Fill Holes)' },
+  { id: 'lab03-shapes', lab: 'lab03', labName: 'Lab 03', title: '06 · YC4.2 Nhận Dạng Hình Tròn (Hough 24/24 Xu)' },
+  { id: 'lab03-support', lab: 'lab03', labName: 'Lab 03', title: '07 · Câu Hỏi Nghiên Cứu Mở Rộng' },
+  { id: 'lab04-flow', lab: 'lab04', labName: 'Lab 04', title: 'Sơ Đồ 2D DWT db4 & Luồng Quyết Định' },
+  { id: 'lab04-dataset', lab: 'lab04', labName: 'Lab 04', title: '01 · Dữ Liệu & Gán Nhãn (26 Nguồn, 147 Cặp)' },
+  { id: 'lab04-hash', lab: 'lab04', labName: 'Lab 04', title: '02 · YC1 Trích Xuất wHash RGB 192-bit' },
+  { id: 'lab04-hamming', lab: 'lab04', labName: 'Lab 04', title: '03 · YC2 Ma Trận Hamming 26×26' },
+  { id: 'lab04-threshold', lab: 'lab04', labName: 'Lab 04', title: '04 · YC4 Ngưỡng Youden (τ=18) & Đánh Giá 98.77%' },
+  { id: 'lab04-robustness', lab: 'lab04', labName: 'Lab 04', title: '05 · YC3 Khảo Sát Độ Bền Vững (7 Biến Đổi)' },
+  { id: 'lab04-methods', lab: 'lab04', labName: 'Lab 04', title: '06 · Nâng Cao 1 So Sánh 4 Cấu Hình Wavelet' },
+  { id: 'lab04-retrieval', lab: 'lab04', labName: 'Lab 04', title: '07 · Nâng Cao 2 Truy Vấn Top-3 (Top-1 100%)' },
+  { id: 'lab04-support', lab: 'lab04', labName: 'Lab 04', title: '08 · Mở Rộng Cấu Trúc Tìm Kiếm (BK-Tree, MIH)' },
+  { id: 'matrix', lab: 'matrix', labName: 'Tổng Kết', title: 'Ma Trận Nghiệm Thu & So Sánh Chéo 3 Lab' }
 ];
 
 let currentIndex = 0;
 let isStepperMode = true;
+
+// Render dynamic sub-ribbon buttons based on active lab
+function updateSubribbon(activeLab) {
+  const ribbonContainer = document.querySelector('#master-subribbon');
+  if (!ribbonContainer) return;
+  ribbonContainer.innerHTML = '';
+
+  const relevantPanels = panelList.filter(p => p.lab === activeLab);
+  relevantPanels.forEach(p => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `subribbon-btn ${activeLab}-ribbon`;
+    btn.textContent = p.title.split('(')[0].trim();
+    if (p.id === panelList[currentIndex].id) btn.classList.add('active');
+    btn.addEventListener('click', () => {
+      const idx = panelList.findIndex(item => item.id === p.id);
+      if (idx !== -1) activatePanel(idx, true);
+    });
+    ribbonContainer.appendChild(btn);
+  });
+}
 
 function activatePanel(index, scrollToTop = true) {
   if (index < 0 || index >= panelList.length) return;
   currentIndex = index;
   const current = panelList[currentIndex];
 
-  // Update Breadcrumb & Indicators
-  const badgeLab = document.querySelector('#bc-lab');
-  const bcTitle = document.querySelector('#bc-title');
-  const progressText = document.querySelectorAll('.stepper-progress');
+  // Update Master Lab Tabs (Top Bar)
+  document.querySelectorAll('.master-lab-tab').forEach(tab => {
+    if (tab.getAttribute('data-lab') === current.lab) {
+      tab.classList.add('active');
+    } else {
+      tab.classList.remove('active');
+    }
+  });
 
-  if (badgeLab) badgeLab.textContent = current.lab;
-  if (bcTitle) bcTitle.textContent = current.title;
-  progressText.forEach(el => el.textContent = `${currentIndex + 1} / ${panelList.length}`);
+  // Update Dynamic Sub-Ribbon
+  updateSubribbon(current.lab);
+
+  // Update Progress Indicator
+  document.querySelectorAll('.stepper-progress').forEach(el => {
+    el.textContent = `${currentIndex + 1} / ${panelList.length}`;
+  });
 
   // Update Sidebar Tree Active States
   document.querySelectorAll('.tree-item').forEach(item => {
@@ -830,6 +917,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize Default Mode: Stepper (zero scrolling needed)
   toggleMode('stepper');
   activatePanel(0, false);
+
+  // Bind Master Lab Tabs Clicks
+  document.querySelectorAll('.master-lab-tab').forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      e.preventDefault();
+      const labName = tab.getAttribute('data-lab');
+      const firstPanelIdx = panelList.findIndex(p => p.lab === labName);
+      if (firstPanelIdx !== -1) activatePanel(firstPanelIdx, true);
+    });
+  });
 
   // Bind Treeview Item Clicks
   document.querySelectorAll('.tree-item').forEach(item => {
@@ -927,13 +1024,11 @@ def render_unified_full_html() -> str:
     l2_map_match = re.search(r'(<section class="flow-map"[^>]*>.*?</section>)', txt2, re.S)
     l2_map = l2_map_match.group(1) if l2_map_match else ""
 
-    # Extract all sections inside Lab 02 results
     l2_res_match = re.search(r'(<div id="results">.*?)(<dialog|<footer>|<script)', txt2, re.S)
     l2_results = l2_res_match.group(1).rstrip() if l2_res_match else ""
     if l2_results.endswith("</div></div>"):
         l2_results = l2_results[:-6]
 
-    # Namespace IDs and hrefs in Lab 02
     l2_content = f"""
     <section class="content-panel" id="lab02-flow">
       <div class="panel-header-banner banner-l2">
@@ -1003,7 +1098,6 @@ def render_unified_full_html() -> str:
         'lab03-input', 'lab03-libraries', 'lab03-parameters', 'lab03-preprocess', 'lab03-regions', 'lab03-shapes', 'lab03-support',
         'lab04-dataset', 'lab04-hash', 'lab04-hamming', 'lab04-threshold', 'lab04-robustness', 'lab04-methods', 'lab04-retrieval', 'lab04-support'
     ]:
-        # Replace <section class="..." id="{sec_id}" with <section class="content-panel ..." id="{sec_id}"
         pattern = rf'<section class="([^"]*)" id="{sec_id}"'
         repl = rf'<section class="content-panel \1" id="{sec_id}"'
         l2_content = re.sub(pattern, repl, l2_content)
@@ -1037,9 +1131,9 @@ def render_unified_full_html() -> str:
 
       <!-- Stepper Quick Controls -->
       <div class="sidebar-stepper">
-        <button type="button" onclick="prevPanel()" title="Phím tắt: Mũi tên trái (&larr;)">◀ Trước</button>
+        <button type="button" onclick="prevPanel()" title="Phím tắt: &larr; (Mũi tên trái)">◀ Trước</button>
         <span class="stepper-progress">1 / 28</span>
-        <button type="button" onclick="nextPanel()" title="Phím tắt: Mũi tên phải (&rarr;) hoặc Space">Tiếp ▶</button>
+        <button type="button" onclick="nextPanel()" title="Phím tắt: &rarr; (Mũi tên phải) hoặc Space">Tiếp ▶</button>
       </div>
 
       <!-- Treeview of all 28 panels -->
@@ -1103,14 +1197,19 @@ def render_unified_full_html() -> str:
 
     <!-- Main Content Area -->
     <main class="dashboard-main">
-      <!-- Master Topbar -->
-      <div class="master-topbar">
+      <!-- Tier 1: Master Top Sticky Control Bar -->
+      <header class="master-topbar">
         <div class="topbar-left">
           <button type="button" class="btn-sidebar-toggle" id="btn-toggle-sidebar">☰ Mục Lục</button>
-          <div class="topbar-breadcrumb">
-            <span class="badge-lab" id="bc-lab">Tổng Quan</span>
-            <span id="bc-title">Toàn Cảnh &amp; KPIs 3 Chuyên Đề</span>
-          </div>
+
+          <!-- Master Lab Tabs -->
+          <nav class="master-lab-tabs" aria-label="Chọn chuyên đề">
+            <button type="button" class="master-lab-tab active" data-lab="overview">🚀 Tổng Quan</button>
+            <button type="button" class="master-lab-tab tab-l2" data-lab="lab02">⚡ Lab 02: Lọc Không Gian</button>
+            <button type="button" class="master-lab-tab tab-l3" data-lab="lab03">🎯 Lab 03: Tách Biên Canny</button>
+            <button type="button" class="master-lab-tab tab-l4" data-lab="lab04">🌊 Lab 04: Wavelet Hash RGB</button>
+            <button type="button" class="master-lab-tab tab-mat" data-lab="matrix">📊 Ma Trận Nghiệm Thu</button>
+          </nav>
         </div>
 
         <div class="topbar-right">
@@ -1121,7 +1220,12 @@ def render_unified_full_html() -> str:
           <button type="button" class="btn-ctrl" id="btn-toggle-details" onclick="toggleAllDetails()">Thu gọn chi tiết</button>
           <button type="button" class="btn-ctrl" onclick="window.print()">In / PDF</button>
         </div>
-      </div>
+      </header>
+
+      <!-- Tier 2: Dynamic Sub-Ribbon for Active Lab Stage Navigation -->
+      <nav class="master-subribbon" id="master-subribbon" aria-label="Thanh điều hướng nhanh thí nghiệm con">
+        <!-- Dynamically injected via JavaScript -->
+      </nav>
 
       <!-- Panel 01: Overview -->
       <section class="content-panel active" id="overview">
@@ -1155,9 +1259,9 @@ def render_unified_full_html() -> str:
         </div>
 
         <div class="takeaway">
-          <strong>HƯỚNG DẪN XEM BÁO CÁO KHÔNG CẦN LƯỚT:</strong>
+          <strong>HƯỚNG DẪN XEM BÁO CÁO TRỰC QUAN KHÔNG CẦN LƯỚT:</strong>
           <ul style="margin:8px 0 0 20px;padding:0;">
-            <li>Bấm vào từng mục ở <strong>Cột Mục Lục bên trái</strong> để chuyển ngay đến nội dung thí nghiệm tương ứng mà không phải cuộn trang.</li>
+            <li>Bấm vào từng mục ở <strong>Thanh Ribbon Thí Nghiệm Con (ở ngay trên đầu)</strong> hoặc <strong>Cột Danh Mục bên trái</strong> để chuyển ngay đến nội dung thí nghiệm tương ứng mà không phải cuộn trang.</li>
             <li>Dùng phím mũi tên <strong>&rarr; (Phải) / Phím Cách (Space)</strong> để tiến bước kế tiếp; phím <strong>&larr; (Trái)</strong> để lùi bước trước.</li>
             <li>Toàn bộ mã nguồn thực thi, bảng số liệu thực nghiệm và hình ảnh đều được <strong>mở trực quan đầy đủ</strong>.</li>
             <li>Bấm vào bất kỳ hình ảnh nào để <strong>phóng to xem chi tiết</strong> ở độ phân giải gốc.</li>
@@ -1271,192 +1375,15 @@ python scripts/render_unified_report.py</code></pre>
 </html>"""
 
 
-def render_unified_markdown_report() -> str:
-    r"""Generate Comprehensive Unified Markdown Report for Labs 02-04."""
-    return r"""# BÁO CÁO TỔNG HỢP CHUYÊN ĐỀ THỊ GIÁC MÁY TÍNH: LAB 02 – LAB 03 – LAB 04
-## TRƯỜNG ĐẠI HỌC GIAO THÔNG VẬN TẢI TP.HCM (UTH) — KHOA CÔNG NGHỆ THÔNG TIN
-
-- **Môi trường thực nghiệm**: Python 3.14.8 | OpenCV 5.0.0 | PyWavelets 1.8.0 | Scikit-Image 0.26.0 | NumPy 2.2.6
-- **Báo cáo Slide Trình Chiếu HTML tương tác 100vh**: [LABS_02_03_04_REPORT.html](LABS_02_03_04_REPORT.html)
-- **Kiểm thử hồi quy tự động**: `58/58 passed` (100% tests cho 3 lab tại `tests/test_filters.py`, `tests/test_canny.py`, `tests/test_wavelet_hash.py`, `tests/test_lab04_baseline.py`, `tests/test_lab04_pairs.py`)
-
----
-
-## 🚀 1. TỔNG QUAN ĐIỀU HÀNH & TIẾN TRÌNH LIÊN HOÀN 3 CHUYÊN ĐỀ
-
-Chuỗi thực nghiệm kết nối xuyên suốt 3 tầng kiến trúc thị giác máy tính: từ **xử lý cường độ mức xám & tích chập không gian (Lab 02)** lên **tách biên tối ưu vi sai & nhận dạng hình học (Lab 03)** và đạt tới **trích xuất đặc trưng nhận thức sóng nhỏ Wavelet Hash RGB 192-bit (Lab 04)**.
-
-```mermaid
-flowchart TD
-    subgraph LAB02 ["1. LAB 02: TOÁN TỬ KHÔNG GIAN & ĐIỂM ẢNH"]
-        direction TB
-        L2_IN["Ảnh Mẫu: image-2.jpg (1920×1080 BGR/Gray)"]
-        L2_P1["Phần I: Point Ops (g = clip(α·f + β))<br/>β=±50, α={0.5, 1.8}, 255-f, T={80, 127, 180}"]
-        L2_P2["Phần II: Linear Filters (Σ = 1.000)<br/>Mean (7×7, 21×21) vs Gaussian (k ≈ 6σ + 1) & Sharpen"]
-        L2_P3["Phần III: Derivatives & Non-linear<br/>Sobel vs Prewitt (r≈0.996) & Median khử 100% cực trị muối tiêu"]
-        L2_IN --> L2_P1 --> L2_P2 --> L2_P3
-    end
-
-    subgraph LAB03 ["2. LAB 03: TÁCH BIÊN CẢI TIẾN CANNY & HÌNH HỌC"]
-        direction TB
-        L3_IN["Ảnh Mẫu skimage: camera, brick (512×512), coins (303×384)"]
-        L3_ST["5 Bước Toán Học Canny<br/>Gauss mượt → Sobel G,θ → NMS 1px → Ngưỡng kép → Hysteresis"]
-        L3_EXP["Thực Nghiệm Chuyên Sâu<br/>• YC1: OpenCV (30,980 px) vs Skimage (7,554 px)<br/>• YC2: Quét σ (20,012 → 793 px) & 4 cặp ngưỡng<br/>• YC3: Cân bằng equalizeHist phục hồi ảnh mù (0 → 13,897 px)<br/>• YC4: Closing + fill holes (Mask 41,111 px) & HoughCircles (24/24 xu)"]
-        L3_IN --> L3_ST --> L3_EXP
-    end
-
-    subgraph LAB04 ["3. LAB 04: WAVELET HASH RGB 192-BIT"]
-        direction TB
-        L4_IN["Tập Dữ Liệu: 26 Nguồn → 130 Ảnh (147 Cặp)<br/>Split không rò rỉ: Calib 66 cặp / Eval 81 cặp"]
-        L4_WT["2D DWT db4 Level 1 (LL1 131×131 → 8×8)<br/>Lượng tử trung vị 64 bit/kênh → Vector [R|G|B] 192-bit"]
-        L4_EV["Đánh Giá & Ứng Dụng<br/>• Ngưỡng Youden τ = 18 bits (Calib Acc = 100%)<br/>• Evaluation: 80/81 đúng (98.77% Acc, ROC AUC = 1.0000)<br/>• Top-3 Nearest Neighbor: Top-1 đạt chính xác 100% (D_H = 2)"]
-        L4_IN --> L4_WT --> L4_EV
-    end
-
-    LAB02 --> LAB03 --> LAB04
-```
-
-### Bảng Ma Trận Nghiệm Thu Toàn Diện 3 Bài Lab
-
-| Tiêu Chí So Sánh | Lab 02: Lọc Không Gian | Lab 03: Canny & Hough Circles | Lab 04: Wavelet Hash RGB 192-bit |
-| :--- | :--- | :--- | :--- |
-| **Ảnh mẫu thực nghiệm** | `image-2.jpg` (1920×1080 uint8) | `camera`, `brick` (512×512), `coins` (303×384) | 26 nguồn (Chihuahua-Muffin, Mèo-Kem) → 130 ảnh |
-| **Bản chất toán học** | Tích chập 2D không gian & ánh xạ điểm | Tối ưu hóa 3 tiêu chí John Canny & tích lũy Hough | Biến đổi tần số không gian 2D DWT db4 & khoảng cách Hamming |
-| **Độ dài / Chiều đặc trưng** | Giữ nguyên kích thước ảnh gốc | Bản đồ biên nhị phân 1-pixel & danh sách tọa độ (x,y,r) | Vector nhị phân cô đọng **192-bit** (48 ký tự Hex) |
-| **Độ phức tạp tính toán** | $\mathcal{O}(H \cdot W \cdot k^2)$ | $\mathcal{O}(H \cdot W) + \mathcal{O}(H \cdot W \cdot R)$ | $\mathcal{O}(H \cdot W) + \mathcal{O}(1)$ so khớp bit bằng POPCNT |
-| **Chỉ số kỹ thuật đột phá** | • Sobel vs Prewitt $r \approx 0.996$<br/>• Sharpen bảo toàn độ sáng $\Sigma = 1.000$<br/>• Median triệt tiêu 100% cực trị muối tiêu 3% | • OpenCV 30,980 px vs Skimage 7,554 px<br/>• equalizeHist cứu ảnh mờ: $0 \to 13,897$ px<br/>• HoughCircles bắt trọn vẹn **24/24 đồng xu (100%)** | • Ngưỡng tối ưu Youden $\tau = 18$ bits<br/>• Evaluation **80/81 đúng (98.77% Acc)**<br/>• ROC AUC = **1.0000** hoàn hảo, Top-1 Precision 100% |
-| **Kiểm thử tự động** | **22 / 22 PASS** (`tests/test_filters.py`) | **11 / 11 PASS** (`tests/test_canny.py`) | **25 / 25 PASS** (`test_wavelet_hash`, `baseline`, `pairs`) |
-
----
-
-## 📌 2. CHI TIẾT KỸ THUẬT CHUYÊN ĐỀ LAB 02: TOÁN TỬ ĐIỂM & LỌC KHÔNG GIAN
-
-### 2.1. Phần I — Toán Tử Điểm Ảnh (YC1–YC4)
-- **YC1 (Độ sáng)**: $g(x,y) = \text{clip}(f(x,y) + \beta, 0, 255)$. Với $\beta = +50$, dải mức xám tịnh tiến sang $[50, 255]$; với $\beta = -50$, dải dịch sang $[0, 197]$. Phép cộng không làm thay đổi hình dáng lược đồ xám.
-- **YC2 (Tương phản)**: $g(x,y) = \text{clip}(\alpha \cdot f(x,y), 0, 255)$. Với $\alpha = 0.5$, co dải động về $[0, 127]$ (ảnh bạc màu mờ đục); với $\alpha = 1.8$, kéo giãn dải mức xám, tăng độ tương phản rõ rệt nhưng bão hòa trắng tại 255.
-- **YC3 (Âm bản)**: $g(x,y) = 255 - f(x,y)$. Đảo ngược toàn bộ thang sáng tối, giúp mắt người nhận diện rõ các chi tiết bị chìm trong vùng tối.
-- **YC4 (Cắt ngưỡng & Histogram)**: Phân ngưỡng $g(x,y) = 255$ nếu $f(x,y) \ge T$ ngược lại bằng $0$. Với $T=127$, chia đều phân bố; lược đồ histogram sau cắt ngưỡng quy tụ về đúng 2 vạch rời rạc $\{0, 255\}$.
-
-### 2.2. Phần II — Bộ Lọc Tuyến Tính (YC5–YC7)
-- **YC5 & YC6 (Mean vs Gaussian Blur)**:
-  - Mean filter gán trọng số đồng nhất $1/k^2$, tạo hiện tượng lem biên dạng ô vuông (box artifact).
-  - Gaussian filter áp dụng hàm chuông chuẩn 2 chiều đối xứng tâm $G(x,y) = \frac{1}{2\pi\sigma^2}\exp\left(-\frac{x^2+y^2}{2\sigma^2}\right)$.
-  - **Quy tắc kích thước kernel**: $k \approx 6\sigma + 1$ (bao trọn dải $\pm 3\sigma$) giúp tích hợp $99.73\%$ năng lượng, ngăn ngừa hiện tượng cắt cụt biên (truncation artifact).
-- **YC7 (Làm nét Sharpening)**:
-  - Bản chất toán học: $\text{Sharpen} = \text{Identity} - \text{Laplacian}$.
-  - Đặc điểm nhận dạng: Kernel làm nét bắt buộc có tổng trọng số $\Sigma w_{ij} = 1.000$ (bảo toàn độ sáng trung bình) VÀ có hệ số âm ở lân cận để khuếch đại vi sai biên.
-  - Phân biệt: Laplacian ($\Sigma = 0$) là toán tử tách biên, không phải làm nét.
-
-### 2.3. Phần III — Đạo Hàm Biên Gradient, Tổng Kernel & Lọc Phi Tuyến (YC8–YC11)
-- **YC8 (Sobel vs Prewitt)**: Đạo hàm bậc một theo hai trục trực giao $Gx, Gy$. Sobel gán trọng số trung tâm bằng 2 ($[1, 2, 1]$), tích hợp sẵn bộ lọc Gauss 1D khử nhiễu. Hệ số tương quan Pearson giữa hai toán tử đạt $r \approx 0.9961$; biên độ trung bình của Sobel lớn hơn Prewitt $\sim 1.37\times$ ($39.5$ vs $28.9$).
-- **YC9 (Quy tắc tổng trọng số kernel)**: Kiểm chứng trên vùng phẳng $c = 100$:
-  - $\Sigma = 0.5 \implies \text{output} = 50$ (tối đi một nửa năng lượng).
-  - $\Sigma = 1.0 \implies \text{output} = 100$ (bảo toàn nguyên vẹn độ sáng).
-  - $\Sigma = 2.0 \implies \text{output} = 200$ (cháy sáng).
-  - $\Sigma = 0.0 \implies \text{output} = 0$ (vùng phẳng biến mất, chỉ giữ lại đường biên).
-- **YC10 & YC11 (Lọc phi tuyến trên 3% nhiễu muối tiêu)**: Median Filter áp dụng thống kê thứ tự trung vị, loại bỏ triệt để $100\%$ điểm cực trị $0$ và $255$ mà không làm nhòe ảnh; Bilateral Filter làm mịn vùng phẳng giữ cạnh sắc nét nhưng không triệt tiêu hết hạt muối tiêu vì vẫn bản chất là trung bình có trọng số.
-
----
-
-## 📌 3. CHI TIẾT KỸ THUẬT CHUYÊN ĐỀ LAB 03: TÁCH BIÊN CẢI TIẾN CANNY & HÌNH HỌC
-
-### 3.1. 5 Bước Toán Học Canny Kinh Điển
-1. **Gaussian Smoothing**: Làm mịn ảnh với bán kính $k = 2\lceil 3\sigma \rceil + 1$ để triệt tiêu nhiễu tần số cao.
-2. **Sobel Gradient**: Tính biên độ $G = \sqrt{Gx^2 + Gy^2}$ và góc pháp tuyến $\theta = \text{atan2}(Gy, Gx)$.
-3. **Non-Maximum Suppression (NMS)**: Lượng tử hóa góc gradient về 4 hướng chính ($0^\circ, 45^\circ, 90^\circ, 135^\circ$), chỉ giữ lại điểm cực đại cục bộ, gọt mỏng đường biên về đúng $1$ pixel.
-4. **Double Thresholding**: Phân loại ứng viên biên thành 3 nhóm: Strong ($G \ge T_{\text{high}}$), Weak ($T_{\text{low}} \le G < T_{\text{high}}$), và Non-edge ($G < T_{\text{low}}$).
-5. **Hysteresis Tracking**: Duyệt 8-lân cận, giữ lại các pixel Weak có liên kết trực tiếp với Strong; loại bỏ các điểm yếu cô lập.
-
-### 3.2. Kết Quả Thực Nghiệm Trọng Tâm (YC1–YC4)
-- **YC1 (OpenCV vs Scikit-image)**: Trên ảnh `camera` (512×512) với cùng ngưỡng 50/150, `cv2.Canny` giữ **30,980** pixel biên vs `skimage.feature.canny` giữ **7,554** pixel biên. Khác biệt do skimage tự động làm mịn Gauss nội bộ ($\sigma=1$) và chuẩn hóa dải float $[0, 1]$.
-- **YC2 (Quét tham số $\sigma$ và ngưỡng kép)**:
-  - Quét $\sigma$ cố định $T=50/150$: $\sigma=0.5$ (20,012 px) $\to \sigma=1.0$ (7,937 px mốc chuẩn) $\to \sigma=2.0$ (4,740 px) $\to \sigma=3.5$ (793 px, xóa sạch chi tiết nhỏ).
-  - Quét cặp ngưỡng cố định $\sigma=1.0$: $30/90$ (15,972 px nhạy cao), $50/150$ (7,937 px tỉ lệ vàng 1:3), $100/200$ (6,025 px khắt khe), $20/180$ (8,483 px khoảng hysteresis rộng).
-- **YC3 (Tiền xử lý ảnh thách thức)**:
-  - Nhiễu Gauss ($\text{std}=20$): Lọc Bilateral ($d=9, 50, 5$) giảm biên nhiễu từ $9,003 \to 5,938$ px.
-  - Nhiễu muối tiêu ($3\%$): Lọc Median 3×3 giảm biên giả từ $13,201 \to 6,963$ px.
-  - Ảnh nhiều vân `brick` (512×512): Lọc Bilateral giảm biên vân rác bề mặt từ $18,750 \to 9,319$ px mà vẫn bảo tồn trọn vẹn đường ron gạch.
-  - Ảnh tương phản thấp ($[100, 163]$): Canny trực tiếp mù hoàn toàn (**0 pixel**); áp dụng `cv2.equalizeHist` phục hồi đầy đủ **13,897 pixel** biên.
-- **YC4 (Phân đoạn vùng & Hough Circles trên `coins` 303×384)**:
-  - Phân đoạn vùng: Canny (50/150) $\to$ Closing Morphology (Ellipse 3×3) nối khe hở $\to$ `scipy.ndimage.binary_fill_holes` tạo mask kín **41,111 pixel trắng**.
-  - Nhận dạng hình học: Tiền xử lý Gaussian 9×9 ($\sigma=2.0$) $\to$ `cv2.HoughCircles` phát hiện chính xác trọn vẹn **24 / 24 đồng xu** ($100\%$ phát hiện, không sót, không báo nhầm).
-
----
-
-## 📌 4. CHI TIẾT KỸ THUẬT CHUYÊN ĐỀ LAB 04: WAVELET HASH RGB 192-BIT
-
-### 4.1. Thiết Kế Tập Dữ Liệu & Quy Tắc Nhãn Không Rò Rỉ
-- 26 ảnh nguồn chia thành 2 chủ đề dễ nhầm hình thức: `chihua_muffin` (7 chó, 7 bánh muffin) và `meo_kem` (6 mèo, 6 kem).
-- Mỗi ảnh nguồn tạo 4 biến thể: `bright ×1.3`, `dark ×0.7`, `noise σ=10`, `jpeg Q=50` $\to$ 104 biến thể (tổng 130 ảnh).
-- Quy tắc gán nhãn:
-  - Nhãn **1** (Cùng nguồn): Ảnh gốc ghép với biến thể của chính nó.
-  - Nhãn **0** (Khác đối tượng): Hai ảnh gốc khác loại trong cùng chủ đề (chó ↔ muffin, mèo ↔ kem).
-- **Chia tập theo nguồn (Seed 42)**:
-  - Tập Calibration: 12 nguồn $\to$ **66 cặp** (48 dương, 18 âm).
-  - Tập Evaluation: 14 nguồn $\to$ **81 cặp** (56 dương, 25 âm).
-  - Đảm bảo không có bất kỳ ảnh nguồn nào xuất hiện đồng thời ở cả hai tập (chống Data Leakage tuyệt đối).
-
-### 4.2. Baseline wHash RGB 192-bit & Độ Bền Vững
-- **Pipeline trích xuất**:
-  1. Chuẩn hóa kích thước: Resize về $256 \times 256$ (INTER_AREA) và tách độc lập 3 kênh $R, G, B$.
-  2. Biến đổi sóng nhỏ: 2D DWT sử dụng sóng mẹ Daubechies 4 (`db4`, Level 1) trích xuất dải xấp xỉ thấp tần $LL_1$ kích thước $131 \times 131$ chứa trên $93\%$ năng lượng hình thái.
-  3. Thu nhỏ & Lượng tử hóa trung vị: Thu nhỏ $LL_1$ về $8 \times 8$ (64 hệ số); gán $\text{bit} = 1$ nếu $LL_{8 \times 8} > \text{median}$ ngược lại bằng $0$ (tạo 32 bit 0 và 32 bit 1, đạt Entropy thông tin cực đại $1.0$).
-  4. Ghép vector: Nối 3 chuỗi 64-bit thành vector **192-bit** ($[R_{64} \mid G_{64} \mid B_{64}]$, tương đương 48 ký tự Hex).
-- **Khảo sát độ bền vững (Robustness)**:
-  - Rất bền với biến đổi cường độ và nén lossy ($D_H \le 18$ bits): `dark ×0.7` (median $0$), `noise σ=10` (median $2$), `jpeg Q=50` (median $3$), `bright ×1.3` (median $7$).
-  - Nhạy với biến đổi hình học (làm lệch ma trận tọa độ không gian 8×8): `rotate 5°` (median $15$), `crop 80%` (median $40$), `flip ngang` (median $77$).
-
-### 4.3. Tối Ưu Hóa Ngưỡng Youden & Đánh Giá Độc Lập
-- Tối ưu chỉ số Youden $J = \text{Recall} + \text{Specificity} - 1$ trên tập Calibration: Chốt ngưỡng tối ưu **$\tau = 18$ bits** (Accuracy = $100\%$, 48 TP, 18 TN, 0 FP, 0 FN). Khoảng cách Hamming giữa cặp dương $[0, 18]$ và cặp âm $[50, 98]$ cách biệt an toàn 32 bits.
-- **Đánh giá trên tập Evaluation (Cố định $\tau = 18$)**:
-  - Đúng **80 / 81 cặp** $\implies$ **Accuracy = 98.77%**.
-  - **Precision = 100.0%**, **Specificity = 100.0%** (25/25 cặp âm đều có $D_H \ge 70$, không có báo nhầm FP = 0).
-  - **Recall = 98.21%**, **F1-Score = 99.10%**, **ROC AUC = 1.0000** hoàn hảo.
-  - Phân tích 1 ca lỗi False Negative duy nhất: `meo_kem_doi_tuong_12` vs bản `bright` có $D_H = 20 > 18$ do ảnh bị clip bão hòa 255 làm méo mó phân bố trung vị cục bộ ở vùng kem trắng.
-- **Nâng cao 1 (So sánh 4 cấu hình Wavelet)**:
-  - `RGB db4 L1` (192-bit): Acc 98.77%, ROC AUC 1.0000 (Tối ưu nhất).
-  - `RGB haar L1` (192-bit): Acc 98.77%, ROC AUC 1.0000 (Tương đương db4).
-  - `RGB db4 L2` (192-bit): Acc 97.53%, ROC AUC 1.0000 (Mất chi tiết tần số trung bình, 2 FN).
-  - `Gray Step L3` (Slide 17, 71,542 bits): Acc 69.14%, Recall 55.36%, ROC AUC 0.7157 (25 FN $\implies$ chứng minh số lượng bit nhiều không đồng nghĩa với hiệu năng tốt hơn).
-- **Nâng cao 2 (Ứng dụng tìm kiếm Top-3)**: Truy vấn ảnh JPEG tìm ra chính xác $100\%$ ảnh gốc ở vị trí Top-1 với khoảng cách Hamming $D_H = 2 \le 18$. Các ảnh vị trí Top-2 và Top-3 có $D_H > 80$.
-
----
-
-## 🛠️ 5. HƯỚNG DẪN TÁI LẬP & TRÌNH CHIẾU (REPRODUCIBILITY)
-
-1. **Khởi chạy Báo Cáo HTML Toàn Diện**:
-   - Mở trực tiếp file [LABS_02_03_04_REPORT.html](LABS_02_03_04_REPORT.html) trong bất kỳ trình duyệt web nào (Chrome, Firefox, Safari, Edge).
-   - Thanh điều hướng trên cùng cho phép nhảy nhanh giữa Tổng quan, Lab 02, Lab 03, Lab 04 và Ma trận so sánh.
-   - Nhấp vào bất kỳ hình ảnh nào để mở cửa sổ phóng to **Lightbox Modal** kiểm tra chi tiết.
-
-2. **Chạy lại kiểm thử hồi quy**:
-   ```bash
-   .venv/bin/pytest tests/test_filters.py tests/test_canny.py tests/test_wavelet_hash.py tests/test_lab04_baseline.py tests/test_lab04_pairs.py
-   # Kết quả: 58 passed in ~1.8s
-   ```
-
-3. **Tái tạo báo cáo tổng hợp**:
-   ```bash
-   python scripts/render_unified_report.py
-   ```
-"""
-
-
 def main() -> None:
-    """Generate edge-to-edge interactive dashboard HTML and Markdown reports for Labs 02-04."""
+    """Generate edge-to-edge interactive dashboard HTML report for Labs 02-04."""
     LABS_DIR.mkdir(parents=True, exist_ok=True)
 
-    # 1. Generate Interactive Dashboard HTML Report
+    # Generate Interactive Dashboard HTML Report (HTML ONLY)
     html_content = render_unified_full_html()
     out_unified_html = LABS_DIR / "LABS_02_03_04_REPORT.html"
     out_unified_html.write_text(html_content, encoding="utf-8")
-    print(f"✔ Generated Interactive Dashboard Report: {out_unified_html} ({out_unified_html.stat().st_size // 1024} KB)")
-
-    # 2. Generate Unified Markdown Technical Report
-    md_content = render_unified_markdown_report()
-    out_unified_md = LABS_DIR / "LABS_02_03_04_REPORT.md"
-    out_unified_md.write_text(md_content, encoding="utf-8")
-    print(f"✔ Generated Unified Markdown Report: {out_unified_md} ({out_unified_md.stat().st_size // 1024} KB)")
+    print(f"✔ Generated Master Visual HTML Report: {out_unified_html} ({out_unified_html.stat().st_size // 1024} KB)")
 
 
 if __name__ == "__main__":
