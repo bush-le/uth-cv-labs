@@ -1,0 +1,138 @@
+{
+  "hero": "Từ đường biên đến vùng và hình dạng.",
+  "subtitle": "Canny bằng hai thư viện, khảo sát tham số và tiền xử lý; sau đó tách riêng hai ứng dụng tìm vùng và hình tròn.",
+  "map_title": "Các thí nghiệm độc lập, hai hướng ứng dụng",
+  "description": "YC1 dùng camera để gọi hai thư viện. YC2–3 khảo sát tham số và tiền xử lý trên camera / brick. YC4 dùng coins, tách hai nhánh: mask từ Canny và hình tròn từ Hough; nhánh Hough không nhận mask của YC4.1.",
+  "result_sections": [
+    2
+  ],
+  "paths": [
+    "M550 90V120H180V160",
+    "M550 120V160",
+    "M550 120H920V160",
+    "M920 236V275H740V330",
+    "M920 275H980V330"
+  ],
+  "nodes": [
+    [
+      330,
+      14,
+      440,
+      "input",
+      "Ảnh thư viện",
+      "camera · brick · coins"
+    ],
+    [
+      40,
+      160,
+      280,
+      "libraries",
+      "YC1 · Hai thư viện",
+      "OpenCV / scikit-image"
+    ],
+    [
+      410,
+      160,
+      280,
+      "parameters",
+      "YC2–3 · Khảo sát",
+      "Tham số / tiền xử lý"
+    ],
+    [
+      780,
+      160,
+      280,
+      "regions",
+      "YC4 · Ảnh coins",
+      "Hai bài toán độc lập"
+    ],
+    [
+      620,
+      330,
+      240,
+      "regions",
+      "YC4.1 · Tìm vùng",
+      "Canny → closing → tô đầy"
+    ],
+    [
+      870,
+      330,
+      220,
+      "shapes",
+      "YC4.2 · Hình tròn",
+      "Gaussian → Hough"
+    ]
+  ],
+  "stages": [
+    [
+      "input",
+      "Dữ liệu đầu vào",
+      "skimage.data → camera / brick / coins",
+      "Ảnh mẫu thư viện; grayscale cho xử lý, RGB để vẽ kết quả hình tròn.",
+      null,
+      [
+        5
+      ],
+      "camera để xem biên, brick để khảo sát texture, coins để thử vùng và hình tròn."
+    ],
+    [
+      "libraries",
+      "YC1 · Hai thư viện",
+      "camera → OpenCV Canny / scikit-image Canny",
+      "Hai lời gọi tối thiểu có điều kiện làm mịn khác nhau.",
+      "yc1-hai-thu-vien",
+      [
+        7
+      ],
+      "Nhiều pixel biên hơn không có nghĩa chính xác hơn. Đây chưa phải so sánh với điều kiện tiền xử lý đồng nhất."
+    ],
+    [
+      "parameters",
+      "YC2 · Sigma & ngưỡng",
+      "camera → Gaussian → thay sigma hoặc ngưỡng → Canny",
+      "Khảo sát từng nhóm tham số; đối chiếu viền cần giữ và texture.",
+      "yc2-sigma-va-nguong",
+      [
+        10,
+        12
+      ],
+      "Sigma lớn giảm texture nhưng có thể mất cấu trúc; hai ngưỡng cần được đọc cùng nhau."
+    ],
+    [
+      "preprocess",
+      "YC3 · Tiền xử lý",
+      "Ảnh khó → lọc / cân bằng histogram → Gaussian → Canny",
+      "Gaussian noise dùng bilateral; muối tiêu dùng median. Tương phản và texture là các thí nghiệm riêng.",
+      "yc3-tien-xu-ly",
+      [
+        15,
+        16,
+        19,
+        22
+      ],
+      "Xem ảnh trước/sau lọc rồi mới đối chiếu Canny. Giảm nhiễu cũng có thể làm mất chi tiết."
+    ],
+    [
+      "regions",
+      "YC4.1 · Tìm vùng",
+      "coins → Gaussian → Canny → closing → tô đầy → mask",
+      "Đầu ra là vùng dự đoán, chưa có danh tính hay ID riêng cho từng đồng xu.",
+      "yc41-tim-vung-tu-bien",
+      [
+        25
+      ],
+      "Canny tạo đường biên, closing nối khe nhỏ, tô đầy chuyển đường bao khép kín thành diện tích."
+    ],
+    [
+      "shapes",
+      "YC4.2 · Tìm hình tròn",
+      "coins → Gaussian → HoughCircles → tâm, bán kính, số thứ tự",
+      "Nhánh độc lập với mask; HoughCircles thực hiện bước dò biên bên trong.",
+      "yc42-hough-tim-hinh-tron",
+      [
+        27
+      ],
+      "Vòng tròn là ứng viên hình học. Chưa có nhãn chuẩn để xác nhận mọi đồng xu đều được tìm đúng."
+    ]
+  ]
+}

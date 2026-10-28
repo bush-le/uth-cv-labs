@@ -21,6 +21,8 @@ Branch `lab-03` chứa bài thực hành Canny và bộ khung dự án dùng chu
 
 Cài `requirements/base.txt` cùng `jupyter nbclient nbformat ipykernel` để chạy notebook. Report HTML nhúng hình nên có thể mở riêng; report Markdown dùng ảnh tại `docs/assets/lab03/`.
 
+Để tạo lại HTML theo sơ đồ thực hành: cài `pip install markdown`, rồi chạy `python scripts/lab03/render_report.py`. Nội dung chi tiết lấy từ report Markdown, hình từ `docs/assets/lab03/`, code trích từ notebook. Bố cục các chặng nằm trong `scripts/lab03/report_layout.json`; CSS và JavaScript được nhúng vào HTML để mở độc lập.
+
 ---
 
 ## 🗂️ Cấu trúc Thư mục (Directory Layout)
