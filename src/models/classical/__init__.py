@@ -31,6 +31,7 @@ from src.models.classical.wavelet_hash import (
     normalized_hamming_distance,
     phash_dct,
     wavelet_hash,
+    wavelet_hash_color,
     wavelet_hash_slide17,
 )
 
@@ -55,6 +56,7 @@ __all__ = [
     "TemporalEdgeFilter",
     # Wavelet Image Hashing (Lab 04)
     "wavelet_hash",
+    "wavelet_hash_color",
     "wavelet_hash_slide17",
     "average_hash",
     "difference_hash",

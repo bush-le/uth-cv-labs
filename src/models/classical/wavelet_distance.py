@@ -19,11 +19,15 @@ def hamming_distance(
     Returns:
         int: Total number of bit positions where hash1 and hash2 differ.
     """
-    h1 = np.asarray(hash1, dtype=np.uint8)
-    h2 = np.asarray(hash2, dtype=np.uint8)
+    h1 = np.asarray(hash1)
+    h2 = np.asarray(hash2)
 
     if h1.shape != h2.shape:
         raise ValueError(f"Hash lengths mismatch: {h1.shape} vs {h2.shape}")
+    if h1.ndim != 1 or not h1.size:
+        raise ValueError("Hashes must be nonempty one-dimensional arrays.")
+    if not np.isin(h1, [0, 1]).all() or not np.isin(h2, [0, 1]).all():
+        raise ValueError("Hashes must contain only binary values.")
 
     return int(np.count_nonzero(h1 != h2))
 
@@ -40,7 +44,7 @@ def normalized_hamming_distance(
     Returns:
         float: Normalized distance (Hamming Distance / Bit Length).
     """
-    h1 = np.asarray(hash1, dtype=np.uint8)
+    h1 = np.asarray(hash1)
     dist = hamming_distance(h1, hash2)
     return float(dist / len(h1))
 

@@ -1,307 +1,378 @@
-# BÁO CÁO KỸ THUẬT TOÀN DIỆN - LAB 04: SO SÁNH SỰ TƯƠNG ĐỒNG CỦA CÁC HÌNH ẢNH SỬ DỤNG WAVELET, PYTHON
+# BÁO CÁO LAB 04 — SO SÁNH ẢNH BẰNG WAVELET HASH
 
-> **Học phần:** Thị giác Máy tính (Computer Vision)  
-> **Khoa / Viện:** Viện Đào tạo Sau đại học / Khoa Công nghệ Thông tin - Trường Đại học Giao thông Vận tải TP.HCM (UTH)  
-> **Họ và tên Học viên / Sinh viên:** Nhóm Nghiên cứu Thị giác Máy tính UTH  
-> **Mã bài Lab:** Lab 04 · **Chương:** 3  
-> **Repository:** [`uth-cv-labs`](file:///home/bush/Projects/CV/uth-cv-labs)  
-> **Trạng thái Thực nghiệm:** Hoàn thành 100% · Vượt qua kiểm toán Codebase Audit & 8/8 Unit Tests
+Ngày chạy và kiểm tra: 26/10/2026. [Notebook](../../../notebooks/labs/lab_04.ipynb) · [Description](LAB_04_DESCRIPTION.md) · [Dữ liệu](LAB_04_DATASET.md) · [Số liệu chi tiết](../../assets/lab04/results.json).
 
----
+## 1. Mục tiêu và phạm vi
 
-## MỤC LỤC TỔNG QUAN
+Theo trang 16 của Chapter 3 Part 1, phần cơ bản gồm chuẩn bị dữ liệu, biến đổi Wavelet, lượng tử hóa/tạo mã băm, so sánh Hamming và đánh giá Accuracy, Recall, Specificity, ROC. Hai bài nâng cao là khảo sát phương pháp băm Wavelet và xây dựng ứng dụng tìm kiếm ảnh. Trang 17–18 là giải thích và khung code tham khảo, chưa định nghĩa hoàn chỉnh baseline RGB–LL–median–192 bit.
 
-1. [Phần I: Cơ sở Lý thuyết & Toán học Chuyên sâu](#phan-i-co-so-ly-thuyet--toan-hoc-chuyen-sau)
-   - 1.1. Bản chất của Biến đổi Wavelet Rời rạc 2 chiều (2D DWT) & Phân tích Đa phân giải (MRA)
-   - 1.2. Quy trình Băm Hình ảnh Wavelet (Wavelet Perceptual Hashing - wHash)
-   - 1.3. Khoảng cách Hamming & Không gian Độ đo Tương đồng Nhị phân
-   - 1.4. Ma trận So sánh Đối đầu 4 Thuật toán Băm Cảm nhận: wHash vs aHash vs dHash vs pHash
-   - 1.5. Hệ sinh thái Ứng dụng Thực tế trong Công nghệ & An ninh Thông tin
-2. [Phần II: Thực nghiệm & Phân tích Đột phá](#phan-ii-thuc-nghiem--phan-tich-dot-pha)
-   - 2.1. Bài tập 1: Phân tách Dải tần Wavelet 2D & Đối chiếu Biến thể Thuật toán (Slide 17 vs Slide 18)
-   - 2.2. Bài tập 2: Ma trận Khoảng cách Hamming Đôi một & Hệ thống Truy vấn Top-k
-   - 2.3. Bài tập 3: Khảo sát Tính Bền vững (Robustness Analysis) qua 12 Phép Biến đổi Ảnh Suy thoái
-   - 2.4. Bài tập 4: Đánh giá Định lượng Ground Truth & Phân tích Đường cong ROC/AUC (Slide 18)
-3. [Phần III: Giải quyết 4 Chuyên đề Mở rộng](#phan-iii-giai-quyet-4-chuyen-de-mo-rong)
-   - 3.1. Chuyên đề 1: Khắc phục Nhược điểm Nhạy Xoay Góc lớn qua Multi-Angle wHash
-   - 3.2. Chuyên đề 2: Tối ưu Hóa Tìm kiếm Ảnh Tương đồng Quy mô Lớn (Multi-Index Hashing & VP-Tree)
-   - 3.3. Chuyên đề 3: So sánh Bản chất giữa Wavelet Hash và Deep Visual Embeddings (ResNet/ViT/CLIP)
-   - 3.4. Chuyên đề 4: Phân tích Tính Bất biến Dịch chuyển (Shift Invariance) & Dual-Tree Complex Wavelet (DTCWT)
-4. [Phần IV: Kết luận & Hướng Phát triển](#phan-iv-ket-luan--huong-phat-trien)
-5. [Phần V: Danh mục Tài liệu Tham khảo](#phan-v-danh-muc-tai-lieu-tham-khao)
+Bài làm chọn baseline đó làm cấu hình tham chiếu của project. Notebook trình bày trực tiếp dữ liệu và kết quả, dùng các hàm tính toán trong `src/` để tái sử dụng. Hình và số liệu trong report được lấy từ một lần thực thi sạch của notebook, không lấy từ report hoặc pipeline mẫu cũ.
 
----
+Đã thực hiện phần cơ bản và hai bài nâng cao. Khảo sát độ bền là bổ sung, giới hạn ở các phép biến đổi được mô tả bên dưới. So sánh aHash/dHash/pHash, PR curve và ứng dụng tìm kiếm quy mô lớn chưa được triển khai ở notebook này; các câu hỏi liên quan được thảo luận riêng.
 
-# PHẦN I: CƠ SỞ LÝ THUYẾT & TOÁN HỌC CHUYÊN SÂU
+### 1.1. Môi trường và tái lập
 
-## 1.1. Bản chất của Biến đổi Wavelet Rời rạc 2 chiều (2D DWT) & Phân tích Đa phân giải (MRA)
+Môi trường thực thi: python 3.13.15, opencv 5.0.0, numpy 2.5.3, pywavelets 1.8.0, scipy 1.18.1, sklearn 1.9.1. Tất cả chạy CPU.
 
-Trong xử lý tín hiệu và hình ảnh cổ điển, **Biến đổi Fourier Rời rạc (DFT / FFT)** và **Biến đổi Cosin Rời rạc (DCT)** phân tích tín hiệu trên cơ sở các hàm sóng hình sin và cosin có độ dài vô hạn. Do đó, Fourier chỉ cho biết tần số nào xuất hiện mà hoàn toàn đánh mất thông tin về vị trí không gian của các tần số đó.
+Cài `requirements/base.txt` và `jupyter nbformat nbclient ipykernel markdown`. Từ thư mục project, chạy `python -m src.data.lab04_pairs` để tạo dữ liệu từ 26 ảnh đã cung cấp, rồi mở notebook và chọn **Restart Kernel → Run All**. Có thể dùng `python scripts/lab04/run_notebook.py` để chạy và xuất hình/số liệu. Report Markdown là nguồn chỉnh sửa báo cáo; `python scripts/lab04/render_report.py` xuất bản HTML tương ứng. Lần chạy notebook không tự sửa ảnh nguồn hoặc tự thay dữ liệu khi thiếu CSV.
 
-Để khắc phục nhược điểm này, **Biến đổi Wavelet Rời rạc (Discrete Wavelet Transform - DWT)** được xây dựng dựa trên nguyên lý **Phân tích Đa phân giải (Multi-Resolution Analysis - MRA)** của Stephane Mallat (1989). Tín hiệu được phân rã thành các hàm sóng con thu nhỏ và tịnh tiến:
-$$\psi_{j, k}(t) = \frac{1}{\sqrt{2^j}} \psi\left(\frac{t - 2^j k}{2^j}\right)$$
-Trong không gian ảnh số 2D $I(x, y)$, phép biến đổi 2D DWT sử dụng cây lọc 2 chiều tách rời (Separable 2D Filter Bank) gồm bộ lọc thông thấp $H$ (Low-pass) và thông cao $G$ (High-pass). Tại mỗi mức phân rã ($level$), hình ảnh được phân tách thành **4 băng tần trực giao**:
+Seed 42 được dùng khi chia nguồn và sinh nhiễu. Cấu hình dữ liệu ở `configs/dataset/lab04_pairs.yaml`; cấu hình hash/notebook ở `configs/experiment/lab04_wavelet.yaml`. Dependencies đặt phiên bản tối thiểu, nên cần ghi lại môi trường nếu kết quả khác. Thời gian xử lý bên dưới là một lần đo trên các ảnh đã nạp vào RAM, không gồm đọc file.
 
+### 1.2. Đối chiếu cấu trúc bài làm
+
+- **YC1:** nạp ảnh/cặp có nhãn, xem Wavelet, lượng tử hóa và tạo mã.
+- **YC2:** Hamming từng cặp; heatmap giữa ảnh nguồn là phần trình bày bổ sung.
+- **YC3:** khảo sát độ bền trên calibration, không dùng để chọn lại dữ liệu evaluation.
+- **YC4:** chọn ngưỡng bằng calibration rồi chấm evaluation; ROC dùng điểm âm của khoảng cách.
+- **Nâng cao 1:** thay sóng mẹ, mức phân rã và cách tạo bit, giữ nguyên bộ cặp.
+- **Nâng cao 2:** tìm Top-3 ảnh nguồn với ảnh truy vấn JPEG; có thể đổi đường dẫn truy vấn trong notebook.
+
+## 2. Dữ liệu và cách hiểu nhãn
+
+### 2.1. Ảnh nguồn
+
+Người học cung cấp 26 ảnh: Chihuahua–muffin gồm 7 chó và 7 muffin; mèo–kem gồm 6 mèo và 6 kem. Hai ảnh tập thể đã được loại bỏ và ảnh có watermark đã được chỉnh trước khi chuẩn bị dữ liệu. Đây là ảnh riêng từng ô, không phải một ảnh ghép hai đối tượng.
+
+Ảnh chó/bánh khoảng 141×141, ảnh mèo/kem khoảng 196×196; resize về 256×256 chỉ để chuẩn hóa đầu vào, không tạo thêm chi tiết thật. Ảnh đã cắt/nén có thể mất thông tin. Tên tác giả, URL gốc và cá thể động vật chưa có metadata đầy đủ, vì vậy chưa xác nhận được sự độc lập theo nguồn website hoặc cá thể.
+
+### 2.2. Nhãn tương tự và không tương tự
+
+Nhãn **1** có nghĩa hai ảnh cùng ảnh nguồn: bản gốc và bản chỉnh sáng, tối, nhiễu hoặc JPEG. Nhãn **0** là hai ảnh gốc khác loại đối tượng trong cùng chủ đề: chó–muffin, mèo–kem. Không gán nhãn bằng khoảng cách Hamming và không coi mọi ảnh chó với nhau là cặp dương.
+
+Các cặp khác đối tượng có thể giống hình thức. Nếu hash trả khoảng cách nhỏ cho chó và muffin, đó là kết quả của đặc trưng cảm nhận; bài đánh giá sẽ xem nó là phát hiện nhầm theo tiêu chí cùng nguồn. Hai cách hiểu “giống hình thức” và “cùng ảnh nguồn” phải được phân biệt khi trình bày kết quả.
+
+### 2.3. Biến thể và chia nhóm
+
+Mỗi ảnh nguồn tạo bốn biến thể: sáng ×1.3, tối ×0.7, nhiễu Gaussian σ=10 trên thang 0–255 và JPEG Q=50. Có 104 biến thể, tổng 130 ảnh tính cả nguồn. Biến thể giữ kích thước gốc và lưu RGB uint8. Notebook giữ RGB cả khi hiển thị và tính baseline hash; ảnh xám chỉ dùng cho phương pháp đối chiếu.
+
+Chọn ngẫu nhiên 3 ảnh mỗi loại cho calibration bằng seed 42, giữ mọi biến thể cùng nhóm với ảnh nguồn. Nhóm calibration có 12 nguồn, 48 cặp dương và 18 cặp âm (66 cặp). Nhóm evaluation có 14 nguồn, 56 cặp dương và 25 cặp âm (81 cặp). Tổng 147 cặp; không có ảnh nguồn dùng ở cả hai nhóm.
+
+Cặp âm gồm tất cả tổ hợp khác loại trong từng chủ đề/split, mỗi cặp một lần. Hai nhãn không cân bằng; các cặp cùng sử dụng ảnh nên không phải 147 quan sát độc lập. Việc tách nguồn giúp giảm rò rỉ do biến thể, nhưng chưa giải quyết được khả năng gần trùng hoặc cùng cá thể giữa các ảnh gốc khác file.
+
+![Hình 1. Ví dụ cặp nhãn 1 và 0 trong calibration, hiển thị bằng màu gốc RGB.](../../assets/lab04/dataset_pairs.png)
+
+*Hình 1. Ví dụ cặp nhãn 1 và 0 trong calibration, hiển thị bằng màu gốc RGB.*
+
+## 3. Cơ sở lý thuyết và thiết kế hash
+
+### 3.1. Biến đổi Wavelet hai chiều
+
+DWT dùng các bộ lọc thông thấp/thông cao và lấy mẫu để biểu diễn ảnh theo các mức phân giải. Thành phần xấp xỉ giữ cấu trúc tổng thể; các thành phần chi tiết mô tả biến đổi theo những hướng khác nhau. Với phân rã đa mức, tiếp tục phân tích thành phần xấp xỉ của mức trước.
+
+`pywt.wavedec2` trả danh sách `[cA_n, (cH_n,cV_n,cD_n), ..., (cH_1,cV_1,cD_1)]`. Phải phân biệt ma trận đầu với tuple chi tiết khi duyệt. Baseline lấy `cA_n`, gọi là LL. Cấu trúc đầu ra được mô tả trong [tài liệu PyWavelets](https://pywavelets.readthedocs.io/en/latest/ref/2d-dwt-and-idwt.html).
+
+Chế độ biên `symmetric` mở rộng dữ liệu đối xứng ở biên trước khi lọc. Kích thước hệ số phụ thuộc độ dài bộ lọc, kích thước ảnh, mức phân rã và chế độ biên; không suy ra LL 8×8 chỉ từ `level=1`. Các tên hướng phụ thuộc quy ước trục của thư viện; notebook dùng tên `cH`, `cV`, `cD` để tránh lẫn hướng ảnh và hướng ma trận.
+
+Wavelet cung cấp thông tin ở các vị trí và mức phân giải. Không kết luận Wavelet luôn vượt Fourier/DCT; chọn biểu diễn phải được đánh giá trên mục tiêu và dữ liệu. Trong bài này chỉ khảo sát các phương pháp dựa trên Wavelet.
+
+### 3.2. Lượng tử hóa và mã RGB 192 bit
+
+Baseline tách ảnh RGB thành ba kênh. Mỗi kênh được chuẩn hóa float32 [0,1], resize 256×256 bằng INTER_AREA, phân rã db4 level=1, lấy LL rồi thu về 8×8 bằng INTER_AREA. Trung vị `m_c` tính trên 64 hệ số của chính kênh `c`; mỗi phần tử tạo bit `h_c[i,j] = 1 nếu LL_c,8[i,j] > m_c, ngược lại 0`. Làm phẳng từng ma trận và ghép R|G|B cho vector uint8 `(192,)`. Không chuyển grayscale trong baseline.
+
+Median chia hệ số theo thứ tự tương đối trong từng kênh. Khi cường độ thay đổi tuyến tính đồng đều mà không clip/lượng tử hóa, thứ tự có thể giữ nên mã ổn định; ảnh thực có clip, lượng tử hóa và sai số nên không được coi bất biến tuyệt đối. Các giá trị bằng median gán 0; ảnh hằng có thể tạo mã ít hoặc không có bit 1. Không bắt buộc đúng 32 bit 1 cho mỗi kênh.
+
+192 bit tương đương 24 byte nếu được đóng gói bit. NumPy uint8 dùng 192 byte cho 192 phần tử, chưa kể metadata; code hiện tại dùng dạng này để dễ đọc. Mã hữu hạn có thể va chạm, nên Hamming=0 không chứng minh hai file giống hệt nhau.
+
+`bits=8` là cạnh ma trận *mỗi kênh* theo giao diện project; slide 18 chưa giải thích đầy đủ tham số này. Việc chọn RGB, LL, median riêng từng kênh, 8×8 và mã 192 bit là quyết định của bài làm. Median từng kênh chủ yếu giữ bố cục tương đối trong kênh, không bảo đảm mô tả màu sắc giống cách mắt người cảm nhận.
+
+### 3.3. Biến thể bước nhảy theo ý tưởng slide 17
+
+Code slide có lời gọi `pywt.quantize` và thao tác làm phẳng chưa xử lý tuple. Bản triển khai thay bằng quy tắc được công bố: ảnh xám float32 trên thang 0–255, resize 256×256, db4 level=3, symmetric; với mỗi hệ số c, tính `q=rint(c/2)` rồi bit `q % 2`. Ghép ma trận xấp xỉ trước, sau đó từng bộ chi tiết theo thứ tự mức trả về của PyWavelets.
+
+Đây là một cách hiện thực hóa ý tưởng lượng tử hóa/tạo bit, không khẳng định slide đã quy định phép làm tròn đó. Modulo 2 giữ tính chẵn/lẻ của hệ số lượng tử hóa; thay đổi cường độ có thể làm đổi parity ở nhiều vị trí. Bản xám này là đối chiếu bổ sung, không phải baseline màu.
+
+### 3.4. Khoảng cách Hamming và quyết định
+
+Với hai vector nhị phân cùng độ dài B, `D_H = Σ[k=1..B] (h1[k] XOR h2[k])`, và khoảng cách chuẩn hóa `d_H = D_H/B`. Độ tương đồng quy ước có thể viết `1−d_H`, nhưng không phải xác suất hai ảnh cùng nguồn.
+
+Quyết định tương tự khi `D_H ≤ τ`, còn lại không tương tự. Ngưỡng nhỏ giảm phát hiện nhầm nhưng có thể bỏ sót biến thể. Trước khi so sánh, code kiểm tra mã không rỗng, một chiều, nhị phân và cùng độ dài, tránh `zip` bỏ qua phần dư hoặc ép uint8 làm mất dữ liệu không hợp lệ.
+
+### 3.5. Các chỉ số đánh giá
+
+- TP: cặp cùng nguồn được dự đoán tương tự; FN: cặp cùng nguồn bị bỏ sót.
+- TN: cặp khác loại được dự đoán khác; FP: cặp khác loại bị dự đoán tương tự.
+- `Accuracy=(TP+TN)/(TP+TN+FP+FN)`.
+- `Recall=TP/(TP+FN)`; `Specificity=TN/(TN+FP)`.
+- Bổ sung: `Precision=TP/(TP+FP)` và `F1=2×Precision×Recall/(Precision+Recall)`; quy ước 0 khi không có dự đoán dương.
+
+ROC biểu diễn TPR theo FPR khi quét ngưỡng. Điểm lớn phải ứng với lớp dương nên dùng `-distance`, không truyền nguyên khoảng cách theo chiều ngược. AUC đánh giá thứ hạng trên nhiều ngưỡng, khác Accuracy ở một ngưỡng. Thư viện yêu cầu dữ liệu có cả hai lớp trong cách đánh giá đang dùng; xem [roc_curve của scikit-learn](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html).
+
+## 4. Kết quả từng yêu cầu
+
+### 4.1. YC1 — Biến đổi và tạo mã
+
+Minh họa các bước trên một ảnh nguồn. Đây là phần code notebook; hàm trong src thực hiện lại cùng quy tắc để dùng cho tất cả ảnh:
+
+```python
+demo_id = sources[settings["detail_source_index"]]["source_id"]
+demo_rgb = rgb_images[demo_id]
+channel_steps = {}
+for channel, name in enumerate("RGB"):
+    prepared = cv2.resize(
+        demo_rgb[:, :, channel].astype(np.float32) / 255,
+        tuple(params["image_size"]),
+        interpolation=cv2.INTER_AREA,
+    )
+    coefficients = pywt.wavedec2(
+        prepared, params["wavelet"], mode="symmetric", level=params["level"]
+    )
+    ll = coefficients[0]
+    ll_small = cv2.resize(
+        ll, (params["bits"], params["bits"]), interpolation=cv2.INTER_AREA
+    )
+    bit_matrix = (ll_small > np.median(ll_small)).astype(np.uint8)
+    channel_steps[name] = (prepared, ll, ll_small, bit_matrix)
+demo_hash = np.concatenate([channel_steps[name][3].ravel() for name in "RGB"])
+print(
+    f"Ảnh: {demo_id}; mỗi LL: {channel_steps['R'][1].shape}; mã RGB: {demo_hash.shape}, {demo_hash.dtype}"
+)
+for name in "RGB":
+    print(f"{name}: {''.join(map(str, channel_steps[name][3].ravel()))}")
+visual.plot_hash_steps(demo_rgb, channel_steps)
 ```
-           ┌─────────── Low-pass (Rows) ──► Downsample 2 ──► Low-pass (Cols) ──► LL (Approximation)
-           │                                             └─► High-pass (Cols) ─► LH (Horizontal)
-Image ─────┤
-           │                                             ┌─► Low-pass (Cols) ──► HL (Vertical)
-           └─────────── High-pass (Rows) ─► Downsample 2 ──┼─► High-pass (Cols) ─► HH (Diagonal)
+
+Mỗi LL của ảnh minh họa có kích thước **131×131**, sau chuẩn hóa còn 8×8. Mã R|G|B dài **192 bit**; từng đoạn 64 bit được in trong notebook.
+
+![Hình 2. Ảnh màu gốc và từng kênh R, G, B được tô bằng màu tương ứng; vùng đen là hai kênh còn lại đã tắt để minh họa.](../../assets/lab04/rgb_channels.png)
+
+*Hình 2. Ảnh màu gốc và từng kênh R, G, B được tô bằng màu tương ứng; vùng đen là hai kênh còn lại đã tắt để minh họa.*
+
+![Hình 3. LL, LL 8×8 và ma trận bit của từng kênh màu.](../../assets/lab04/baseline_hash.png)
+
+*Hình 3. LL, LL 8×8 và ma trận bit của từng kênh màu.*
+
+![Hình 4. LL và ba thành phần chi tiết trên kênh R; các panel dùng thang hiển thị riêng.](../../assets/lab04/wavelet_bands.png)
+
+*Hình 4. LL và ba thành phần chi tiết trên kênh R; các panel dùng thang hiển thị riêng.*
+
+Ảnh nguồn không được phân loại thành chó/bánh bởi ma trận bit. Bit chỉ ghi quan hệ hệ số với ngưỡng, không mang nhãn ngữ nghĩa. Phần chi tiết được hiển thị để hiểu DWT nhưng không đưa vào baseline LL.
+
+### 4.2. YC2 — So sánh Hamming
+
+Tạo 130 mã RGB 192 bit, tính khoảng cách cho 147 cặp trong CSV. Tổng Hamming bằng tổng số bit khác ở ba đoạn R/G/B. Heatmap dùng 26 ảnh gốc; số trục là thứ tự nguồn và có tên loại/file ở trục dọc. Các ô ngoài đường chéo bao gồm cả cặp không thuộc manifest đánh giá, vì heatmap nhằm quan sát tổng thể.
+
+```python
+labels = {
+    split: np.array([int(p["label"]) for p in rows]) for split, rows in pairs.items()
+}
+distances = {
+    split: np.array(
+        [wh.hamming_distance(hashes[p["left_id"]], hashes[p["right_id"]]) for p in rows]
+    )
+    for split, rows in pairs.items()
+}
+for p in sample_pairs:
+    distance = wh.hamming_distance(hashes[p["left_id"]], hashes[p["right_id"]])
+    print(f"{p['left_id']} ↔ {p['right_id']}: nhãn={p['label']}, Hamming={distance}")
 ```
 
-1. **Băng xấp xỉ $LL$ (Low-Low / Approximation):**
-   $$LL(x, y) = \sum_{m} \sum_{n} h(2x - m) h(2y - n) I(m, n)$$
-   Chứa hầu hết năng lượng phổ và các cấu trúc hình học thô, đại diện cho bản thu nhỏ mượt mà của bức ảnh.
-2. **Băng chi tiết ngang $LH$ (Low-High / Horizontal Details):**
-   $$LH(x, y) = \sum_{m} \sum_{n} h(2x - m) g(2y - n) I(m, n)$$
-   Làm nổi bật các đường biên và kết cấu chạy theo phương ngang.
-3. **Băng chi tiết dọc $HL$ (High-Low / Vertical Details):**
-   $$HL(x, y) = \sum_{m} \sum_{n} g(2x - m) h(2y - n) I(m, n)$$
-   Làm nổi bật các đường biên và kết cấu chạy theo phương dọc.
-4. **Băng chi tiết chéo $HH$ (High-High / Diagonal Details):**
-   $$HH(x, y) = \sum_{m} \sum_{n} g(2x - m) g(2y - n) I(m, n)$$
-   Chứa các góc nhọn, đường chéo và các thành phần nhiễu tần số cao.
+![Hình 5. Đóng góp Hamming của ba kênh ở bốn cặp minh họa.](../../assets/lab04/channel_distances.png)
 
----
+*Hình 5. Đóng góp Hamming của ba kênh ở bốn cặp minh họa.*
 
-## 1.2. Quy trình Băm Hình ảnh Wavelet (Wavelet Perceptual Hashing - wHash)
+![Hình 6. Ma trận Hamming RGB giữa 26 ảnh nguồn.](../../assets/lab04/hamming_matrix.png)
 
-Khác với các hàm băm mật mã học (MD5, SHA-256) vốn có tính chất tuyết lở (Avalanche Effect - chỉ cần đổi 1 bit đầu vào thì mã băm đầu ra đổi hoàn toàn), **Hàm băm cảm nhận (Perceptual Hashing)** bảo toàn khoảng cách ngữ nghĩa: hai bức ảnh giống nhau về nội dung thị giác thì mã băm của chúng phải gần nhau trong không gian Hamming.
+*Hình 6. Ma trận Hamming RGB giữa 26 ảnh nguồn.*
 
-Quy trình băm hình ảnh Wavelet bao gồm 4 giai đoạn kỹ thuật:
+**calibration:**
 
+- Cặp cùng nguồn: khoảng cách nhỏ nhất 0, lớn nhất 18 bit.
+- Cặp khác loại: khoảng cách nhỏ nhất 50, lớn nhất 98 bit.
+
+**evaluation:**
+
+- Cặp cùng nguồn: khoảng cách nhỏ nhất 0, lớn nhất 20 bit.
+- Cặp khác loại: khoảng cách nhỏ nhất 70, lớn nhất 126 bit.
+
+
+Các cặp khác đối tượng có thể có khoảng cách gần nhau hơn dự kiến; ngưỡng RGB tách đúng calibration nhưng bỏ sót một cặp dương evaluation. Không suy ra thuật toán nhận biết loại chó/muffin hay mèo/kem.
+
+### 4.3. YC3 — Khảo sát độ bền bổ sung
+
+Dùng 12 ảnh calibration cho bốn biến thể dữ liệu và thêm crop giữa 80%, xoay 5°, lật ngang. Xoay giữ kích thước ảnh và dùng biên phản chiếu theo hàm biến đổi hiện có; crop lấy giữa rồi resize về kích thước cũ. Đây là khảo sát mô tả; các phép hình học không nằm trong cặp dương evaluation đã định nghĩa.
+
+![Hình 7. Phân bố khoảng cách RGB với ảnh nguồn qua từng biến đổi trên calibration.](../../assets/lab04/robustness.png)
+
+*Hình 7. Phân bố khoảng cách RGB với ảnh nguồn qua từng biến đổi trên calibration.*
+
+- **bright:** median 7, min 0, max 18 bit.
+- **dark:** median 0, min 0, max 0 bit.
+- **noise:** median 2, min 0, max 4 bit.
+- **jpeg:** median 3, min 0, max 6 bit.
+- **crop 80%:** median 40, min 36, max 54 bit.
+- **rotate 5°:** median 15, min 12, max 20 bit.
+- **flip:** median 77, min 42, max 104 bit.
+
+Tối ×0.7 cho mã không đổi trong mẫu này; nhiễu/JPEG chỉ đổi ít bit. Điều này phù hợp với việc LL giữ cấu trúc thô và dùng ngưỡng tương đối. Tăng sáng có thể clip vùng sáng, dẫn tới thay đổi mạnh hơn giảm sáng.
+
+Crop và lật ngang thay bố cục, làm khoảng cách tăng. Với ngưỡng RGB 18 bit, crop tối thiểu 36 và flip tối thiểu 42 trong calibration sẽ bị xem là khác nguồn dù được tạo từ cùng ảnh. Đây là giới hạn quan trọng: kết quả evaluation không bao quát crop/lật hoặc góc chụp khác. Không đưa các biến đổi này vào test sau khi xem kết quả để rồi báo như đánh giá ban đầu.
+
+### 4.4. YC4 — Chọn ngưỡng và đánh giá cuối
+
+Chọn ngưỡng bằng Youden J = Recall + Specificity − 1 trên calibration. Xét các giá trị khoảng cách quan sát được và trường hợp dự đoán toàn âm; nếu nhiều ngưỡng cùng J thì lấy nhỏ nhất. Đây là tiêu chí lựa chọn bổ sung của project, không phải ngưỡng cố định trong slide.
+
+```python
+threshold = evaluation.select_threshold(labels["calibration"], distances["calibration"])
+metrics = {
+    split: evaluation.score_pairs(labels[split], distances[split], threshold)
+    for split in pairs
+}
+print(f"Ngưỡng calibration: {threshold:g}/{len(demo_hash)} bit")
+for split, values in metrics.items():
+    print(
+        split,
+        {
+            name: round(values[name], 3)
+            for name in ("accuracy", "recall", "specificity", "auc")
+        },
+    )
 ```
-[ Ảnh Gốc I ] ──► (1. Tiền xử lý & Resize) ──► (2. Biến đổi 2D DWT) ──► (3. Lượng tử hóa Hệ số) ──► (4. Mã Băm Nhị Phân)
+
+Kết quả giữ nguyên ngưỡng calibration:
+
+- **calibration:** τ=18; TP=48, TN=18, FP=0, FN=0; Accuracy=1.0000, Recall=1.0000, Specificity=1.0000; Precision=1.0000, F1=1.0000, AUC=1.0000.
+- **evaluation:** τ=18; TP=55, TN=25, FP=0, FN=1; Accuracy=0.9877, Recall=0.9821, Specificity=1.0000; Precision=1.0000, F1=0.9910, AUC=1.0000.
+
+![Hình 8. Recall, Specificity và Youden J theo ngưỡng calibration; đường đứt là ngưỡng chọn.](../../assets/lab04/threshold_selection.png)
+
+*Hình 8. Recall, Specificity và Youden J theo ngưỡng calibration; đường đứt là ngưỡng chọn.*
+
+![Hình 9. ROC, phân bố khoảng cách evaluation và confusion matrix tại ngưỡng đã chọn.](../../assets/lab04/roc_evaluation.png)
+
+*Hình 9. ROC, phân bố khoảng cách evaluation và confusion matrix tại ngưỡng đã chọn.*
+
+Phân tích riêng theo chủ đề trên evaluation với cùng ngưỡng:
+
+- **chihua_muffin:** τ=18; TP=32, TN=16, FP=0, FN=0; Accuracy=1.0000, Recall=1.0000, Specificity=1.0000; Precision=1.0000, F1=1.0000, AUC=1.0000.
+- **meo_kem:** τ=18; TP=23, TN=9, FP=0, FN=1; Accuracy=0.9697, Recall=0.9583, Specificity=1.0000; Precision=1.0000, F1=0.9787, AUC=1.0000.
+
+
+Baseline RGB đạt đúng 80/81 cặp evaluation: 55 TP, 25 TN, 0 FP và 1 FN. Cặp bị bỏ sót là ảnh mèo/kem số 12 và bản tăng sáng của chính nó. R đổi 12 bit, G đổi 6 bit, B đổi 2 bit; tổng Hamming 20 > ngưỡng 18. ROC AUC vẫn 1.0 vì xếp hạng tổng thể tách hai lớp, nhưng ngưỡng đã chốt trên calibration không được chỉnh theo evaluation. Accuracy nếu luôn đoán lớp dương đã là 56/81 ≈ 69.1%, cho thấy cần đọc thêm Recall/Specificity.
+
+Notebook hiển thị cặp evaluation dự đoán sai bằng ảnh RGB gốc. Không thay ngưỡng sau khi xem hình này.
+
+![Hình 10. Cặp cùng nguồn bị bỏ sót: ảnh gốc, bản tăng sáng, chênh lệch RGB được nhân 3 để dễ nhìn và vị trí bit khác nhau của R/G/B. Tổng Hamming 20 > ngưỡng 18.](../../assets/lab04/review_pairs.png)
+
+*Hình 10. Cặp cùng nguồn bị bỏ sót: ảnh gốc, bản tăng sáng, chênh lệch RGB được nhân 3 để dễ nhìn và vị trí bit khác nhau của R/G/B. Tổng Hamming 20 > ngưỡng 18.*
+
+## 5. Hai bài nâng cao
+
+### 5.1. Khảo sát phương pháp băm Wavelet
+
+Giữ bốn cấu hình dễ đối chiếu: RGB LL–median với db4 level 1 (baseline), haar level 1, db4 level 2 và biến thể bước nhảy/modulo 2 dùng ảnh xám db4 level 3 theo ý tưởng slide 17. Mỗi cấu hình dùng cùng 130 ảnh, 66 cặp calibration và 81 cặp evaluation. Ngưỡng riêng chọn trên calibration; số liệu evaluation chỉ để đánh giá, không chọn lại baseline theo kết quả.
+
+Độ dài khác nhau nên tất cả ngưỡng trong khảo sát này dùng Hamming chuẩn hóa. Một bit của mã ngắn và một bit của mã dài không có ý nghĩa tương đương để so trực tiếp số đếm thô. Chuẩn hóa làm cùng khoảng [0,1], nhưng vẫn cần dựa trên chỉ số phân loại vì hai biểu diễn mang lượng thông tin khác nhau.
+
+![Hình 11. Recall và Specificity evaluation của bốn cấu hình Wavelet.](../../assets/lab04/wavelet_comparison.png)
+
+*Hình 11. Recall và Specificity evaluation của bốn cấu hình Wavelet.*
+
+- **RGB db4 L1**: 192 bit; τ chuẩn hóa=0.093750; Accuracy=0.9877, Recall=0.9821, Specificity=1.0000, AUC=1.0000.
+- **RGB haar L1**: 192 bit; τ chuẩn hóa=0.072917; Accuracy=0.9877, Recall=0.9821, Specificity=1.0000, AUC=1.0000.
+- **RGB db4 L2**: 192 bit; τ chuẩn hóa=0.093750; Accuracy=0.9753, Recall=0.9643, Specificity=1.0000, AUC=1.0000.
+- **Gray Step L3**: 71,542 bit; τ chuẩn hóa=0.294163; Accuracy=0.6914, Recall=0.5536, Specificity=1.0000, AUC=0.7157.
+
+Baseline RGB có một FN ở ngưỡng chọn từ calibration. AUC vẫn bằng 1.0 vì thứ hạng có thể tách được hai lớp ở một ngưỡng khác, nhưng bài đánh giá phải giữ ngưỡng đã chọn từ calibration. Số liệu của bốn cấu hình không đủ để kết luận sóng mẹ nào tốt nhất nói chung.
+
+Biến thể bước nhảy tạo mã 71.542 bit do ghép toàn bộ các hệ số với chế độ mở rộng biên, vượt xa 192 bit của baseline. Kết quả Recall khoảng 55.4% cho thấy nhiều bản chỉnh sửa cùng nguồn bị bỏ sót. Modulo 2 có thể đổi bit khi hệ số lượng tử hóa thay đổi chẵn/lẻ; độ dài lớn không bảo đảm biểu diễn tốt hơn.
+
+Biến thể bước nhảy còn đổi hệ số dùng, thang cường độ, không gian màu và cách nhị phân hóa. Vì vậy không quy toàn bộ khác biệt của nó cho level hoặc loại wavelet.
+
+### 5.2. Tìm kiếm ảnh dựa trên hash
+
+Ứng dụng chạy trực tiếp trong notebook. Dùng một ảnh JPEG biến thể làm truy vấn, tính baseline hash và xếp hạng trong 14 ảnh gốc evaluation. Ảnh truy vấn không có mặt như một file giống hệt trong cơ sở dữ liệu; ảnh nguồn của nó có mặt để kiểm tra khả năng tìm lại nguồn.
+
+Người dùng đổi biến `query_path` sang file riêng và chạy lại cell. Nếu chính file truy vấn nằm trong database, code loại file đó theo đường dẫn đã resolve. Không xây website vì đề không yêu cầu loại giao diện cụ thể.
+
+```python
+database = [s for s in sources if s["split"] == "evaluation"]
+query_source = database[settings["retrieval_source_index"]]["source_id"]
+query_id = f"{query_source}__{settings['retrieval_transform']}"
+query_path = (
+    root / metadata[query_id]["path"]
+)  # đổi đường dẫn tại đây để thử ảnh của bạn
+query_rgb, candidates, top_results = evaluation.retrieve_top_k(
+    query_path, database, hashes, root, baseline, settings["top_k"]
+)
+visual.plot_retrieval(query_rgb, candidates, top_results, rgb_images, threshold)
 ```
 
-1. **Giai đoạn 1: Tiền xử lý & Chuẩn hóa Không gian (Preprocessing):**
-   - Chuyển ảnh màu RGB sang Grayscale $I_{\text{gray}} \in [0, 255]$ để loại bỏ sự phụ thuộc vào không gian màu.
-   - Resize ảnh về kích thước cố định có dạng lũy thừa của 2 (ví dụ: $32 \times 32$ hoặc $64 \times 64$) bằng phép nội suy diện tích (`cv2.INTER_AREA`) nhằm tạo tính bất biến co giãn.
-2. **Giai đoạn 2: Biến đổi Wavelet 2D Đa tầng (2D DWT Decomposition):**
-   - Áp dụng `pywt.wavedec2` với sóng mẹ định trước (ví dụ: Daubechies `db4`) tại mức phân rã $level$.
-   - Trích xuất băng xấp xỉ tần số thấp $LL_{level}$ (hoặc kết hợp băng chi tiết $LH, HL$).
-3. **Giai đoạn 3: Lượng tử hóa Hệ số (Coefficient Quantization):**
-   - Giảm độ chính xác số thực liên tục thành nhị phân.
-   - **Cơ chế Lượng tử hóa Trung vị (Median Quantization):**
-     $$h_{x, y} = \begin{cases} 1, & \text{nếu } LL(x, y) > \text{median}(LL) \\ 0, & \text{ngược lại} \end{cases}$$
-   - Việc so sánh với trung vị đảm bảo phân phối các bit $0$ và $1$ trong mã băm luôn cân bằng $50\% - 50\%$, tối đa hóa lượng thông tin (Entropy) của mã băm.
-4. **Giai đoạn 4: Ghép nối Chuỗi Mã Băm (Binary Hash Code Generation):**
-   - Làm phẳng ma trận nhị phân thành vector hàng 1D $\mathbf{h} \in \{0, 1\}^B$ với $B = \text{bits}^2$ (thường là $64$ bits hoặc $256$ bits).
+![Hình 12. Ảnh truy vấn và Top-3 kết quả hiển thị RGB, xếp theo Hamming của hash màu.](../../assets/lab04/top_k.png)
 
----
+*Hình 12. Ảnh truy vấn và Top-3 kết quả hiển thị RGB, xếp theo Hamming của hash màu.*
 
-## 1.3. Khoảng cách Hamming & Không gian Độ đo Tương đồng Nhị phân
+Truy vấn hiện tại: `chihua_muffin_doi_tuong_02__jpeg`. Kết quả:
 
-Khoảng cách giữa hai mã băm nhị phân $\mathbf{h}_1, \mathbf{h}_2 \in \{0, 1\}^B$ được tính bằng **Khoảng cách Hamming (Hamming Distance)**:
-$$D_H(\mathbf{h}_1, \mathbf{h}_2) = \sum_{k=1}^B |h_{1, k} - h_{2, k}| = \sum_{k=1}^B (h_{1, k} \oplus h_{2, k}) = \text{popcount}(\mathbf{h}_1 \oplus \mathbf{h}_2)$$
-- **Khoảng cách Hamming chuẩn hóa (Normalized Hamming Distance):**
-  $$d_H(\mathbf{h}_1, \mathbf{h}_2) = \frac{D_H(\mathbf{h}_1, \mathbf{h}_2)}{B} \in [0.0, 1.0]$$
-- **Độ tương đồng hình ảnh (Similarity Score):**
-  $$\text{Similarity}(\mathbf{h}_1, \mathbf{h}_2) = 1.0 - d_H(\mathbf{h}_1, \mathbf{h}_2)$$
+1. `chihua_muffin_doi_tuong_02`: Hamming **2**, cùng nguồn: **True**.
+2. `chihua_muffin_doi_tuong_03`: Hamming **84**, cùng nguồn: **False**.
+3. `chihua_muffin_doi_tuong_08`: Hamming **90**, cùng nguồn: **False**.
 
-### Quy tắc Phán quyết Phân lớp Nhị phân:
-Với một ngưỡng tương đồng danh định $\tau \in [0, B]$:
-$$\text{Phán quyết} = \begin{cases} \text{Tương đồng (Match / Similar / Positive)}, & \text{nếu } D_H(\mathbf{h}_1, \mathbf{h}_2) \le \tau \\ \text{Khác biệt (Non-match / Dissimilar / Negative)}, & \text{nếu } D_H(\mathbf{h}_1, \mathbf{h}_2) > \tau \end{cases}$$
 
----
+Top-1 tìm lại ảnh nguồn ở khoảng cách 2. Top-2/3 vẫn được hiển thị theo thứ hạng, nhưng vượt ngưỡng 18 nên không được kết luận đủ tương tự. Top-k là cách lấy các kết quả gần nhất ngay cả khi tất cả đều xa; việc chấp nhận cần xét ngưỡng riêng.
 
-## 1.4. Ma trận So sánh Đối đầu 4 Thuật toán Băm Cảm nhận: wHash vs aHash vs dHash vs pHash
+Đây là một ví dụ truy hồi, chưa phải phép đánh giá Recall@k trên nhiều truy vấn. Khi dùng ảnh ngoài bộ dữ liệu, phải kiểm tra kết quả theo thực tế; hash không tự biết nhãn đối tượng mới.
 
-| Tiêu chí So sánh | Average Hash (aHash) | Difference Hash (dHash) | pHash (DCT-based) | Wavelet Hash (wHash) |
-|:---|:---|:---|:---|:---|
-| **Miền biến đổi** | Không gian điểm ảnh thô (Spatial Domain) | Vi phân không gian bậc 1 (Spatial Gradient) | Miền tần số góc Cosin (Frequency Domain) | **Miền không gian - tần số đa phân giải (Wavelet MRA)** |
-| **Công cụ toán học** | Thu nhỏ $8 \times 8 \rightarrow$ So sánh giá trị trung bình | So sánh chênh lệch $P[x] > P[x+1]$ | 2D Discrete Cosine Transform (DCT) | **2D Discrete Wavelet Transform (`pywt.wavedec2`)** |
-| **Tốc độ tính toán** | Cực nhanh ($< 0.05 \text{ ms}$) | Cực nhanh ($< 0.06 \text{ ms}$) | Nhanh ($0.15 - 0.25 \text{ ms}$) | **Rất nhanh ($0.10 - 0.15 \text{ ms}$)** |
-| **Bền trước Thay đổi Sáng** | Kém (dễ lệch ngưỡng trung bình) | Tốt (vi phân triệt tiêu bù trừ độ sáng) | Tốt (thành phần DC bị cô lập) | **Rất cao (bảo toàn cấu trúc dải tần LL)** |
-| **Bền trước Nén JPEG** | Kém (nhiễu khối 8x8 phá hủy trung bình) | Trung bình | Tốt (DCT kháng nén JPEG tốt) | **Xuất sắc (bộ lọc thông thấp lọc sạch nhiễu nén)** |
-| **Bền trước Nhiễu hạt** | Kém (rất nhạy với nhiễu đốm/muối tiêu) | Kém (gradient kề cận bị đảo cực) | Tốt | **Vượt trội (tách hoàn toàn nhiễu vào băng tần $HH$)** |
-| **Độ nhạy cấu trúc cục bộ** | Rất thấp (mất cấu trúc vi mô) | Trung bình (chỉ xét 1 chiều ngang) | Trung bình (mất thông tin tọa độ) | **Rất cao (định vị đồng thời tần số và tọa độ)** |
+## 6. Thảo luận các câu hỏi mở rộng
 
----
+Phần này mô tả hướng phát triển, chưa phải các tính năng hoặc kết quả đã được notebook kiểm chứng.
 
-## 1.5. Hệ sinh thái Ứng dụng Thực tế trong Công nghệ & An ninh Thông tin
+### 6.1. Cải thiện với ảnh xoay lớn
 
-1. **Hệ thống Tìm kiếm Hình ảnh Dựa trên Nội dung (CBIR):** Cho phép người dùng tìm kiếm sản phẩm tương tự bằng hình ảnh chụp từ điện thoại trong kho dữ liệu thương mại điện tử hàng chục triệu mặt hàng.
-2. **Bảo vệ Bản quyền Số & Phát hiện Vi phạm Sở hữu Trí tuệ:** Định danh tự động các tác phẩm nhiếp ảnh, tranh vẽ bị tải về, cắt viền, nén mờ và đăng tải lại trên mạng xã hội.
-3. **MLOps Dataset Deduplication (Lọc trùng lặp dữ liệu):** Nhận diện và loại bỏ các ảnh gần như trùng lặp (Near-Duplicate) giữa tập Train và tập Test, ngăn chặn hiện tượng rò rỉ dữ liệu (Data Leakage) làm sai lệch kết quả mô hình AI.
-4. **Giám định Kỹ thuật số (Digital Forensics):** Cơ quan thực thi pháp luật sử dụng mã băm cảm nhận để rà quét và ngăn chặn tự động việc phát tán tài liệu vi phạm pháp luật trên các nền tảng đám mây.
+Biểu diễn LL theo lưới tọa độ thay đổi khi ảnh xoay, nhất là khi vị trí tương đối các vùng sáng tối đổi. Có thể chuẩn hóa hướng trước khi hash hoặc lưu nhiều hash cho các góc xoay. Cách nhiều hash làm tăng lưu trữ và số phép so sánh; đồng thời tăng cơ hội ảnh khác cũng có khoảng cách nhỏ, nên phải chọn lại tiêu chí đánh giá trên calibration phù hợp.
 
----
+Định hướng bằng mô-men có thể không ổn định với nền phức tạp hoặc vật đối xứng. Log-polar hoặc biểu diễn khác là phương án nghiên cứu, không mặc định giải quyết được mọi biến đổi. Kết quả crop/flip hiện tại cho thấy cần thử riêng các biến đổi hình học trước khi mở rộng tuyên bố độ bền.
 
-# PHẦN II: THỰC NGHIỆM & PHÂN TÍCH ĐỘT PHÁ
+### 6.2. Tìm kiếm trên hàng triệu ảnh
 
-Toàn bộ các thí nghiệm được tự động hóa qua module [`Lab04Pipeline`](file:///home/bush/Projects/CV/uth-cv-labs/src/pipelines/lab04_pipeline.py#L42-L560), lưu trữ ảnh tại [`experiments/predictions/lab04/`](file:///home/bush/Projects/CV/uth-cv-labs/experiments/predictions) và xuất số liệu vào [`experiments/logs/lab04/metrics_summary.json`](file:///home/bush/Projects/CV/uth-cv-labs/experiments/logs).
+Ví dụ hiện tại quét tuyến tính N mã và tính Hamming, chi phí khoảng O(NB). Với mã 192 bit đóng gói, XOR và popcount có thể giảm chi phí tính/lưu. Khi N lớn, có thể khảo sát BK-tree, multi-index hashing hoặc tìm kiếm gần đúng; hiệu quả phụ thuộc phân bố mã và bán kính tìm kiếm.
 
----
+Không suy ra truy vấn toàn hệ thống là O(1) chỉ vì một thao tác tra bảng băm có chi phí trung bình hằng số. Vẫn có chi phí tạo ứng viên, duyệt kết quả và kiểm tra khoảng cách. Những cấu trúc này chưa được cài đặt hoặc benchmark trong bài.
 
-## 2.1. Bài tập 1: Phân tách Dải tần Wavelet 2D & Đối chiếu Biến thể Thuật toán (Slide 17 vs Slide 18)
+### 6.3. Hash và vector đặc trưng học sâu
 
-Thí nghiệm được thực hiện trên ảnh chuẩn `camera.png` ($256 \times 256$ pixels).
+Hash của bài dùng cấu trúc thô của từng kênh màu, phù hợp thử tìm bản gần trùng với chi phí biểu diễn nhỏ. Đặc trưng học sâu có thể mang thông tin ngữ nghĩa tùy mô hình và cách huấn luyện. Không khẳng định mọi embedding hiểu ngữ nghĩa tốt hoặc bắt buộc chạy GPU; cần chọn theo bài toán, tài nguyên và dữ liệu.
 
-![Phân tích dải tần 2D DWT](../../../experiments/predictions/lab04/ex1_wavelet_decomposition.png)
-*Hình 1: Phân rã Đa phân giải 2D DWT mức 2 bằng sóng mẹ Daubechies `db4`: Băng xấp xỉ $LL_2$ và các băng chi tiết $LH, HL, HH$ ở cấp 1 và cấp 2.*
+Hai ảnh chó khác nhau có thể cùng ngữ nghĩa nhưng không cùng ảnh nguồn. Vì thế thay hash bằng embedding còn đòi hỏi xem lại tiêu chí tương tự và dữ liệu đánh giá. Có thể dùng hai giai đoạn: lọc ứng viên rồi so kỹ hơn, nhưng phải đo tỷ lệ bỏ sót ở bước đầu.
 
-### Đối chiếu Hai Biến thể Thuật toán trong Slide Bài giảng:
-| Thuộc tính So sánh | Biến thể Slide 17 | Biến thể Slide 18 (Chuẩn wHash) |
-|:---|:---|:---|
-| **Chữ ký hàm** | `wavelet_hash(image_path, wavelet='db4', level=3)` | `wavelet_hash(image_path, wavelet='db4', level=1, bits=8)` |
-| **Cơ chế trích xuất hệ số** | Làm phẳng toàn bộ hệ số $LL_3$ và các tuple chi tiết $LH, HL, HH$ | **Chỉ trích xuất băng tần xấp xỉ $LL_1$** (chứa năng lượng chủ đạo) |
-| **Phương pháp lượng tử hóa** | Lượng tử hóa bước nhảy `step=2` và lấy modulo 2 | **Lượng tử hóa trung vị (`median thresholding`)** |
-| **Kích thước mã băm** | $5,782$ bits (rất dài, tốn bộ nhớ) | **Đúng 64 bits** (gọn gàng, tối ưu lưu trữ và so sánh bitwise) |
-| **Thời gian thực thi (Latency)** | $0.91 \text{ ms}$ | **$0.13 \text{ ms}$ (nhanh gấp ~7 lần)** |
-| **Khả năng kháng nhiễu** | Dễ bị ảnh hưởng do giữ lại cả băng $HH$ chứa nhiễu | Kháng nhiễu cực tốt vì đã loại bỏ băng chi tiết cao |
+### 6.4. Wavelet Packet và DTCWT
 
----
+DWT lấy mẫu có thể nhạy với dịch chuyển nhỏ. Wavelet Packet phân rã thêm các nhánh để khảo sát thông tin băng tần chi tiết hơn, nhưng tăng số lựa chọn đặc trưng; riêng việc thêm nhánh chưa đảm bảo bất biến dịch chuyển.
 
-## 2.2. Bài tập 2: Ma trận Khoảng cách Hamming Đôi một & Hệ thống Truy vấn Top-k
+DTCWT là hướng nghiên cứu để có tính chọn hướng và độ ổn định dịch chuyển tốt hơn trong những điều kiện nhất định. Bài chưa sử dụng thư viện hoặc thí nghiệm cho WPT/DTCWT, vì vậy không đưa số liệu khẳng định chúng cải thiện trên 26 ảnh này. Nếu triển khai, cần so cùng split và quy tắc nhãn.
 
-Thí nghiệm xây dựng cơ sở dữ liệu gồm 12 ảnh: 6 ảnh gốc (`camera`, `coins`, `brick`, `cat`, `coffee`, `horse`) và 6 biến thể chỉnh sáng nhẹ tương ứng.
+## 7. Kiểm tra quy trình và giới hạn
 
-![Ma trận nhiệt khoảng cách Hamming](../../../experiments/predictions/lab04/ex2_pairwise_heatmap.png)
-*Hình 2: Biểu đồ nhiệt (Heatmap Matrix) thể hiện khoảng cách Hamming đôi một giữa 12 ảnh trong cơ sở dữ liệu.*
+### 7.1. Audit
 
-![Truy vấn Top-3](../../../experiments/predictions/lab04/ex2_top_k_retrieval.png)
-*Hình 3: Kết quả truy vấn Top-3 ảnh tương đồng nhất với ảnh Query `camera_orig`.*
+- **Kiến trúc:** dữ liệu và cặp do `src/data/lab04_pairs.py` chuẩn bị; hash ở `src/models/classical/wavelet_hash.py`; chọn ngưỡng/chấm cặp ở `src/pipelines/lab04_evaluation.py`; phần vẽ dài ở `src/pipelines/lab04_visuals.py` để notebook tập trung vào từng bước tính toán.
+- **Đúng phạm vi:** đủ các bước cơ bản, hai bài nâng cao và khảo sát độ bền được ghi rõ là bổ sung. Không gán baseline RGB–LL–median–192 bit thành yêu cầu slide.
+- **Quy chuẩn CV:** đường dẫn theo project root, không ghi đè ảnh nguồn; NumPy RGB `(H,W,3)`, hash `(192,)` uint8; seed nhiễu/split cố định. Các vòng lặp theo ảnh/cặp/thí nghiệm, không lặp từng pixel. Hàm có type hints và docstring. Bài CPU nên không có quy trình GPU/training.
+- **Phạm vi code:** chỉ giữ các hàm phục vụ notebook hiện tại; đã bỏ pipeline mẫu cũ, bộ vẽ trùng và các thuật toán băm bổ sung chưa dùng. Các hướng mở rộng được thảo luận trong report không đồng nghĩa đã có triển khai.
 
-### Phân tích Khoa học từ Biểu đồ Nhiệt:
-1. **Khối đường chéo chính (Diagonal Blocks):** Khoảng cách giữa các ảnh thuộc cùng một chủ thể (ví dụ: `camera_orig` và `camera_bright`) chỉ dao động từ **$0$ đến $2$ bits**.
-2. **Khối ngoài đường chéo (Off-diagonal Blocks):** Khoảng cách giữa các bức ảnh khác nhau (ví dụ: `camera` và `coins`, `brick`, `cat`) dao động từ **$18$ đến $38$ bits** (trung bình $\approx 28$ bits trên tổng số 64 bits).
-3. **Kết quả Truy vấn Top-k:** Ảnh `camera_bright` được truy vấn ở vị trí số 1 ngay sau chính nó với khoảng cách $D_H = 2$ bits, trong khi ảnh khác biệt gần nhất (`coins_orig`) có khoảng cách lên tới $20$ bits. Độ phân cách (Separation Margin) đạt **$18$ bits**, cho phép phân định tương đồng với độ tin cậy tuyệt đối.
+### 7.2. Kiểm tra thực tế
 
----
+- Notebook chạy toàn bộ từ kernel mới, không lỗi cell; đã xuất 12 hình từ output.
+- Kiểm tra 130 mã có 192 bit nhị phân; code minh họa R|G|B khớp hàm baseline.
+- Kiểm tra ma trận đôi một đối xứng và đường chéo bằng 0; nguồn calibration/evaluation không giao nhau; nhãn cặp đúng nguồn và cùng split.
+- Test dữ liệu kiểm tra tái lập, nhãn, nguồn giữ nguyên; test baseline kiểm tra thứ tự R|G|B, dữ liệu float/uint8, shape không hợp lệ và ảnh hằng.
+- Test chọn ngưỡng có trường hợp evaluation vẫn sai để bảo đảm không tự fit lại ngưỡng theo evaluation.
+- Smoke và normal test, Ruff trên src/tests/notebook và Black trên src/tests được chạy sau khi dọn code. Các test riêng cho tính năng cũ đã bỏ được gỡ cùng tính năng; các kiểm tra hash, Hamming, dữ liệu, chọn ngưỡng và Top-k vẫn được giữ.
 
-## 2.3. Bài tập 3: Khảo sát Tính Bền vững (Robustness Analysis) qua 12 Phép Biến đổi Ảnh Suy thoái
+### 7.3. Giới hạn diễn giải
 
-Khảo sát đối đầu tính bền vững của **wHash**, **pHash (DCT)**, **dHash**, và **aHash** trên 12 phép biến đổi quang học và hình học:
+Tập nguồn chỉ có 26 ảnh đã chọn có chủ đích, hai chủ đề và một seed chia nhóm. Cặp dương là các biến đổi tổng hợp nhẹ, không có ảnh cùng vật ở góc chụp mới. Không có khoảng tin cậy hoặc đánh giá nhiều lần chia nhóm. Các kết quả hiện tại là minh họa học phần có kiểm tra thực thi, chưa phải benchmark đại diện cho tìm kiếm ảnh tự nhiên.
 
-![Các mẫu ảnh suy thoái thực nghiệm](../../../experiments/predictions/lab04/ex3_distorted_samples.png)
-*Hình 4: Các mẫu ảnh bị suy thoái nhân tạo dùng cho kiểm thử tính bền vững.*
+Nguồn/tác giả ảnh cần bổ sung nếu dùng để công bố rộng hơn. Hash không thay nhãn nguồn, không phân loại chó/bánh và không đưa ra kết luận bản quyền. Kết quả Hamming gần cần được người dùng xem lại theo mục tiêu thực tế.
 
-![Biểu đồ so sánh tính bền vững](../../../experiments/predictions/lab04/ex3_robustness_comparison.png)
-*Hình 5: Biểu đồ cột so sánh độ dịch chuyển khoảng cách Hamming của 4 thuật toán băm dưới 12 loại biến đổi.*
+## 8. Kết luận
 
-### Bảng Dữ liệu Đo kiểm Thực tế:
-| Phép Biến đổi Ảnh Suy thoái | wHash (Wavelet) | pHash (DCT) | dHash (Difference) | aHash (Average) | Nhận xét Chuyên môn |
-|:---|:---:|:---:|:---:|:---:|:---|
-| **Độ sáng tăng (+30%)** | **2 bits** | 2 bits | 1 bit | 0 bit | Tất cả thuật toán đều giữ khoảng cách $\le 2$ bits. |
-| **Độ sáng giảm (-30%)** | **0 bit** | 0 bit | 0 bit | 0 bit | Miễn nhiễm hoàn toàn với suy giảm độ sáng đồng nhất. |
-| **Tương phản tăng (x1.4)** | **0 bit** | 0 bit | 3 bits | 0 bit | wHash giữ vững cấu trúc không đổi 1 bit nào. |
-| **Gaussian Blur ($\sigma = 1.5$)** | **2 bits** | 0 bit | 1 bit | 0 bit | Các bộ lọc đều kháng mờ rất tốt. |
-| **Nén JPEG Chất lượng thấp ($Q = 20$)**| **0 bit** | 0 bit | 2 bits | 0 bit | **wHash miễn nhiễm tuyệt đối** trước nhiễu khối JPEG. |
-| **Nhiễu Gaussian nặng ($\sigma = 25$)** | **0 bit** | 0 bit | 7 bits | 0 bit | wHash lọc sạch nhiễu vào băng tần $HH$, mã băm không đổi. |
-| **Nhiễu Muối Tiêu (S&P 3%)** | **0 bit** | 0 bit | 5 bits | 0 bit | dHash bị nhảy 5 bits do gradient kề cận bị đảo cực; wHash giữ 0 bit. |
-| **Thu nhỏ tỷ lệ (Downscale 0.5x)** | **2 bits** | 0 bit | 0 bit | 0 bit | Cả 4 thuật toán đều chịu đựng tốt phép co giãn. |
-| **Cắt xén viền (Center Crop 80%)** | **14 bits** | 20 bits | 14 bits | 6 bits | **wHash vượt trội pHash (14 vs 20 bits)** nhờ tính cục bộ. |
-| **Xoay góc nhỏ ($5^\circ$)** | **4 bits** | 8 bits | 8 bits | 1 bit | wHash vượt trội pHash và dHash (chỉ lệch 4 bits). |
-| **Xoay góc lớn ($45^\circ$)** | **12 bits** | 26 bits | 30 bits | 11 bits | **wHash vượt trội pHash gấp hơn 2 lần (12 vs 26 bits)**. |
-| **Lật ảnh đối xứng ngang (Flip)** | **18 bits** | 32 bits | 42 bits | 40 bits | Cả 4 thuật toán đều thay đổi do phá vỡ thứ tự không gian. |
+Đã thực hiện luồng RGB → Wavelet từng kênh → lượng tử hóa → mã băm 192 bit → Hamming → đánh giá, với ngưỡng 18 bit chọn trên calibration. Baseline đúng 80/81 cặp evaluation, bỏ sót một bản tăng sáng và nhạy với crop/lật trong khảo sát bổ sung. Thử nhiều cấu hình cho thấy số bit lớn hơn không tự bảo đảm kết quả tốt hơn.
 
----
+Tìm kiếm Top-3 đã tìm lại nguồn của một ảnh JPEG và hiển thị cả những ứng viên xa hơn. Hướng tiếp theo phù hợp là bổ sung ảnh cùng vật ở góc chụp mới, nhiều nguồn độc lập hơn và đánh giá nhiều truy vấn, giữ nguyên nguyên tắc chọn ngưỡng tách khỏi dữ liệu đánh giá.
 
-## 2.4. Bài tập 4: Đánh giá Định lượng Ground Truth & Phân tích Đường cong ROC/AUC (Slide 18)
+## 9. Tài liệu đối chiếu
 
-Thí nghiệm được thực hiện theo đúng khung chương trình lặp đôi một tại Slide 18 trên tập dữ liệu gồm **$24$ bức ảnh** ($6$ danh mục, mỗi danh mục gồm ảnh gốc và $3$ biến thể suy thoái khác nhau).
-- Tổng số cặp ảnh đánh giá: $\frac{24 \times 23}{2} = \mathbf{276 \text{ cặp}}$.
-- Số cặp Dương bản (Positive Pairs - Cùng nguồn gốc): **$36 \text{ cặp}$**.
-- Số cặp Âm bản (Negative Pairs - Khác nguồn gốc): **$240 \text{ cặp}$**.
-
-![Đường cong ROC và PR](../../../experiments/predictions/lab04/ex4_roc_pr_curves.png)
-*Hình 6: Đường cong ROC (Receiver Operating Characteristic) đạt diện tích $\text{AUC} = 1.0000$ và Đường cong Precision-Recall.*
-
-### Bảng Kết Quả Đánh Giá Định Lượng Chi Tiết (Khung Slide 18):
-| Chỉ số Thống kê | Ký hiệu Toán học | Giá trị Đo kiểm Thực tế | Ý nghĩa Khoa học & Đánh giá |
-|:---|:---:|:---:|:---|
-| **Diện tích dưới đường cong** | **$\text{AUC}$** | **$1.0000$** | **Mô hình phân loại hoàn hảo tuyệt đối**; có sự phân tách rạch ròi 100% giữa phân phối cặp giống nhau và khác nhau. |
-| **Độ chính xác (Accuracy)** | $\frac{TP + TN}{TP + TN + FP + FN}$ | **$100.00\%$** | Không có bất kỳ phán đoán sai lầm nào trên toàn bộ 276 cặp ảnh. |
-| **Độ nhạy (Sensitivity / Recall)** | $\frac{TP}{TP + FN}$ | **$100.00\%$** | Phát hiện chính xác $36/36$ cặp ảnh biến thể tương đồng. |
-| **Độ đặc hiệu (Specificity / TNR)** | $\frac{TN}{TN + FP}$ | **$100.00\%$** | Nhận diện đúng $240/240$ cặp ảnh có nội dung khác biệt. |
-| **Độ xác thực (Precision / PPV)** | $\frac{TP}{TP + FP}$ | **$100.00\%$** | $100\%$ các cặp được báo "giống nhau" thực sự là cùng một chủ thể. |
-| **Điểm $F_1$-Score** | $2 \cdot \frac{P \cdot R}{P + R}$ | **$1.0000$** | Cân bằng lý tưởng tuyệt đối giữa Precision và Recall. |
-| **Ngưỡng quyết định tối ưu** | **$\tau^*$** | **$4 \text{ bits}$** | Điểm phân cách vàng theo tiêu chuẩn Youden's J Index ($J = 1.00$). |
-
----
-
-# PHẦN III: GIẢI QUYẾT 4 CHUYÊN ĐỀ MỞ RỘNG
-
-## 3.1. Chuyên đề 1: Khắc phục Nhược điểm Nhạy Xoay Góc lớn qua Multi-Angle wHash
-
-### Bản chất Vấn đề:
-Lưới Descartes của biến đổi 2D DWT phụ thuộc trực tiếp vào phương ngang và phương dọc. Khi ảnh bị xoay góc lớn ($90^\circ, 180^\circ, 270^\circ$), khoảng cách Hamming của wHash thông thường tăng vọt lên tới $30 - 50$ bits, dẫn đến phân loại nhầm thành hai ảnh khác nhau (False Negative).
-
-![Khảo sát xoay góc](../../../experiments/predictions/lab04/ext_q1_rotation_invariance.png)
-*Hình 7: Khảo sát khoảng cách Hamming theo góc xoay giữa Standard wHash (Đỏ) và Multi-Angle wHash (Xanh lá).*
-
-### Giải pháp Kỹ thuật: Multi-Angle Hash Code
-Tạo bộ mã băm gồm 4 hướng xoay trực giao:
-$$\mathcal{H}(I) = \left\{ \text{wHash}(I, 0^\circ), \text{wHash}(I, 90^\circ), \text{wHash}(I, 180^\circ), \text{wHash}(I, 270^\circ) \right\}$$
-Khoảng cách giữa hai ảnh là cực tiểu khoảng cách giữa các hướng:
-$$D_{\text{multi}}(I_1, I_2) = \min_{\mathbf{h} \in \mathcal{H}(I_1)} D_H(\mathbf{h}, \text{wHash}(I_2))$$
-
-### Kết quả Thực nghiệm:
-- Tại các góc quay hiểm hóc $90^\circ, 180^\circ, 270^\circ$, khoảng cách của Standard wHash lần lượt là $30, 50, 38$ bits (bị rớt khỏi ngưỡng tương đồng).
-- Trong khi đó, **Multi-Angle wHash kéo khoảng cách về đúng $0 \text{ bit}$ tuyệt đối**, giải quyết hoàn hảo bài toán bất biến quay trực giao!
-
----
-
-## 3.2. Chuyên đề 2: Tối ưu Hóa Tìm kiếm Ảnh Tương đồng Quy mô Lớn (Multi-Index Hashing & VP-Tree)
-
-Khi cơ sở dữ liệu mở rộng lên hàng triệu ảnh ($N \ge 10^7$), phương pháp quét tuyến tính (Linear Scan $\mathcal{O}(N)$) trở thành điểm nghẽn nghiêm trọng.
-
-![Benchmark Lập chỉ mục quy mô lớn](../../../experiments/predictions/lab04/ext_q2_large_scale_indexing.png)
-*Hình 8: So sánh thời gian truy vấn giữa Linear Scan $\mathcal{O}(N)$ và Multi-Index Hashing (MIH) khi tăng số lượng mã băm.*
-
-### Phương pháp Multi-Index Hashing (MIH - Norouzi et al., IEEE TPAMI 2014):
-Dựa trên **Nguyên lý Chuồng bồ câu (Pigeonhole Principle)**: Chia chuỗi băm 64-bit thành $m = 4$ khối con ngắn (mỗi khối 16 bits). Nếu khoảng cách Hamming toàn cục $D_H \le 3$, chắc chắn phải có ít nhất **1 khối con có khoảng cách bằng 0** (trùng khớp hoàn toàn).
-- Sử dụng bảng băm (Hash Table) lập chỉ mục cho từng khối con, cho phép truy xuất ứng viên trong thời gian **$\mathcal{O}(1)$**.
-- **Kết quả Đo kiểm:** Tại quy mô $N = 100,000$ mã băm, Linear Scan mất $4.46 \text{ ms}$, trong khi MIH chỉ mất **$0.22 \text{ ms}$ (tăng tốc hơn 20 lần)**!
-
----
-
-## 3.3. Chuyên đề 3: So sánh Bản chất giữa Wavelet Hash và Deep Visual Embeddings (ResNet/ViT/CLIP)
-
-| Tiêu chí Đánh giá | Wavelet Perceptual Hash (wHash) | Deep Visual Embeddings (ResNet-50 / CLIP ViT) |
-|:---|:---|:---|
-| **Cơ sở biểu diễn** | Phân rã tần số không gian cục bộ (Low-level Perceptual Cues) | Biểu diễn ngữ nghĩa trừu tượng cấp cao (High-level Semantic Embeddings) |
-| **Kích thước biểu diễn** | **Cực nhỏ (64 bits = 8 bytes)** | Lớn ($512 - 2048$ số thực 32-bit = $2 - 8 \text{ KB}$) |
-| **Khoảng cách đo đạc** | Khoảng cách Hamming (Bitwise XOR / Popcount trên thanh ghi CPU) | Khoảng cách Cosine / Euclidean trên không gian vector liên tục |
-| **Yêu cầu phần cứng** | **Chỉ cần CPU thông thường** ($< 0.15 \text{ ms}$/ảnh) | Cần GPU tăng tốc ($15 - 50 \text{ ms}$/ảnh trên GPU) |
-| **Độ nhạy ngữ nghĩa** | Không hiểu ngữ nghĩa (hai con mèo khác nhau là hai ảnh khác biệt) | Hiểu ngữ nghĩa (hai con mèo khác nhau vẫn có vector gần nhau) |
-| **Ứng dụng tối ưu** | **Phát hiện ảnh gần trùng lặp (Near-Duplicate), vi phạm bản quyền** | **Tìm kiếm ngữ nghĩa (Semantic Search), phân loại hình ảnh** |
-
----
-
-## 3.4. Chuyên đề 4: Phân tích Tính Bất biến Dịch chuyển (Shift Invariance) & Dual-Tree Complex Wavelet (DTCWT)
-
-### Nhược điểm của 2D DWT Truyền thống:
-Khâu lấy mẫu giảm (Downsampling by 2) sau mỗi tầng lọc khiến 2D DWT chuẩn bị mắc hiện tượng **Nhạy dịch chuyển (Shift-Variance)**: Dịch chuyển bức ảnh chỉ 1 pixel có thể làm đảo lộn đáng kể phân phối năng lượng giữa các hệ số chi tiết.
-
-### Đột phá của Dual-Tree Complex Wavelet Transform (DTCWT - Kingsbury 2001):
-Sử dụng 2 cây lọc DWT song song (Cây thực $\Re$ và Cây ảo $\Im$) tạo thành các hệ số wavelet phức:
-$$\psi_c(t) = \psi_r(t) + j \psi_i(t)$$
-- Đạt tính chất **Gần như Bất biến Dịch chuyển (Near Shift-Invariance)**.
-- Mở rộng từ 3 hướng chi tiết ($LH, HL, HH$) thành **6 hướng định hướng chọn lọc cao**: $\pm 15^\circ, \pm 45^\circ, \pm 75^\circ$, giúp mã băm bền vững hơn trước các rung lắc vi mô của camera.
-
----
-
-# PHẦN IV: KẾT LUẬN & HƯỚNG PHÁT TRIỂN
-
-1. **Tổng kết Thành tựu Bài Lab:**
-   - Làm chủ trọn vẹn bản chất giải tích của 2D DWT và kỹ thuật băm hình ảnh Wavelet.
-   - Triển khai thành công pipeline wHash chuẩn mực theo đúng mã nguồn mẫu trong Slide 17 và Slide 18.
-   - Chứng minh thực nghiệm tính bền vững vượt bậc của wHash trước các phép biến đổi quang học và nén JPEG so với aHash, dHash.
-   - Đánh giá định lượng trên 276 cặp ảnh Ground Truth, đạt độ chính xác $100\%$ và $\text{AUC} = 1.0000$ tại ngưỡng $\tau^* = 4 \text{ bits}$.
-   - Giải quyết trọn vẹn 4 chuyên đề mở rộng về bất biến quay, lập chỉ mục hàng triệu ảnh và so sánh với Deep Learning.
-
-2. **Hướng Nghiên cứu Tiếp theo:**
-   - Xây dựng mô hình lai (Hybrid Architecture) kết hợp mã băm wHash 64-bit làm tầng lọc thô cực nhanh (Filtering Stage), sau đó dùng CLIP Embeddings làm tầng xếp hạng tinh (Reranking Stage) cho các hệ thống tìm kiếm hình ảnh thế hệ mới.
-
----
-
-# PHẦN V: DANH MỤC TÀI LIỆU THAM KHẢO
-
-1. **Mallat, S. G. (1989).** *"A Theory for Multiresolution Signal Decomposition: The Wavelet Representation."* IEEE Transactions on Pattern Analysis and Machine Intelligence, 11(7), pp. 674–693.
-2. **Daubechies, I. (1992).** *"Ten Lectures on Wavelets."* Society for Industrial and Applied Mathematics (SIAM).
-3. **Norouzi, M., Punjani, A., & Fleet, D. J. (2014).** *"Fast Search in Hamming Space with Multi-Index Hashing."* IEEE Transactions on Pattern Analysis and Machine Intelligence, 36(6), pp. 1107–1119.
-4. **Kingsbury, N. (2001).** *"Complex Wavelets for Shift Invariant Analysis and Filtering of Signals."* Applied and Computational Harmonic Analysis, 10(3), pp. 234–253.
-5. **Lee, S. (2016).** *"PyWavelets: Wavelet Transforms in Python."* Journal of Open Source Software, 4(36), 1237.
+1. Slide Chapter 3 Part 1 trang 16–18 trong thư mục tài liệu học phần: yêu cầu, mô tả băm Wavelet và khung code.
+2. [PyWavelets — 2D DWT](https://pywavelets.readthedocs.io/en/latest/ref/2d-dwt-and-idwt.html): cấu trúc hệ số, mức phân rã và chế độ biên.
+3. [scikit-learn — roc_curve](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_curve.html): giao diện đánh giá ROC.
+4. [Notebook hiện tại](../../../notebooks/labs/lab_04.ipynb), [cấu hình hash](../../../configs/experiment/lab04_wavelet.yaml), [cấu hình dữ liệu](../../../configs/dataset/lab04_pairs.yaml): nguồn tái lập thí nghiệm.
