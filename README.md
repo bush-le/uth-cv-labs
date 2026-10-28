@@ -19,6 +19,8 @@ Repository này chứa toàn bộ mã nguồn, dữ liệu thực nghiệm, pipe
 | **Lab 03** | **Canny Edge Detector Chuyên sâu** (5-stage Canny, Noise Robustness, Pratt FOM, Hough Shapes, Segmentation) | ✅ **100%** | [`lab_03.ipynb`](notebooks/labs/lab_03.ipynb) | [`lab03_pipeline.py`](src/pipelines/lab03_pipeline.py) | [Markdown](docs/labs/lab03/LAB_03_REPORT.md) · [HTML](docs/labs/lab03/LAB_03_REPORT.html) | 16 passed |
 | **Lab 04** | **So sánh tương đồng ảnh dùng Wavelet Hashing** (2D DWT Haar/db4, Quantization, ROC/PR Curves, Top-k Retrieval, MIH) | ✅ **100%** | [`lab_04.ipynb`](notebooks/labs/lab_04.ipynb) | [`lab04_pipeline.py`](src/pipelines/lab04_pipeline.py) | [Markdown](docs/labs/lab04/LAB_04_REPORT.md) · [HTML](docs/labs/lab04/LAB_04_REPORT.html) | 8 passed |
 
+Để tạo lại HTML theo sơ đồ thực hành: cài `pip install markdown`, rồi chạy `python scripts/lab03/render_report.py`. Nội dung chi tiết lấy từ report Markdown, hình từ `docs/assets/lab03/`, code trích từ notebook. Bố cục các chặng nằm trong `scripts/lab03/report_layout.json`; CSS và JavaScript được nhúng vào HTML để mở độc lập.
+
 ---
 
 ## 🗂️ Cấu trúc Thư mục Tổng thể (Architecture Layout)
