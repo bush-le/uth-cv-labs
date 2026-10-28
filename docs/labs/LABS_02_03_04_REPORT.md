@@ -149,9 +149,9 @@ flowchart TD
 
 ## 🛠️ 5. HƯỚNG DẪN TÁI LẬP & TRÌNH CHIẾU (REPRODUCIBILITY)
 
-1. **Khởi chạy Slide Trình Chiếu HTML 100vh**:
+1. **Khởi chạy Báo Cáo HTML Toàn Diện**:
    - Mở trực tiếp file [LABS_02_03_04_REPORT.html](LABS_02_03_04_REPORT.html) trong bất kỳ trình duyệt web nào (Chrome, Firefox, Safari, Edge).
-   - Dùng phím `Space`, `↓` hoặc `PageDown` để lướt qua 13 slide trình chiếu toàn màn hình.
+   - Thanh điều hướng trên cùng cho phép nhảy nhanh giữa Tổng quan, Lab 02, Lab 03, Lab 04 và Ma trận so sánh.
    - Nhấp vào bất kỳ hình ảnh nào để mở cửa sổ phóng to **Lightbox Modal** kiểm tra chi tiết.
 
 2. **Chạy lại kiểm thử hồi quy**:

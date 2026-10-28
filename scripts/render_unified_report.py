@@ -1,24 +1,15 @@
-"""Unified Fullscreen 100vh Presentation & Technical Report for Labs 02, 03, and 04.
+#!/usr/bin/env python3
+"""Unified Report Generator for Labs 02, 03, and 04.
 
-Generates a single, cohesive, interactive presentation & technical report combining Labs 02-04:
-- Lab 02: Spatial Filters & Point Operators (11 Yêu Cầu, Linear, Edge, Non-linear)
-- Lab 03: Optimal Canny Edge Detector & Hough Circle Recognition (4 Yêu Cầu + 4 Mở Rộng)
-- Lab 04: Perceptual Image Matching via Wavelet Hash RGB 192-bit (147 Pairs, ROC AUC 1.0000, Top-3)
-
-Features:
-- True 100vh Fullscreen Snap (Mỗi Slide chiếm trọn 100% khung nhìn, lướt hít cứng mượt mà)
-- Dark Luxury Keynote Aesthetic (#0b0f19, glowing cyan accents, glassmorphic cards)
-- 5-Stage Visual Pipeline Ribbons with Real Experimental Images & Exact Math Formulas
-- Sơ đồ kiến trúc luồng dữ liệu Vector SVG độ phân giải cao
-- Minimalist Right-Edge Dots Pager (13 slides tương ứng 13 chấm định vị)
-- Keyboard navigation (Space, ArrowDown, ArrowUp, ArrowRight, ArrowLeft)
-- Interactive tabbed image canvases and fullscreen Lightbox modal
-- 100% self-contained with inline CSS, JS, and Base64-encoded images.
+Generates a standalone, full-bleed, edge-to-edge HTML report (LABS_02_03_04_REPORT.html)
+and a synchronized technical Markdown report (LABS_02_03_04_REPORT.md).
+Retains 100% of all content, figures, code snippets, takeaways, tables, and flow maps
+from Lab 02, Lab 03, and Lab 04 without truncation or floating rounded-corner containment.
 """
-
 from __future__ import annotations
 
 import base64
+import re
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
@@ -46,2059 +37,982 @@ def get_base64_img(rel_path: str) -> str:
     return f"data:{mime};base64,{b64}"
 
 
-# Unified Fullscreen 100vh Slide Presentation CSS Design System
-SHARED_CSS = """
-:root {
-  --primary: #38bdf8;
-  --primary-dark: #0284c7;
-  --primary-glow: rgba(56, 189, 248, 0.25);
-  --accent: #818cf8;
-  --success: #34d399;
-  --success-bg: rgba(52, 211, 153, 0.15);
-  --warning: #fbbf24;
-  --danger: #f87171;
-  --bg-deck: #0b0f19;
-  --bg-card: rgba(15, 23, 42, 0.75);
-  --border: rgba(255, 255, 255, 0.12);
-  --border-light: rgba(255, 255, 255, 0.06);
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --radius-lg: 20px;
-  --radius-md: 12px;
+# Edge-to-Edge Full Bleed Modern CSS (Zero border-radius, 100% width)
+UNIFIED_CSS = """
+/* Universal Reset & Full Bleed Layout (Zero Border-Radius) */
+*, *::before, *::after {
+  box-sizing: border-box;
+  border-radius: 0 !important;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --primary-2: #1e3a8a;
+  --primary-3: #183f35;
+  --primary-4: #4c1d95;
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --border: #cbd5e1;
+  --border-dark: #334155;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --success: #15803d;
+  --success-bg: #f0fdf4;
+}
 
 html, body {
-  height: 100%;
   margin: 0;
   padding: 0;
-  background-color: var(--bg-deck);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  background-color: var(--bg-page);
   color: var(--text-main);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  overflow-x: hidden;
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
+  line-height: 1.65;
   scroll-behavior: smooth;
+  scroll-padding-top: 110px;
 }
 
-body::-webkit-scrollbar {
-  width: 5px;
-}
-body::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 9999px;
-}
-
-/* Slide Screen Container (100vh Snap) */
-.slide-screen {
-  height: 100vh;
-  min-height: 100vh;
-  max-height: 100vh;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 16px 44px;
-  box-sizing: border-box;
-  position: relative;
-  overflow: hidden;
+main {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-.slide-frame {
+/* Master Top Sticky Navigation Bar */
+.master-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   width: 100%;
-  max-width: 1440px;
-  height: 94vh;
+  background: #091310;
+  border-bottom: 2px solid #22c55e;
+  padding: 10px clamp(16px, 3vw, 40px);
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: space-between;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 20px 30px;
-  box-sizing: border-box;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
-  position: relative;
-}
-
-/* Cover / Hero Slide */
-.hero-frame {
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.85) 100%);
-  border-color: rgba(56, 189, 248, 0.3);
-  box-shadow: 0 30px 80px rgba(2, 132, 199, 0.15);
-  justify-content: center;
-  text-align: center;
-  align-items: center;
-}
-
-.brand-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(56, 189, 248, 0.15);
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  color: var(--primary);
-  padding: 5px 14px;
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 10px;
-}
-
-.hero-title {
-  font-size: 30px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  margin-bottom: 8px;
-  line-height: 1.25;
-  background: linear-gradient(135deg, #ffffff 30%, #38bdf8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  max-width: 1100px;
-}
-
-.hero-desc {
-  color: #94a3b8;
-  font-size: 14px;
-  max-width: 950px;
-  margin-bottom: 16px;
-  line-height: 1.5;
-}
-
-.badge-row {
-  display: flex;
+  gap: 12px;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
 }
 
-.pill-badge {
-  display: inline-flex;
+.master-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #f8fafc;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+}
+
+.master-brand .tag {
+  background: #15803d;
+  color: #fff;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.master-nav-links {
+  display: flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
-  border-radius: 8px;
-  font-size: 11.5px;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.08);
-  color: #f1f5f9;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-.pill-badge.success { background: rgba(52, 211, 153, 0.15); color: #34d399; border-color: rgba(52, 211, 153, 0.3); }
-.pill-badge.info { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.3); }
-.pill-badge.warning { background: rgba(251, 191, 36, 0.15); color: #fbbf24; border-color: rgba(251, 191, 36, 0.3); }
-
-/* Hero KPI Grid */
-.hero-kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-  width: 100%;
-  max-width: 1200px;
-  margin-bottom: 14px;
+  flex-wrap: wrap;
 }
 
-.hero-kpi-card {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-md);
-  padding: 14px 16px;
-  text-align: left;
-  transition: transform 0.2s, border-color 0.2s, background 0.2s;
-}
-
-.hero-kpi-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--primary);
-  background: rgba(255, 255, 255, 0.07);
-}
-
-.hero-kpi-title {
-  font-size: 10.5px;
-  text-transform: uppercase;
-  color: #94a3b8;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  margin-bottom: 4px;
-}
-
-.hero-kpi-value {
-  font-size: 24px;
-  font-weight: 800;
-  color: #38bdf8;
-  line-height: 1.2;
-}
-
-.hero-kpi-sub {
-  font-size: 11px;
+.master-nav-links a {
   color: #cbd5e1;
-  margin-top: 4px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.15s ease;
 }
 
-/* Roadmap Grid */
-.lab-roadmap-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 10px;
+.master-nav-links a:hover, .master-nav-links a.active {
+  background: #22c55e;
+  color: #091310;
+  border-color: #22c55e;
+}
+
+.master-nav-links a.btn-lab2:hover { background: #38bdf8; color: #02122b; border-color: #38bdf8; }
+.master-nav-links a.btn-lab3:hover { background: #4ade80; color: #052e16; border-color: #4ade80; }
+.master-nav-links a.btn-lab4:hover { background: #c084fc; color: #2e1065; border-color: #c084fc; }
+.master-nav-links a.btn-matrix:hover { background: #fbbf24; color: #451a03; border-color: #fbbf24; }
+
+.master-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.master-actions button {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #f1f5f9;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.master-actions button:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+/* Master Executive Banner */
+.master-hero {
   width: 100%;
-  max-width: 1200px;
+  background: linear-gradient(135deg, #091a13 0%, #123225 55%, #1b4b38 100%);
+  color: #ffffff;
+  padding: clamp(32px, 5vw, 64px) clamp(20px, 4vw, 56px);
+  border-bottom: 3px solid #22c55e;
+}
+
+.master-hero .eyebrow {
+  color: #86efac;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 700;
   margin-bottom: 12px;
 }
 
-.roadmap-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  padding: 8px 12px;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.roadmap-card:hover {
-  background: rgba(56, 189, 248, 0.1);
-  border-color: var(--primary);
-  transform: translateY(-2px);
-}
-
-.roadmap-step-tag {
-  font-size: 10px;
+.master-hero h1 {
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1.2;
+  margin: 0 0 16px 0;
   font-weight: 800;
-  color: var(--primary);
-  text-transform: uppercase;
-  margin-bottom: 2px;
+  letter-spacing: -0.02em;
 }
 
-.roadmap-step-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: #ffffff;
+.master-hero p.lead {
+  font-size: clamp(16px, 1.8vw, 20px);
+  max-width: 1200px;
+  color: #d1fae5;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
 }
 
-.roadmap-step-desc {
-  font-size: 10.5px;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
-
-.scroll-hint {
-  font-size: 12px;
-  color: #64748b;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 4px;
-  animation: pulse 2s infinite ease-in-out;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 0.5; transform: translateY(0); }
-  50% { opacity: 1; transform: translateY(4px); }
-}
-
-/* Regular Slide Header */
-.slide-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 8px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid var(--border-light);
+.master-hero .kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
-  flex-shrink: 0;
+  margin-top: 24px;
 }
 
-.slide-tag {
-  display: inline-block;
-  background: rgba(56, 189, 248, 0.15);
-  color: var(--primary);
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 2px;
-  border: 1px solid rgba(56, 189, 248, 0.3);
+.master-hero .kpi-card {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-left: 4px solid #22c55e;
+  padding: 16px 20px;
 }
 
-.slide-title {
-  font-size: 19px;
+.master-hero .kpi-card .kpi-val {
+  font-size: 26px;
   font-weight: 800;
-  color: #ffffff;
-  letter-spacing: -0.01em;
+  color: #4ade80;
+  line-height: 1.2;
 }
 
-.slide-summary {
+.master-hero .kpi-card .kpi-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 4px 0 2px 0;
+}
+
+.master-hero .kpi-card .kpi-sub {
   font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
-
-.slide-badge-num {
-  font-size: 11px;
-  font-weight: 700;
-  color: #64748b;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 3px 9px;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  white-space: nowrap;
-}
-
-/* Slide Center Body */
-.slide-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 0;
-  margin: 4px 0;
-  overflow: hidden;
-}
-
-/* Visual Pipeline Ribbon */
-.pipeline-ribbon {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-  width: 100%;
-}
-
-.pipeline-step {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-md);
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.2s, border-color 0.2s, background 0.2s;
-  cursor: zoom-in;
-  position: relative;
-}
-
-.pipeline-step:hover {
-  transform: translateY(-3px);
-  border-color: var(--primary);
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-}
-
-.step-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 4px;
-}
-
-.step-num {
-  font-size: 10px;
-  font-weight: 800;
-  color: var(--primary);
-  background: rgba(56, 189, 248, 0.15);
-  padding: 2px 6px;
-  border-radius: 9999px;
-  letter-spacing: 0.05em;
-  border: 1px solid rgba(56, 189, 248, 0.3);
-}
-
-.step-badge {
-  font-size: 9.5px;
-  font-weight: 700;
-  color: #94a3b8;
-  text-transform: uppercase;
-}
-
-.step-thumb {
-  width: 100%;
-  height: 120px;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: #000000;
-  margin-bottom: 6px;
-}
-
-.step-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.step-title {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 2px;
-  line-height: 1.25;
-}
-
-.step-formula {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 10px;
-  color: #38bdf8;
-  background: rgba(56, 189, 248, 0.1);
-  padding: 2px 5px;
-  border-radius: 4px;
-  margin-bottom: 4px;
-  display: inline-block;
-  border: 1px solid rgba(56, 189, 248, 0.25);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.step-desc {
-  font-size: 10.5px;
-  color: var(--text-muted);
-  line-height: 1.3;
-  margin-bottom: 6px;
-  flex-grow: 1;
-}
-
-.step-metric {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--success);
-  background: var(--success-bg);
-  border: 1px solid rgba(52, 211, 153, 0.3);
-  padding: 2px 6px;
-  border-radius: 4px;
-  display: inline-block;
-  align-self: flex-start;
-}
-
-/* Visual Canvas & Tabs */
-.visual-canvas {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-md);
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.tab-nav {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 6px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding-bottom: 5px;
-  overflow-x: auto;
-  flex-shrink: 0;
-}
-
-.tab-btn {
-  background: transparent;
-  border: none;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.tab-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
-}
-
-.tab-btn.active {
-  background: var(--primary);
-  color: #0f172a;
-  font-weight: 700;
-}
-
-.tab-pane {
-  display: none;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.tab-pane.active {
-  display: flex;
-  flex-direction: column;
-}
-
-.img-container {
-  position: relative;
-  flex: 1;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: #000000;
-  cursor: zoom-in;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
-.img-container img {
-  width: 100%;
-  height: 100%;
-  max-height: 52vh;
-  object-fit: contain;
-  display: block;
-  margin: auto;
-}
-
-.img-caption {
-  padding: 5px 10px;
-  background: rgba(15, 23, 42, 0.85);
-  font-size: 11px;
-  color: var(--text-muted);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.img-caption strong {
-  color: #ffffff;
-}
-
-.zoom-hint {
-  font-size: 10px;
-  color: var(--primary);
-  font-weight: 600;
-}
-
-/* Side-by-Side Images in Canvas */
-.side-by-side-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  flex: 1;
-  min-height: 0;
-}
-
-.quad-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap: 6px;
-  flex: 1;
-  min-height: 0;
-}
-
-/* Slide Footer & Takeaways Pills */
-.slide-footer {
-  margin-top: 6px;
-  flex-shrink: 0;
-}
-
-.takeaways-pills {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 6px;
-}
-
-.takeaway-pill {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-left: 3px solid var(--success);
-  border-radius: 6px;
-  padding: 5px 8px;
-  font-size: 11.5px;
   color: #cbd5e1;
-  line-height: 1.35;
 }
 
-.takeaway-pill strong {
+/* Lab Section Full-Width Containers */
+.lab-section {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-bottom: 8px solid #0f172a;
+}
+
+.lab-section-header {
+  width: 100%;
+  padding: clamp(28px, 4vw, 48px) clamp(20px, 4vw, 56px);
   color: #ffffff;
+  border-bottom: 2px solid rgba(255,255,255,0.15);
 }
 
-/* Data Table in Slide Mode */
-.data-table {
+.lab-section-header.lab02-header {
+  background: linear-gradient(135deg, #0c1e47 0%, #1e3a8a 70%, #0369a1 100%);
+  border-bottom-color: #38bdf8;
+}
+
+.lab-section-header.lab03-header {
+  background: linear-gradient(135deg, #0b221a 0%, #183f35 70%, #15803d 100%);
+  border-bottom-color: #4ade80;
+}
+
+.lab-section-header.lab04-header {
+  background: linear-gradient(135deg, #240e4f 0%, #4c1d95 70%, #4338ca 100%);
+  border-bottom-color: #c084fc;
+}
+
+.lab-section-header .eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 700;
+  opacity: 0.85;
+  margin-bottom: 8px;
+}
+
+.lab-section-header h2 {
+  font-size: clamp(24px, 3.2vw, 40px);
+  margin: 0 0 10px 0;
+  font-weight: 800;
+}
+
+.lab-section-header p {
+  font-size: 16px;
+  max-width: 1000px;
+  margin: 0 0 16px 0;
+  opacity: 0.92;
+}
+
+/* Sub-nav for each lab */
+nav.lab-subnav {
+  position: sticky;
+  top: 50px;
+  z-index: 900;
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  padding: 10px clamp(20px, 4vw, 56px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+nav.lab-subnav a {
+  font-size: 13px;
+  color: #334155;
+  text-decoration: none;
+  padding: 5px 11px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  font-weight: 600;
+  transition: all 0.1s ease;
+}
+
+nav.lab-subnav a:hover, nav.lab-subnav a[aria-current="location"] {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+nav.lab-subnav button {
+  margin-left: auto;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Flow Map Container */
+.flow-map {
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  padding: 28px clamp(20px, 4vw, 56px);
+  margin-bottom: 0;
+}
+
+.flow-map .eyebrow {
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #678273;
+  font-weight: 700;
+}
+
+.flow-map h2 {
+  font-size: 24px;
+  margin: 6px 0 12px 0;
+  color: var(--text-main);
+}
+
+.flow-map p {
+  color: var(--text-muted);
+  max-width: 1000px;
+  margin-bottom: 20px;
+}
+
+.map-scroll {
+  overflow-x: auto;
+  width: 100%;
+  padding-bottom: 8px;
+}
+
+.map-svg, .experiment-map {
+  display: block;
+  width: 100%;
+  min-width: 800px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Content Stages Full Bleed */
+.lab-body {
+  width: 100%;
+  padding: 32px clamp(20px, 4vw, 56px);
+  background: var(--bg-page);
+}
+
+.stage, .flow-stage {
+  border-left: 3px solid #94a3b8;
+  margin: 0 0 48px 20px;
+  padding: 0 0 32px 30px;
+}
+
+.stage-head, .stage-heading {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.number, .stage-number {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  margin-left: -53px;
+  background: #0f172a;
+  color: #ffffff;
+  border: 3px solid var(--bg-page);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.stage h2, .flow-stage h2 {
+  font-size: 24px;
+  line-height: 1.3;
+  margin: 4px 0;
+  color: var(--text-main);
+}
+
+.mini-flow {
+  padding: 12px 18px;
+  background: #e2e8f0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  border-left: 4px solid #0284c7;
+  margin: 12px 0 18px 0;
+}
+
+.intro, .stage-intro {
+  color: var(--text-muted);
+  font-size: 15px;
+  margin: 12px 0 20px 0;
+  max-width: 100%;
+}
+
+/* Image Cards & Gallery */
+.image-card, .gallery-item {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin: 20px 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.image-card img, .gallery-item img {
+  display: block;
+  max-width: 100%;
+  width: 100%;
+  max-height: 900px;
+  object-fit: contain;
+  cursor: zoom-in;
+  background: #ffffff;
+}
+
+.image-card figcaption, .gallery-item .caption {
+  padding: 14px 20px;
+  font-size: 14px;
+  color: #334155;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.image-card figcaption b, .gallery-item .caption strong {
+  display: block;
+  color: var(--text-main);
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.takeaway, .callout {
+  padding: 16px 20px;
+  background: #f0fdf4;
+  border-left: 4px solid #16a34a;
+  font-size: 14px;
+  color: #14532d;
+  margin: 20px 0;
+}
+
+.callout.warn {
+  background: #fffbeb;
+  border-left-color: #f59e0b;
+  color: #78350f;
+}
+
+details {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  margin: 16px 0;
+}
+
+summary {
+  padding: 14px 20px;
+  cursor: pointer;
+  font-weight: 700;
+  color: #0f172a;
+  background: #f8fafc;
+  border-bottom: 1px solid transparent;
+  user-select: none;
+}
+
+details[open] summary {
+  border-bottom-color: var(--border);
+}
+
+.detail-body {
+  padding: 20px;
+  overflow-wrap: anywhere;
+}
+
+.code-note {
+  font-size: 13px;
+  color: #64748b;
+  margin: 8px 0;
+}
+
+pre {
+  padding: 16px 20px;
+  background: #0f172a;
+  color: #e2e8f0;
+  overflow-x: auto;
+  line-height: 1.6;
+  font-size: 13px;
+  font-family: Consolas, "SFMono-Regular", Menlo, Monaco, monospace;
+  margin: 12px 0;
+}
+
+code {
+  font-family: Consolas, "SFMono-Regular", Menlo, Monaco, monospace;
+  background: #e2e8f0;
+  color: #0f172a;
+  padding: 2px 5px;
+  font-size: 0.9em;
+}
+
+pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+.support {
+  margin: 48px 0 24px 0;
+  padding-top: 24px;
+  border-top: 2px solid var(--border);
+}
+
+.support h2 {
+  font-size: 26px;
+  margin-bottom: 16px;
+}
+
+table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 11px;
-  margin: auto 0;
+  margin: 16px 0;
+  font-size: 14px;
 }
 
-.data-table th, .data-table td {
-  padding: 6px 10px;
+th, td {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
   text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.data-table th {
-  background: rgba(255, 255, 255, 0.06);
+th {
+  background: #f1f5f9;
   font-weight: 700;
-  color: var(--primary);
 }
 
-.data-table tr:hover {
-  background: rgba(255, 255, 255, 0.03);
+/* Master Comparison Matrix Block */
+.matrix-block {
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 8px solid #0f172a;
+  padding: clamp(32px, 5vw, 64px) clamp(20px, 4vw, 56px);
 }
 
-/* Minimalist Right Pager Dots */
-.slide-dots {
-  position: fixed;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  z-index: 50;
+.matrix-block h2 {
+  font-size: clamp(24px, 3vw, 36px);
+  margin-bottom: 16px;
+  font-weight: 800;
 }
 
-.slide-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.25);
-  transition: all 0.25s ease;
-  cursor: pointer;
-}
-
-.slide-dot:hover {
-  background: rgba(255, 255, 255, 0.7);
-  transform: scale(1.3);
-}
-
-.slide-dot.active {
-  background: var(--primary);
-  height: 18px;
-  border-radius: 9999px;
-  box-shadow: 0 0 10px var(--primary);
+.matrix-block p {
+  color: var(--text-muted);
+  max-width: 1000px;
+  margin-bottom: 24px;
+  font-size: 16px;
 }
 
 /* Lightbox Modal */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(5, 8, 15, 0.95);
-  z-index: 1000;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  backdrop-filter: blur(12px);
+dialog#viewer {
+  border: 1px solid #475569;
+  padding: 0;
+  max-width: 98vw;
+  max-height: 96vh;
+  background: #090d16;
 }
 
-.modal-overlay.active {
+dialog#viewer::backdrop {
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+}
+
+dialog#viewer .dialog-header {
   display: flex;
+  justify-content: flex-end;
+  padding: 8px 14px;
+  background: #0f172a;
+  border-bottom: 1px solid #334155;
 }
 
-.modal-content {
-  max-width: 95vw;
-  max-height: 94vh;
-  position: relative;
-  background: transparent;
-  text-align: center;
-}
-
-.modal-img {
-  max-width: 100%;
-  max-height: 86vh;
-  border-radius: var(--radius-md);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.modal-caption {
-  color: #ffffff;
-  margin-top: 8px;
-  font-size: 13.5px;
-  font-weight: 600;
-}
-
-.modal-close {
-  position: absolute;
-  top: -38px;
-  right: 0;
-  background: rgba(255, 255, 255, 0.15);
+dialog#viewer button {
+  background: #e2e8f0;
+  color: #0f172a;
   border: none;
-  color: #ffffff;
-  font-size: 22px;
+  padding: 6px 14px;
+  font-weight: 700;
   cursor: pointer;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
 }
 
-.modal-close:hover {
-  background: rgba(255, 255, 255, 0.35);
+dialog#viewer img {
+  display: block;
+  max-width: 96vw;
+  max-height: 88vh;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+/* Footer */
+footer.master-footer {
+  width: 100%;
+  background: #090d16;
+  color: #94a3b8;
+  padding: 32px clamp(20px, 4vw, 56px);
+  text-align: center;
+  font-size: 14px;
+  border-top: 1px solid #1e293b;
+}
+
+/* Print Styles */
+@media print {
+  .master-topbar, nav.lab-subnav, dialog#viewer, .master-actions {
+    display: none !important;
+  }
+  body, main {
+    background: #ffffff;
+    color: #000000;
+  }
+  .stage, .flow-stage {
+    border-left: none;
+    margin-left: 0;
+    padding-left: 0;
+  }
+  .image-card, .gallery-item {
+    break-inside: avoid;
+  }
 }
 """
 
-SHARED_JS = """
+# Global JavaScript for Sticky Navigation, Lightbox, and Detail Toggles
+UNIFIED_JS = """
 document.addEventListener('DOMContentLoaded', () => {
-  // Tabs
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const parent = btn.closest('.visual-canvas') || btn.closest('.slide-frame');
-      const targetId = btn.getAttribute('data-tab');
-      parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      parent.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      const targetPane = parent.querySelector(`#${targetId}`);
-      if (targetPane) targetPane.classList.add('active');
+  // 1. Global Image Lightbox Modal
+  const viewer = document.querySelector('#viewer');
+  const viewerImg = viewer.querySelector('img');
+  document.querySelectorAll('.image-card img, .gallery-item img, figure img').forEach(image => {
+    image.tabIndex = 0;
+    const openModal = () => {
+      viewerImg.src = image.src;
+      viewerImg.alt = image.alt || 'Chi tiết hình ảnh thực nghiệm';
+      viewer.showModal();
+    };
+    image.addEventListener('click', openModal);
+    image.addEventListener('keydown', event => {
+      if (event.key === 'Enter') openModal();
     });
   });
-
-  // Lightbox Modal
-  const modal = document.getElementById('lightbox-modal');
-  const modalImg = document.getElementById('modal-img');
-  const modalCap = document.getElementById('modal-caption');
-  const modalClose = document.getElementById('modal-close');
-
-  const openLightbox = (imgSrc, title) => {
-    if (modal && modalImg) {
-      modalImg.src = imgSrc;
-      if (modalCap) modalCap.textContent = title || '';
-      modal.classList.add('active');
-    }
-  };
-
-  document.querySelectorAll('.img-container').forEach(container => {
-    container.addEventListener('click', () => {
-      const img = container.querySelector('img');
-      const caption = container.querySelector('.img-caption strong');
-      if (img) openLightbox(img.src, caption ? caption.textContent : '');
-    });
+  const closeBtn = viewer.querySelector('button');
+  if (closeBtn) closeBtn.addEventListener('click', () => viewer.close());
+  viewer.addEventListener('click', event => {
+    if (event.target === viewer) viewer.close();
   });
 
-  document.querySelectorAll('.pipeline-step').forEach(step => {
-    step.addEventListener('click', () => {
-      const img = step.querySelector('img');
-      const title = step.querySelector('.step-title');
-      if (img) openLightbox(img.src, title ? title.textContent : '');
-    });
-  });
+  // 2. Master Active Nav Tracker via IntersectionObserver
+  if ('IntersectionObserver' in window) {
+    const masterLinks = [...document.querySelectorAll('.master-nav-links a')];
+    const labSections = document.querySelectorAll('.lab-section, #overview, #matrix');
+    const masterObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          masterLinks.forEach(link => {
+            if (link.getAttribute('href') === '#' + entry.target.id) {
+              link.classList.add('active');
+            } else {
+              link.classList.remove('active');
+            }
+          });
+        }
+      });
+    }, { rootMargin: '-20% 0px -60% 0px' });
+    labSections.forEach(section => masterObserver.observe(section));
 
-  if (modalClose) {
-    modalClose.addEventListener('click', () => modal.classList.remove('active'));
+    // Local subnav links
+    const subnavLinks = [...document.querySelectorAll('nav.lab-subnav a')];
+    const stages = document.querySelectorAll('.stage, .flow-stage, .flow-map, .support');
+    const stageObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          subnavLinks.forEach(link => {
+            if (link.getAttribute('href') === '#' + entry.target.id) {
+              link.setAttribute('aria-current', 'location');
+            } else {
+              link.removeAttribute('aria-current');
+            }
+          });
+        }
+      });
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    stages.forEach(stage => stageObserver.observe(stage));
   }
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) modal.classList.remove('active');
-    });
-  }
 
-  // Keyboard Slide Snap Navigation
-  const slides = document.querySelectorAll('.slide-screen');
-  const dots = document.querySelectorAll('.slide-dot');
-
-  let currentIdx = 0;
-
-  const updateActiveDot = (idx) => {
-    dots.forEach((dot, dIdx) => {
-      if (dIdx === idx) dot.classList.add('active');
-      else dot.classList.remove('active');
-    });
-  };
-
-  window.scrollToSlide = (idx) => {
-    if (idx >= 0 && idx < slides.length) {
-      slides[idx].scrollIntoView({ behavior: 'smooth' });
-      currentIdx = idx;
-      updateActiveDot(idx);
-    }
-  };
-
-  dots.forEach(dot => {
-    dot.addEventListener('click', () => {
-      const targetIdx = parseInt(dot.getAttribute('data-index'), 10);
-      window.scrollToSlide(targetIdx);
+  // 3. Print handling: Expand details before print, restore after
+  window.addEventListener('beforeprint', () => {
+    document.querySelectorAll('details').forEach(detail => {
+      detail.dataset.previous = detail.open;
+      detail.open = true;
     });
   });
-
-  // ScrollSpy for Dots
-  window.addEventListener('scroll', () => {
-    const scrollPos = window.scrollY + window.innerHeight / 2;
-    slides.forEach((slide, idx) => {
-      if (scrollPos >= slide.offsetTop && scrollPos < slide.offsetTop + slide.offsetHeight) {
-        currentIdx = idx;
-        updateActiveDot(idx);
-      }
+  window.addEventListener('afterprint', () => {
+    document.querySelectorAll('details').forEach(detail => {
+      detail.open = detail.dataset.previous === 'true';
     });
-  });
-
-  // Keyboard navigation
-  document.addEventListener('keydown', (e) => {
-    if (modal && modal.classList.contains('active')) {
-      if (e.key === 'Escape') modal.classList.remove('active');
-      return;
-    }
-
-    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
-      e.preventDefault();
-      window.scrollToSlide(currentIdx + 1);
-    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') {
-      e.preventDefault();
-      window.scrollToSlide(currentIdx - 1);
-    } else if (e.key === 'Home') {
-      e.preventDefault();
-      window.scrollToSlide(0);
-    } else if (e.key === 'End') {
-      e.preventDefault();
-      window.scrollToSlide(slides.length - 1);
-    }
   });
 });
+
+// Toggle all code snippets across the entire master report
+let codeOpen = false;
+function toggleAllCode() {
+  codeOpen = !codeOpen;
+  document.querySelectorAll('details').forEach(d => d.open = codeOpen);
+  const btn = document.querySelector('#btn-toggle-code');
+  if (btn) btn.textContent = codeOpen ? 'Thu gọn code' : 'Mở tất cả code';
+}
 """
 
-LIGHTBOX_MARKUP = """
-<div class="modal-overlay" id="lightbox-modal">
-  <div class="modal-content">
-    <button class="modal-close" id="modal-close">&times;</button>
-    <img src="" alt="Enlarged view" class="modal-img" id="modal-img">
-    <div class="modal-caption" id="modal-caption"></div>
-  </div>
-</div>
-"""
 
-def render_unified_labs_02_03_04() -> str:
-    """Generate Fullscreen 100vh Unified Presentation HTML for Labs 02-04."""
-    # Lab 02 assets
-    l2_step1 = get_base64_img("lab02/image-2.jpg")
-    l2_step2 = get_base64_img("lab02/brightness_plus50.jpg")
-    l2_step3 = get_base64_img("lab02/gaussian_19x19_s3.jpg")
-    l2_step4 = get_base64_img("lab02/sharpen.jpg")
-    l2_step5 = get_base64_img("lab02/median_denoised.jpg")
-    l2_bright = get_base64_img("lab02/brightness_comparison.png")
-    l2_contrast = get_base64_img("lab02/contrast_comparison.png")
-    l2_negative = get_base64_img("lab02/negative_comparison.png")
-    l2_thresh = get_base64_img("lab02/threshold_comparison.png")
-    l2_hist_orig = get_base64_img("lab02/histogram_original.png")
-    l2_hist_bin = get_base64_img("lab02/histogram_binary.png")
-    l2_blur = get_base64_img("lab02/blur_comparison_grid.png")
-    l2_sharpen = get_base64_img("lab02/sharpen_comparison.png")
-    l2_edges = get_base64_img("lab02/edge_detection_grid.png")
-    l2_sobel_mag = get_base64_img("lab02/sobel_gradient_magnitude.png")
-    l2_sobel_x = get_base64_img("lab02/sobel_x.png")
-    l2_sobel_y = get_base64_img("lab02/sobel_y.png")
-    l2_prewitt_x = get_base64_img("lab02/prewitt_x.png")
-    l2_prewitt_y = get_base64_img("lab02/prewitt_y.png")
-    l2_sum_rule = get_base64_img("lab02/kernel_sum_rule.png")
-    l2_sum_effects = get_base64_img("lab02/kernel_effects_on_image.png")
-    l2_nonlinear = get_base64_img("lab02/nonlinear_comparison_grid.png")
-    l2_all = get_base64_img("lab02/all_filters_grid.png")
-    svg_lab02 = get_base64_img("workflow_lab02.svg")
+def render_unified_full_html() -> str:
+    """Generate edge-to-edge standalone HTML report combining Lab 02, 03, and 04 in full."""
+    txt2 = (LABS_DIR / "lab02" / "LAB_02_REPORT.html").read_text(encoding="utf-8")
+    txt3 = (LABS_DIR / "lab03" / "LAB_03_REPORT.html").read_text(encoding="utf-8")
+    txt4 = (LABS_DIR / "lab04" / "LAB_04_REPORT.html").read_text(encoding="utf-8")
 
-    # Lab 03 assets
-    l3_yc1 = get_base64_img("lab03/yc1_libraries.png")
-    l3_yc2_sigma = get_base64_img("lab03/yc2_sigma.png")
-    l3_yc2_thresh = get_base64_img("lab03/yc2_threshold.png")
-    l3_yc3_noise_img = get_base64_img("lab03/yc3_noise_images.png")
-    l3_yc3_noise_edge = get_base64_img("lab03/yc3_noise_edges.png")
-    l3_yc3_contrast = get_base64_img("lab03/yc3_contrast.png")
-    l3_yc3_texture = get_base64_img("lab03/yc3_texture.png")
-    l3_yc4_regions = get_base64_img("lab03/yc4_regions.png")
-    l3_yc4_circles = get_base64_img("lab03/yc4_circles.png")
-    svg_lab03 = get_base64_img("workflow_lab03.svg")
+    # 1. Process Lab 02
+    l2_nav_match = re.search(r'(<nav aria-label="Mục lục">.*?</nav>)', txt2, re.S)
+    l2_nav = l2_nav_match.group(1) if l2_nav_match else ""
+    l2_nav = l2_nav.replace('<nav aria-label="Mục lục">', '<nav class="lab-subnav" aria-label="Mục lục Lab 02">')
 
-    # Lab 04 assets
-    l4_dataset = get_base64_img("lab04/dataset_pairs.png")
-    l4_rgb = get_base64_img("lab04/rgb_channels.png")
-    l4_baseline = get_base64_img("lab04/baseline_hash.png")
-    l4_bands = get_base64_img("lab04/wavelet_bands.png")
-    l4_channel_dist = get_base64_img("lab04/channel_distances.png")
-    l4_hamming = get_base64_img("lab04/hamming_matrix.png")
-    l4_robust = get_base64_img("lab04/robustness.png")
-    l4_thresh_sel = get_base64_img("lab04/threshold_selection.png")
-    l4_roc = get_base64_img("lab04/roc_evaluation.png")
-    l4_review = get_base64_img("lab04/review_pairs.png")
-    l4_wavelet_comp = get_base64_img("lab04/wavelet_comparison.png")
-    l4_topk = get_base64_img("lab04/top_k.png")
-    svg_lab04 = get_base64_img("workflow_lab04.svg")
+    l2_map_match = re.search(r'(<section class="flow-map"[^>]*>.*?</section>)', txt2, re.S)
+    l2_map = l2_map_match.group(1) if l2_map_match else ""
+
+    l2_res_match = re.search(r'(<div id="results">.*?)(<dialog|<footer>|<script)', txt2, re.S)
+    l2_results = l2_res_match.group(1).rstrip() if l2_res_match else ""
+    if l2_results.endswith("</div></div>"):
+        l2_results = l2_results[:-6]  # Clean trailing outer container closing tag
+
+    l2_content = f"""
+    <div class="lab-section-header lab02-header" id="lab02">
+      <div class="eyebrow">CHUYÊN ĐỀ 01 · 11 YÊU CẦU THỰC NGHIỆM</div>
+      <h2>Lab 02 — Toán Tử Điểm Ảnh &amp; Bộ Lọc Không Gian</h2>
+      <p>Toàn bộ 11 yêu cầu thực nghiệm: Biến đổi cường độ sáng (&beta;=&plusmn;50), tương phản (&alpha;={0.5, 1.8}), âm bản, phân ngưỡng histogram; bộ lọc tuyến tính Mean vs Gaussian; làm nét Sharpening (&Sigma;=1.000) vs Laplacian; đạo hàm biên Sobel vs Prewitt; quy tắc tổng kernel và lọc phi tuyến Median khử 100% cực trị muối tiêu.</p>
+      <div style="display:flex;gap:14px;margin-top:12px;flex-wrap:wrap;">
+        <a href="../../notebooks/labs/lab_02.ipynb" style="color:#7dd3fc;text-decoration:none;font-weight:700;">Notebook lab_02.ipynb &nearr;</a>
+        <a href="lab02/LAB_02_REPORT.md" style="color:#7dd3fc;text-decoration:none;font-weight:700;">Báo Cáo Lab 02 Markdown &nearr;</a>
+      </div>
+    </div>
+    {l2_nav}
+    {l2_map}
+    <div class="lab-body">
+      {l2_results}
+    </div>
+    """
+    for id_name in ['flow', 'prepare', 'point', 'linear', 'edges', 'kernel', 'nonlinear', 'comparison', 'principles']:
+        l2_content = re.sub(rf'id="{id_name}"', f'id="lab02-{id_name}"', l2_content)
+        l2_content = re.sub(rf'href="#{id_name}"', f'href="#lab02-{id_name}"', l2_content)
+
+    # 2. Process Lab 03
+    l3_nav_match = re.search(r'(<nav aria-label="Lộ trình">.*?</nav>)', txt3, re.S)
+    l3_nav = l3_nav_match.group(1) if l3_nav_match else ""
+    l3_nav = l3_nav.replace('<nav aria-label="Lộ trình">', '<nav class="lab-subnav" aria-label="Lộ trình Lab 03">')
+
+    l3_map_match = re.search(r'(<section class="flow-map"[^>]*>.*?</section>)', txt3, re.S)
+    l3_map = l3_map_match.group(1) if l3_map_match else ""
+
+    l3_stages = "".join(re.findall(r'(<section class="(?:stage|support)"[^>]*>.*?</section>)', txt3, re.S))
+
+    l3_content = f"""
+    <div class="lab-section-header lab03-header" id="lab03">
+      <div class="eyebrow">CHUYÊN ĐỀ 02 · 4 YÊU CẦU &amp; CÂU HỎI MỞ RỘNG</div>
+      <h2>Lab 03 — Tách Biên Cải Tiến Canny &amp; Nhận Dạng Hình Học</h2>
+      <p>Toàn bộ thí nghiệm tách biên vi sai: Đối sánh thư viện OpenCV (30,980 px) vs Skimage (7,554 px); quét tham số sigma (&sigma;=0.5 &rarr; 3.5) và ngưỡng kép; lọc nhiễu Gauss, muối tiêu, vân gạch brick; cân bằng histogram cứu ảnh mờ (0 &rarr; 13,897 px); phân đoạn vùng mask kín 41,111 px và HoughCircles bắt trọn vẹn 24/24 đồng xu.</p>
+      <div style="display:flex;gap:14px;margin-top:12px;flex-wrap:wrap;">
+        <a href="../../notebooks/labs/lab_03.ipynb" style="color:#86efac;text-decoration:none;font-weight:700;">Notebook lab_03.ipynb &nearr;</a>
+        <a href="lab03/LAB_03_REPORT.md" style="color:#86efac;text-decoration:none;font-weight:700;">Báo Cáo Lab 03 Markdown &nearr;</a>
+      </div>
+    </div>
+    {l3_nav}
+    {l3_map}
+    <div class="lab-body">
+      {l3_stages}
+    </div>
+    """
+    for id_name in ['flow', 'input', 'libraries', 'parameters', 'preprocess', 'regions', 'shapes', 'support']:
+        l3_content = re.sub(rf'id="{id_name}"', f'id="lab03-{id_name}"', l3_content)
+        l3_content = re.sub(rf'href="#{id_name}"', f'href="#lab03-{id_name}"', l3_content)
+
+    # 3. Process Lab 04
+    l4_nav_match = re.search(r'(<nav aria-label="Lộ trình">.*?</nav>)', txt4, re.S)
+    l4_nav = l4_nav_match.group(1) if l4_nav_match else ""
+    l4_nav = l4_nav.replace('<nav aria-label="Lộ trình">', '<nav class="lab-subnav" aria-label="Lộ trình Lab 04">')
+
+    l4_map_match = re.search(r'(<section class="flow-map"[^>]*>.*?</section>)', txt4, re.S)
+    l4_map = l4_map_match.group(1) if l4_map_match else ""
+
+    l4_stages = "".join(re.findall(r'(<section class="(?:stage|support)"[^>]*>.*?</section>)', txt4, re.S))
+
+    l4_content = f"""
+    <div class="lab-section-header lab04-header" id="lab04">
+      <div class="eyebrow">CHUYÊN ĐỀ 03 · 147 CẶP ẢNH &amp; WAVELET HASH 192-BIT</div>
+      <h2>Lab 04 — Mã Băm Nhận Thức Wavelet Hash RGB 192-bit</h2>
+      <p>Toàn bộ thí nghiệm băm sóng nhỏ 2D DWT db4: Trích xuất vector băm 192-bit từ 3 kênh RGB; ma trận Hamming 26&times;26; kiểm định độ bền 7 biến đổi; tối ưu ngưỡng Youden &tau;=18 bits trên Calibration (100% Acc); đánh giá Evaluation 98.77% Acc (ROC AUC=1.0000); so sánh 4 cấu hình Wavelet và truy vấn Top-3.</p>
+      <div style="display:flex;gap:14px;margin-top:12px;flex-wrap:wrap;">
+        <a href="../../notebooks/labs/lab_04.ipynb" style="color:#d8b4fe;text-decoration:none;font-weight:700;">Notebook lab_04.ipynb &nearr;</a>
+        <a href="lab04/LAB_04_REPORT.md" style="color:#d8b4fe;text-decoration:none;font-weight:700;">Báo Cáo Lab 04 Markdown &nearr;</a>
+      </div>
+    </div>
+    {l4_nav}
+    {l4_map}
+    <div class="lab-body">
+      {l4_stages}
+    </div>
+    """
+    for id_name in ['flow', 'dataset', 'hash', 'hamming', 'threshold', 'robustness', 'methods', 'retrieval', 'support']:
+        l4_content = re.sub(rf'id="{id_name}"', f'id="lab04-{id_name}"', l4_content)
+        l4_content = re.sub(rf'href="#{id_name}"', f'href="#lab04-{id_name}"', l4_content)
 
     return f"""<!doctype html>
 <html lang="vi">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Báo Cáo Tổng Hợp Chuyên Đề Lab 02 - Lab 03 - Lab 04 | UTH Computer Vision</title>
-  <style>{SHARED_CSS}</style>
+  <title>Báo Cáo Toàn Diện Thực Hành Thị Giác Máy Tính: Lab 02 · 03 · 04 | UTH</title>
+  <style>{UNIFIED_CSS}</style>
 </head>
 <body>
-
-  <!-- Minimalist Right Pager Dots (13 Slides) -->
-  <div class="slide-dots">
-    <div class="slide-dot active" data-index="0" title="Slide 01: Bìa & Dashboard Tổng Hợp"></div>
-    <div class="slide-dot" data-index="1" title="Slide 02: Lab 02 · Tiến Trình 5 Tầng & Sơ Đồ SVG"></div>
-    <div class="slide-dot" data-index="2" title="Slide 03: Lab 02 · Điểm Ảnh & Làm Mờ Không Gian"></div>
-    <div class="slide-dot" data-index="3" title="Slide 04: Lab 02 · Làm Nét & Đạo Hàm Sobel/Prewitt"></div>
-    <div class="slide-dot" data-index="4" title="Slide 05: Lab 02 · Tổng Kernel & Lọc Phi Tuyến"></div>
-    <div class="slide-dot" data-index="5" title="Slide 06: Lab 03 · 5 Bước Canny & Benchmark Thư Viện"></div>
-    <div class="slide-dot" data-index="6" title="Slide 07: Lab 03 · Quét Tham Số σ & Tiền Xử Lý Ảnh Khó"></div>
-    <div class="slide-dot" data-index="7" title="Slide 08: Lab 03 · Phân Đoạn & Hough Circles 24 Xu"></div>
-    <div class="slide-dot" data-index="8" title="Slide 09: Lab 04 · Tiến Trình wHash 192-bit & Dữ Liệu"></div>
-    <div class="slide-dot" data-index="9" title="Slide 10: Lab 04 · Wavelet 2D DWT & Độ Bền Vững"></div>
-    <div class="slide-dot" data-index="10" title="Slide 11: Lab 04 · Ngưỡng Youden τ=18 & Đánh Giá"></div>
-    <div class="slide-dot" data-index="11" title="Slide 12: Lab 04 · Cấu Hình Hash & Tìm Kiếm Top-3"></div>
-    <div class="slide-dot" data-index="12" title="Slide 13: Tổng Kết Nghiệm Thu & Ma Trận 3 Lab"></div>
-  </div>
-
-  <!-- ========================================================================
-       SLIDE 01: MASTER COVER & EXECUTIVE ROADMAP DASHBOARD
-       ======================================================================== -->
-  <section class="slide-screen" id="slide-0">
-    <div class="slide-frame hero-frame">
-      <div class="brand-badge">Trường Đại học Giao thông Vận tải TP.HCM · Khoa Công Nghệ Thông Tin</div>
-      <h1 class="hero-title">BÁO CÁO TỔNG HỢP CHUYÊN ĐỀ THỊ GIÁC MÁY TÍNH<br/>LAB 02 · LAB 03 · LAB 04</h1>
-      <p class="hero-desc">Hợp nhất chuỗi chuyên đề cốt lõi: Toán tử điểm ảnh & Lọc không gian tuyến tính/phi tuyến (Lab 02), Tách biên tối ưu Canny & Nhận dạng hình tròn Hough (Lab 03) và So sánh ảnh bằng Wavelet Hash RGB 192-bit (Lab 04).</p>
-      <div class="badge-row">
-        <span class="pill-badge info">Python 3.14.8</span>
-        <span class="pill-badge info">OpenCV 5.0.0</span>
-        <span class="pill-badge info">PyWavelets</span>
-        <span class="pill-badge info">Scikit-Image</span>
-        <span class="pill-badge success">58/58 Tests Passed (100%)</span>
-        <span class="pill-badge success">54 Artifacts Tích Hợp</span>
-        <span class="pill-badge success">100% Offline Standalone</span>
-      </div>
-      <div class="hero-kpi-grid">
-        <div class="hero-kpi-card" onclick="window.scrollToSlide(1)" style="cursor: pointer;">
-          <div class="hero-kpi-title">Lab 02 · Lọc Không Gian</div>
-          <div class="hero-kpi-value">11 Yêu Cầu</div>
-          <div class="hero-kpi-sub">Sobel-Prewitt r≈0.996 · Sharpen Σ=1.000 · Median 100%</div>
-        </div>
-        <div class="hero-kpi-card" onclick="window.scrollToSlide(5)" style="cursor: pointer;">
-          <div class="hero-kpi-title">Lab 03 · Tách Biên Canny</div>
-          <div class="hero-kpi-value">24 / 24 Xu</div>
-          <div class="hero-kpi-sub">5 bước Canny · 30,980 vs 7,554 px · HoughCircles 100%</div>
-        </div>
-        <div class="hero-kpi-card" onclick="window.scrollToSlide(8)" style="cursor: pointer;">
-          <div class="hero-kpi-title">Lab 04 · Wavelet Hash</div>
-          <div class="hero-kpi-value">98.77% Acc</div>
-          <div class="hero-kpi-sub">147 cặp · 192-bit RGB · Youden τ=18 · ROC AUC 1.0000</div>
-        </div>
-        <div class="hero-kpi-card" onclick="window.scrollToSlide(12)" style="cursor: pointer;">
-          <div class="hero-kpi-title">Chất Lượng Kỹ Nghệ</div>
-          <div class="hero-kpi-value">58 / 58 PASS</div>
-          <div class="hero-kpi-sub">PyTest 2.42s · 0 Ruff Warnings · Báo cáo Slide 100vh</div>
-        </div>
-      </div>
-      <div class="lab-roadmap-grid">
-        <div class="roadmap-card" onclick="window.scrollToSlide(1)">
-          <div class="roadmap-step-tag">Lab 02 (Slides 02–05)</div>
-          <div class="roadmap-step-title">Toán Tử Điểm & Lọc Không Gian</div>
-          <div class="roadmap-step-desc">Point ops, Mean/Gauss, Sharpen, Sobel & Median</div>
-        </div>
-        <div class="roadmap-card" onclick="window.scrollToSlide(5)">
-          <div class="roadmap-step-tag">Lab 03 (Slides 06–08)</div>
-          <div class="roadmap-step-title">Tách Biên Canny & Hough Circles</div>
-          <div class="roadmap-step-desc">Benchmark thư viện, quét σ, equalizeHist & 24 xu</div>
-        </div>
-        <div class="roadmap-card" onclick="window.scrollToSlide(8)">
-          <div class="roadmap-step-tag">Lab 04 (Slides 09–12)</div>
-          <div class="roadmap-step-title">Wavelet Hash RGB 192-bit</div>
-          <div class="roadmap-step-desc">2D DWT db4 L1, Hamming, Youden τ=18 & Top-3</div>
-        </div>
-        <div class="roadmap-card" onclick="window.scrollToSlide(12)">
-          <div class="roadmap-step-tag">Nghiệm Thu (Slide 13)</div>
-          <div class="roadmap-step-title">Ma Trận Kỹ Nghệ 3 Bài Lab</div>
-          <div class="roadmap-step-desc">Bảng đối chiếu toàn diện thuật toán, dữ liệu & KPI</div>
-        </div>
-      </div>
-      <div class="scroll-hint">
-        <span>↓ Cuộn chuột hoặc bấm phím <strong>[Space]</strong> / <strong>[↓]</strong> để xem chuỗi bài báo cáo</span>
-      </div>
+  <!-- Master Sticky Navigation Bar -->
+  <header class="master-topbar">
+    <a href="#overview" class="master-brand">
+      <span class="tag">UTH CV</span>
+      <span>Báo Cáo Tổng Hợp Labs 02 · 03 · 04</span>
+    </a>
+    <nav class="master-nav-links" aria-label="Điều hướng chính">
+      <a href="#overview" class="btn-overview active">🚀 Tổng Quan</a>
+      <a href="#lab02" class="btn-lab2">⚡ Lab 02: Lọc Không Gian</a>
+      <a href="#lab03" class="btn-lab3">🎯 Lab 03: Tách Biên Canny</a>
+      <a href="#lab04" class="btn-lab4">🌊 Lab 04: Wavelet Hash RGB</a>
+      <a href="#matrix" class="btn-matrix">📊 Ma Trận Nghiệm Thu</a>
+    </nav>
+    <div class="master-actions">
+      <button type="button" id="btn-toggle-code" onclick="toggleAllCode()">Mở tất cả code</button>
+      <button type="button" onclick="window.print()">In / PDF</button>
     </div>
-  </section>
+  </header>
 
-  <!-- ========================================================================
-       SLIDE 02: LAB 02 - PIPELINE RIBBON & ARCHITECTURE SVG
-       ======================================================================== -->
-  <section class="slide-screen" id="slide-1">
-    <div class="slide-frame">
-      <div class="slide-header">
-        <div>
-          <span class="slide-tag">CHUYÊN ĐỀ LAB 02 / 01 · TIẾN TRÌNH THỊ GIÁC</span>
-          <h2 class="slide-title">Lab 02 · Chu Trình 5 Tầng Lọc Không Gian & Toán Tử Điểm Ảnh</h2>
-          <div class="slide-summary">Chuyển hóa mức xám từ ảnh gốc 1920×1080 qua các tầng tích chập tuyến tính, vi sai đạo hàm và khử nhiễu phi tuyến.</div>
+  <main>
+    <!-- Master Executive Hero Banner -->
+    <section class="master-hero" id="overview">
+      <div class="eyebrow">TRƯỜNG ĐẠI HỌC GIAO THÔNG VẬN TẢI TP.HCM (UTH) — KHOA CÔNG NGHỆ THÔNG TIN</div>
+      <h1>BÁO CÁO TOÀN DIỆN THỰC HÀNH THỊ GIÁC MÁY TÍNH<br/>CHUYÊN ĐỀ LIÊN HOÀN: LAB 02 – LAB 03 – LAB 04</h1>
+      <p class="lead">Hệ thống thực nghiệm kết nối xuyên suốt 3 tầng kiến trúc thị giác máy tính: từ xử lý mức xám &amp; tích chập không gian (Lab 02), tối ưu vi sai tách biên đa hướng &amp; trích chọn hình học (Lab 03), đến biểu diễn nhận thức sóng nhỏ tần số không gian Wavelet Hash RGB 192-bit (Lab 04).</p>
+
+      <div class="kpi-strip">
+        <div class="kpi-card" style="border-left-color: #38bdf8;">
+          <div class="kpi-val">11 / 11 YC</div>
+          <div class="kpi-title">Lab 02: Lọc Không Gian</div>
+          <div class="kpi-sub">Pearson r &approx; 0.9961, &Sigma;=1.000, 100% khử muối tiêu</div>
         </div>
-        <span class="slide-badge-num">Slide 02 / 13</span>
-      </div>
-      <div class="slide-body">
-        <div class="visual-canvas">
-          <div class="tab-nav">
-            <button class="tab-btn active" data-tab="tab-u-l2-ribbon">Chuỗi 5 Bước Ảnh Thực Nghiệm</button>
-            <button class="tab-btn" data-tab="tab-u-l2-workflow">Sơ Đồ Kiến Trúc Vector (SVG)</button>
-            <button class="tab-btn" data-tab="tab-u-l2-mapping">Bảng 11 Yêu Cầu YC1–YC11</button>
-          </div>
-          <div class="tab-pane active" id="tab-u-l2-ribbon">
-            <div class="pipeline-ribbon">
-              <div class="pipeline-step">
-                <div class="step-header">
-                  <span class="step-num">01</span>
-                  <span class="step-badge">ĐẦU VÀO</span>
-                </div>
-                <div class="step-thumb"><img src="{l2_step1}" alt="Ảnh gốc"></div>
-                <div class="step-title">Ảnh Gốc Đầu Vào</div>
-                <div class="step-formula">BGR (1920×1080) → Gray</div>
-                <div class="step-desc">Ảnh mức xám chuẩn Rec. 601, bảo toàn nguyên bản phân bố cường độ sáng.</div>
-                <span class="step-metric">1920×1080 uint8</span>
-              </div>
-              <div class="pipeline-step">
-                <div class="step-header">
-                  <span class="step-num">02</span>
-                  <span class="step-badge">ĐIỂM ẢNH (YC1–4)</span>
-                </div>
-                <div class="step-thumb"><img src="{l2_step2}" alt="Toán tử tăng sáng"></div>
-                <div class="step-title">Điểm Ảnh & Clip uint8</div>
-                <div class="step-formula">g = clip(α·f + β, 0, 255)</div>
-                <div class="step-desc">Độ sáng β=±50, tương phản α={0.5, 1.8}, âm bản 255-f, cắt ngưỡng T={80, 127, 180}.</div>
-                <span class="step-metric">Anti-Overflow Clip</span>
-              </div>
-              <div class="pipeline-step">
-                <div class="step-header">
-                  <span class="step-num">03</span>
-                  <span class="step-badge">LÀM MỜ (YC5–6)</span>
-                </div>
-                <div class="step-thumb"><img src="{l2_step3}" alt="Lọc Gaussian"></div>
-                <div class="step-title">Lọc Gauss 3-Sigma</div>
-                <div class="step-formula">k ≈ 6σ + 1 (±3σ)</div>
-                <div class="step-desc">Tích chập Gauss σ=3 (19×19) và σ=7 (43×43) bảo toàn 99.73% năng lượng không cụt biên.</div>
-                <span class="step-metric">Σ w_ij = 1.000</span>
-              </div>
-              <div class="pipeline-step">
-                <div class="step-header">
-                  <span class="step-num">04</span>
-                  <span class="step-badge">LÀM NÉT (YC7)</span>
-                </div>
-                <div class="step-thumb"><img src="{l2_step4}" alt="Làm nét"></div>
-                <div class="step-title">Sharpening Identity - Lap</div>
-                <div class="step-formula">g = f - ∇²f (Σ = 1.000)</div>
-                <div class="step-desc">Kernel 4/8-lân cận có hệ số âm xung quanh và tâm dương lớn, tăng vi sai biên cạnh.</div>
-                <span class="step-metric">Preserve Brightness</span>
-              </div>
-              <div class="pipeline-step">
-                <div class="step-header">
-                  <span class="step-num">05</span>
-                  <span class="step-badge">KHỬ NHIỄU (YC10)</span>
-                </div>
-                <div class="step-thumb"><img src="{l2_step5}" alt="Lọc trung vị"></div>
-                <div class="step-title">Lọc Phi Tuyến Median</div>
-                <div class="step-formula">g(x,y) = median{{f(s,t)}}</div>
-                <div class="step-desc">Lọc thống kê thứ tự loại bỏ triệt để 100% hạt nhiễu muối tiêu 3% mà không làm lem biên.</div>
-                <span class="step-metric">Triệt Tiêu 100% Cực Trị</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-l2-workflow">
-            <div class="img-container">
-              <img src="{svg_lab02}" alt="Workflow Architecture Lab 02">
-              <div class="img-caption">
-                <strong>Sơ đồ kiến trúc toàn thể luồng xử lý Lab 02: Từ dữ liệu đầu vào, các tầng lọc đến phân nhánh đánh giá (Vector SVG)</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-l2-mapping">
-            <div class="visual-canvas" style="justify-content: center;">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Yêu Cầu</th>
-                    <th>Thuật Toán</th>
-                    <th>Thông Số Thực Nghiệm</th>
-                    <th>Công Thức / Kernel</th>
-                    <th>Kết Quả Quan Sát</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr><td><strong>YC1</strong></td><td>Độ sáng</td><td>β = ±50</td><td>g = clip(f + β, 0, 255)</td><td>Dải mức xám dịch sang [50, 255] (+50) và [0, 197] (-50)</td></tr>
-                  <tr><td><strong>YC2</strong></td><td>Tương phản</td><td>α = 0.5 (co), α = 1.8 (giãn)</td><td>g = clip(α · f, 0, 255)</td><td>α=0.5 ảnh mờ xám [0, 127]; α=1.8 tăng sắc nét nhưng bão hòa 255</td></tr>
-                  <tr><td><strong>YC3</strong></td><td>Âm bản</td><td>Đảo ngược thang xám</td><td>g = 255 - f</td><td>Đảo ngược hoàn toàn thang sáng tối, nổi rõ chi tiết vùng tối</td></tr>
-                  <tr><td><strong>YC4</strong></td><td>Cắt ngưỡng</td><td>T ∈ {{80, 127, 180}}</td><td>g = 255 if f ≥ T else 0</td><td>T=127 là trung điểm đối xứng; histogram nhị phân có đúng 2 vạch {{0, 255}}</td></tr>
-                  <tr><td><strong>YC5–6</strong></td><td>Mean & Gauss</td><td>Mean (7×7, 21×21), Gauss (σ=3, σ=7)</td><td>exp(-(x²+y²)/(2σ²)), k≈6σ+1</td><td>Gauss làm mờ tự nhiên hơn Mean, không bị artifact ô vuông</td></tr>
-                  <tr><td><strong>YC7</strong></td><td>Làm nét</td><td>4-lân cận & 8-lân cận</td><td>Sharpen = Identity − Laplacian</td><td>Σ = 1.000 bảo toàn độ sáng; có hệ số âm xung quanh tăng vi sai</td></tr>
-                  <tr><td><strong>YC8</strong></td><td>Sobel vs Prewitt</td><td>Sobel [1,2,1] vs Prewitt [1,1,1]</td><td>|G| = √(Gx² + Gy²)</td><td>Tương quan r ≈ 0.996; biên độ Sobel lớn hơn Prewitt ~1.37× (39.5 vs 28.9)</td></tr>
-                  <tr><td><strong>YC9</strong></td><td>Tổng kernel</td><td>Σ ∈ {{0.5, 1.0, 2.0, 0.0}}</td><td>output = c · Σkernel trên c=100</td><td>Output đúng = {{50, 100, 200, 0}}; Σ=0 xóa sạch vùng phẳng chỉ giữ biên</td></tr>
-                  <tr><td><strong>YC10–11</strong></td><td>Phi tuyến & Master</td><td>Nhiễu muối tiêu 3%, 7 bộ lọc</td><td>Median 3×3 vs Bilateral</td><td>Median loại 100% cực trị; Master Grid tổng kết toàn diện</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+        <div class="kpi-card" style="border-left-color: #4ade80;">
+          <div class="kpi-val">24 / 24 Xu</div>
+          <div class="kpi-title">Lab 03: Tách Biên Canny</div>
+          <div class="kpi-sub">100% phát hiện hình tròn, phục hồi ảnh mờ 0 &rarr; 13,897 px</div>
+        </div>
+        <div class="kpi-card" style="border-left-color: #c084fc;">
+          <div class="kpi-val">98.77% Acc</div>
+          <div class="kpi-title">Lab 04: Wavelet Hash RGB</div>
+          <div class="kpi-sub">ROC AUC 1.0000, 192-bit Hex, Youden &tau; = 18 bits</div>
+        </div>
+        <div class="kpi-card" style="border-left-color: #fbbf24;">
+          <div class="kpi-val">58 / 58 PASS</div>
+          <div class="kpi-title">Kiểm Thử Hồi Quy</div>
+          <div class="kpi-sub">100% Unit Tests vượt qua (22 Lab 02 + 11 Lab 03 + 25 Lab 04)</div>
         </div>
       </div>
-      <div class="slide-footer">
-        <div class="takeaways-pills">
-          <div class="takeaway-pill"><strong>Chuỗi xử lý 5 tầng:</strong> Phân tầng rõ rệt giữa biến đổi điểm, lọc tuyến tính, đạo hàm vi sai và lọc phi tuyến.</div>
-          <div class="takeaway-pill"><strong>Chống tràn Saturation:</strong> Mọi phép toán uint8 đều bắt buộc clip(0, 255) để ngăn lỗi tràn số âm/dương.</div>
-          <div class="takeaway-pill"><strong>Kiểm thử toàn diện:</strong> 22/22 unit tests passed bảo đảm tính toàn vẹn của mã nguồn trong tests/test_filters.py.</div>
-        </div>
+    </section>
+
+    <!-- Section 1: Lab 02 -->
+    <section class="lab-section" id="lab02-section">
+      {l2_content}
+    </section>
+
+    <!-- Section 2: Lab 03 -->
+    <section class="lab-section" id="lab03-section">
+      {l3_content}
+    </section>
+
+    <!-- Section 3: Lab 04 -->
+    <section class="lab-section" id="lab04-section">
+      {l4_content}
+    </section>
+
+    <!-- Section 4: Master Cross-Lab Comparison Matrix -->
+    <section class="matrix-block" id="matrix">
+      <div class="eyebrow" style="font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:#64748b;font-weight:700;">TỔNG KẾT ĐỐI SÁNH KỸ THUẬT</div>
+      <h2>Ma Trận Nghiệm Thu &amp; So Sánh Chéo 3 Chuyên Đề</h2>
+      <p>Đối chiếu toàn diện các khía cạnh toán học, kích thước đặc trưng, độ phức tạp thuật toán và giá trị kỹ thuật thực tiễn được kiểm chứng qua 58 bài kiểm thử tự động.</p>
+
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th style="min-width: 180px;">Tiêu Chí Đánh Giá</th>
+              <th>Lab 02: Lọc Không Gian &amp; Điểm Ảnh</th>
+              <th>Lab 03: Tách Biên Canny &amp; Hình Học</th>
+              <th>Lab 04: Wavelet Hash RGB 192-bit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Bản chất toán học</strong></td>
+              <td>Ánh xạ mức xám điểm ảnh &amp; Tích chập 2D không gian</td>
+              <td>Tối ưu hóa hàm tiêu chuẩn John Canny &amp; Không gian tích lũy Hough</td>
+              <td>Biến đổi sóng nhỏ 2D DWT Daubechies 4 (`db4`) &amp; Khoảng cách Hamming</td>
+            </tr>
+            <tr>
+              <td><strong>Kích thước đặc trưng</strong></td>
+              <td>Giữ nguyên kích thước ma trận ảnh gốc (1920&times;1080 uint8)</td>
+              <td>Bản đồ nhị phân cạnh 1-pixel &amp; Vector tọa độ hình học (x, y, r)</td>
+              <td>Vector nhị phân cô đọng <strong>192-bit</strong> (48 ký tự Hex, 24 bytes)</td>
+            </tr>
+            <tr>
+              <td><strong>Độ phức tạp thuật toán</strong></td>
+              <td>&Omicron;(H &middot; W &middot; k<sup>2</sup>)</td>
+              <td>&Omicron;(H &middot; W) + &Omicron;(H &middot; W &middot; R)</td>
+              <td>&Omicron;(H &middot; W) trích xuất + &Omicron;(1) so khớp bit bằng POPCNT</td>
+            </tr>
+            <tr>
+              <td><strong>Kết quả then chốt</strong></td>
+              <td>
+                &bull; Sobel vs Prewitt tương quan Pearson r &approx; 0.9961<br>
+                &bull; Sharpening bảo toàn năng lượng sáng &Sigma;=1.000<br>
+                &bull; Median khử triệt để 100% điểm cực trị muối tiêu 3%
+              </td>
+              <td>
+                &bull; OpenCV 30,980 px vs Skimage 7,554 px<br>
+                &bull; Cân bằng tương phản phục hồi ảnh mù: 0 &rarr; 13,897 px<br>
+                &bull; HoughCircles phát hiện chính xác <strong>24 / 24 đồng xu (100%)</strong>
+              </td>
+              <td>
+                &bull; Ngưỡng tối ưu Youden &tau; = 18 bits (Acc 100% trên Calibration)<br>
+                &bull; Evaluation: <strong>80 / 81 đúng (98.77% Acc)</strong>, ROC AUC = <strong>1.0000</strong><br>
+                &bull; Top-1 Retrieval đạt 100% chính xác (D<sub>H</sub> = 2)
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Kiểm thử hồi quy</strong></td>
+              <td><span style="color:#16a34a;font-weight:700;">22 / 22 PASS</span> (<code>tests/test_filters.py</code>)</td>
+              <td><span style="color:#16a34a;font-weight:700;">11 / 11 PASS</span> (<code>tests/test_canny.py</code>)</td>
+              <td><span style="color:#16a34a;font-weight:700;">25 / 25 PASS</span> (<code>test_wavelet_hash</code>, <code>pairs</code>)</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+
+      <div style="margin-top:28px;padding:20px;background:#f8fafc;border:1px solid #cbd5e1;">
+        <h4 style="margin-top:0;font-size:16px;color:#0f172a;">Lệnh Tái Lập Thí Nghiệm &amp; Kiểm Thử Toàn Cục</h4>
+        <pre><code class="language-bash"># Chạy toàn bộ 58 bài kiểm thử tự động cho cả 3 chuyên đề
+.venv/bin/pytest tests/test_filters.py tests/test_canny.py tests/test_wavelet_hash.py tests/test_lab04_baseline.py tests/test_lab04_pairs.py
+
+# Kết xuất lại báo cáo HTML toàn diện full màn hình
+python scripts/render_unified_report.py</code></pre>
+      </div>
+    </section>
+  </main>
+
+  <footer class="master-footer">
+    UTH Computer Vision Workspace &middot; Trường Đại học Giao thông Vận tải TP.HCM &middot; Khoa Công Nghệ Thông Tin &middot; 2026
+  </footer>
+
+  <!-- Lightbox Viewer Modal -->
+  <dialog id="viewer" aria-label="Xem ảnh phóng to">
+    <div class="dialog-header">
+      <button type="button" aria-label="Đóng cửa sổ">Đóng &times;</button>
     </div>
-  </section>
+    <img src="" alt="Chi tiết hình ảnh phóng to">
+  </dialog>
 
-  <!-- ========================================================================
-       SLIDE 03: LAB 02 - POINT OPERATIONS & BLUR
-       ======================================================================== -->
-  <section class="slide-screen" id="slide-2">
-    <div class="slide-frame">
-      <div class="slide-header">
-        <div>
-          <span class="slide-tag">CHUYÊN ĐỀ LAB 02 / 02 · PHẦN I</span>
-          <h2 class="slide-title">Lab 02 · Toán Tử Điểm Ảnh (YC1–4) & Làm Mờ Không Gian (YC5–6)</h2>
-          <div class="slide-summary">Khảo sát trực tiếp phép biến đổi cường độ điểm ảnh, lược đồ xám histogram nhị phân và lọc mờ Mean vs Gaussian.</div>
-        </div>
-        <span class="slide-badge-num">Slide 03 / 13</span>
-      </div>
-      <div class="slide-body">
-        <div class="visual-canvas">
-          <div class="tab-nav">
-            <button class="tab-btn active" data-tab="tab-u-p-bright">YC1 · Độ Sáng (β = ±50)</button>
-            <button class="tab-btn" data-tab="tab-u-p-contrast">YC2 · Tương Phản (α = 0.5, 1.8)</button>
-            <button class="tab-btn" data-tab="tab-u-p-negative">YC3 · Đảo Âm Bản (255 - f)</button>
-            <button class="tab-btn" data-tab="tab-u-p-thresh">YC4 · Cắt Ngưỡng (T = 80, 127, 180)</button>
-            <button class="tab-btn" data-tab="tab-u-p-hist">YC4 · Histogram Gốc vs Nhị Phân</button>
-            <button class="tab-btn" data-tab="tab-u-p-blur">YC5–6 · Lưới So Sánh Mean vs Gauss</button>
-          </div>
-          <div class="tab-pane active" id="tab-u-p-bright">
-            <div class="img-container">
-              <img src="{l2_bright}" alt="Brightness Comparison">
-              <div class="img-caption">
-                <strong>YC1: Biến đổi độ sáng g = clip(f + β, 0, 255) với β = +50 (dải [50, 255]) và β = -50 (dải [0, 197])</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-p-contrast">
-            <div class="img-container">
-              <img src="{l2_contrast}" alt="Contrast Comparison">
-              <div class="img-caption">
-                <strong>YC2: Biến đổi tương phản g = clip(α · f, 0, 255) với α = 0.5 (co dải động, bạc màu) và α = 1.8 (giãn dải động, bão hòa sáng)</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-p-negative">
-            <div class="img-container">
-              <img src="{l2_negative}" alt="Negative Comparison">
-              <div class="img-caption">
-                <strong>YC3: Biến đổi âm bản g = 255 - f, đảo ngược thang xám, làm nổi bật chi tiết các vùng tối của ảnh gốc</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-p-thresh">
-            <div class="img-container">
-              <img src="{l2_thresh}" alt="Threshold Comparison">
-              <div class="img-caption">
-                <strong>YC4: Phân ngưỡng nhị phân với T ∈ {{80, 127, 180}}. T=127 là trung điểm đối xứng; T=80 cho nhiều vùng trắng, T=180 lọc gắt</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-p-hist">
-            <div class="side-by-side-grid">
-              <div class="img-container">
-                <img src="{l2_hist_orig}" alt="Histogram Original">
-                <div class="img-caption"><strong>Histogram Mức Xám Gốc (Phân bố liên tục [0, 255])</strong></div>
-              </div>
-              <div class="img-container">
-                <img src="{l2_hist_bin}" alt="Histogram Binary">
-                <div class="img-caption"><strong>Histogram Sau Cắt Ngưỡng T=127 (Đúng 2 vạch rời rạc {{0, 255}})</strong></div>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-p-blur">
-            <div class="img-container">
-              <img src="{l2_blur}" alt="Blur Comparison Grid">
-              <div class="img-caption">
-                <strong>YC5–6: So sánh Mean (7×7, 21×21) vs Gaussian (σ=3 k=19, σ=7 k=43). Gaussian bảo tồn chuyển tiếp mượt mà theo quy tắc k ≈ 6σ+1</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="slide-footer">
-        <div class="takeaways-pills">
-          <div class="takeaway-pill"><strong>Độ sáng tịnh tiến:</strong> Phép cộng beta tịnh tiến toàn bộ lược đồ xám mà không thay đổi hình dạng phân bố.</div>
-          <div class="takeaway-pill"><strong>Tương phản co giãn:</strong> Hệ số alpha > 1 khuếch đại khoảng cách mức xám giữa các pixel lân cận, làm nổi bật chi tiết.</div>
-          <div class="takeaway-pill"><strong>Gaussian vs Mean:</strong> Trọng số suy giảm hàm mũ chuẩn của Gaussian loại bỏ hiện tượng răng cưa ô vuông thô ráp của Mean.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================================================
-       SLIDE 04: LAB 02 - SHARPENING & SOBEL/PREWITT
-       ======================================================================== -->
-  <section class="slide-screen" id="slide-3">
-    <div class="slide-frame">
-      <div class="slide-header">
-        <div>
-          <span class="slide-tag">CHUYÊN ĐỀ LAB 02 / 03 · PHẦN II & III</span>
-          <h2 class="slide-title">Lab 02 · Làm Nét Sharpening (YC7) & Đạo Hàm Gradient Sobel vs Prewitt (YC8)</h2>
-          <div class="slide-summary">Bản chất toán học Identity − Laplacian bảo toàn độ sáng và đo lường định lượng tương quan biên r ≈ 0.996.</div>
-        </div>
-        <span class="slide-badge-num">Slide 04 / 13</span>
-      </div>
-      <div class="slide-body">
-        <div class="visual-canvas">
-          <div class="tab-nav">
-            <button class="tab-btn active" data-tab="tab-u-sharpen">YC7 · Kết Quả Làm Nét Ảnh Thực Nghiệm</button>
-            <button class="tab-btn" data-tab="tab-u-sharpen-math">Bản Chất: Sharpen (Σ=1) vs Laplacian (Σ=0)</button>
-            <button class="tab-btn" data-tab="tab-u-edge-grid">YC8 · Lưới So Sánh Sobel vs Prewitt</button>
-            <button class="tab-btn" data-tab="tab-u-edge-mag">YC8 · Bản Đồ Nhiệt Gradient Sobel |G|</button>
-            <button class="tab-btn" data-tab="tab-u-edge-quad">YC8 · Đối Chiếu 4 Hướng Đạo Hàm (Gx, Gy)</button>
-          </div>
-          <div class="tab-pane active" id="tab-u-sharpen">
-            <div class="img-container">
-              <img src="{l2_sharpen}" alt="Sharpen Comparison">
-              <div class="img-caption">
-                <strong>YC7: So sánh Ảnh gốc vs Làm nét 4-lân cận [0 -1 0; -1 5 -1; 0 -1 0] vs Làm nét 8-lân cận có trọng số [-1 -2 -1; -2 13 -2; -1 -2 -1]</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-sharpen-math">
-            <div class="visual-canvas" style="justify-content: center;">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Khái Niệm</th>
-                    <th>Toán Tử Laplacian Đạo Hàm Bậc 2</th>
-                    <th>Bộ Lọc Làm Nét (Sharpening Filter)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr><td><strong>Mục đích</strong></td><td>Phát hiện vị trí đường biên (Edge Detection)</td><td>Tăng cường độ tương phản vi mô tại đường biên (Image Enhancement)</td></tr>
-                  <tr><td><strong>Tổng trọng số</strong></td><td><span class="pill-badge warning">Σ w_ij = 0</span> (xóa sạch vùng phẳng đồng nhất)</td><td><span class="pill-badge success">Σ w_ij = 1.000</span> (bảo toàn nguyên vẹn mức xám trung bình)</td></tr>
-                  <tr><td><strong>Kernel 4-lân cận</strong></td><td><code>[ 0,  1,  0]<br/>[ 1, -4,  1]<br/>[ 0,  1,  0]</code> (Tổng = 0)</td><td><code>[ 0, -1,  0]<br/>[-1,  5, -1]<br/>[ 0, -1,  0]</code> (5 - 4 = 1)</td></tr>
-                  <tr><td><strong>Kernel 8-lân cận</strong></td><td><code>[ 1,  1,  1]<br/>[ 1, -8,  1]<br/>[ 1,  1,  1]</code> (Tổng = 0)</td><td><code>[-1, -2, -1]<br/>[-2, 13, -2]<br/>[-1, -2, -1]</code> (13 - 12 = 1)</td></tr>
-                  <tr><td><strong>Hành vi vùng phẳng</strong></td><td>Vùng phẳng c = 100 → output = 0 (màu đen hoàn toàn)</td><td>Vùng phẳng c = 100 → output = 100 (giữ nguyên độ sáng)</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-edge-grid">
-            <div class="img-container">
-              <img src="{l2_edges}" alt="Edge Detection Grid">
-              <div class="img-caption">
-                <strong>YC8: Lưới đạo hàm vi phân Sobel X/Y vs Prewitt X/Y và độ lớn gradient tổng hợp (Tương quan Pearson r ≈ 0.996)</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-edge-mag">
-            <div class="img-container">
-              <img src="{l2_sobel_mag}" alt="Sobel Gradient Magnitude">
-              <div class="img-caption">
-                <strong>YC8: Bản đồ độ lớn Gradient Sobel |G| = √(Gx² + Gy²). Chuẩn hóa Percentile 99 giúp hiển thị rõ các gân biên mảnh</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-edge-quad">
-            <div class="quad-grid">
-              <div class="img-container"><img src="{l2_sobel_x}" alt="Sobel X"><div class="img-caption"><strong>Sobel Gx (Biên Dọc, Trọng Số 2)</strong></div></div>
-              <div class="img-container"><img src="{l2_sobel_y}" alt="Sobel Y"><div class="img-caption"><strong>Sobel Gy (Biên Ngang, Trọng Số 2)</strong></div></div>
-              <div class="img-container"><img src="{l2_prewitt_x}" alt="Prewitt X"><div class="img-caption"><strong>Prewitt Gx (Biên Dọc, Hệ Số 1)</strong></div></div>
-              <div class="img-container"><img src="{l2_prewitt_y}" alt="Prewitt Y"><div class="img-caption"><strong>Prewitt Gy (Biên Ngang, Hệ Số 1)</strong></div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="slide-footer">
-        <div class="takeaways-pills">
-          <div class="takeaway-pill"><strong>Bản chất Sharpen:</strong> Sharpen = Identity − Laplacian. Trừ đi đạo hàm bậc hai giúp đẩy cao vút sườn dốc mức xám tại biên.</div>
-          <div class="takeaway-pill"><strong>Tương quan r ≈ 0.996:</strong> Cấu trúc hình học đường biên giữa Sobel và Prewitt gần như trùng khít hoàn toàn.</div>
-          <div class="takeaway-pill"><strong>Chênh lệch biên độ ~1.37×:</strong> Sobel có hệ số trọng số trung tâm bằng 2 ([1,2,1]), giúp biên độ trung bình đạt ~39.5 so với ~28.9 của Prewitt.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================================================
-       SLIDE 05: LAB 02 - KERNEL SUM RULE & NONLINEAR FILTERS
-       ======================================================================== -->
-  <section class="slide-screen" id="slide-4">
-    <div class="slide-frame">
-      <div class="slide-header">
-        <div>
-          <span class="slide-tag">CHUYÊN ĐỀ LAB 02 / 04 · PHẦN III</span>
-          <h2 class="slide-title">Lab 02 · Quy Tắc Tổng Kernel (YC9) & Lọc Phi Tuyến Khử Nhiễu (YC10–11)</h2>
-          <div class="slide-summary">Kiểm chứng output = c · Σkernel trên vùng phẳng c=100 và hiệu quả triệt tiêu 100% cực trị của Median Filter trên nhiễu muối tiêu 3%.</div>
-        </div>
-        <span class="slide-badge-num">Slide 05 / 13</span>
-      </div>
-      <div class="slide-body">
-        <div class="visual-canvas">
-          <div class="tab-nav">
-            <button class="tab-btn active" data-tab="tab-u-sum-math">YC9 · Kiểm Chứng Vùng Phẳng c = 100</button>
-            <button class="tab-btn" data-tab="tab-u-sum-image">YC9 · Tác Động Thực Tế Lên Ảnh Màu</button>
-            <button class="tab-btn" data-tab="tab-u-nl-grid">YC10 · Khử Nhiễu Muối Tiêu 3% (Median vs Bilateral)</button>
-            <button class="tab-btn" data-tab="tab-u-all-filters">YC11 · Master Grid 7 Bộ Lọc Không Gian</button>
-          </div>
-          <div class="tab-pane active" id="tab-u-sum-math">
-            <div class="img-container">
-              <img src="{l2_sum_rule}" alt="Kernel Sum Rule Analysis">
-              <div class="img-caption">
-                <strong>YC9: Vùng phẳng c = 100 cho ra đúng giá trị lý thuyết {{50, 100, 200, 0}} tương ứng với Σkernel = {{0.5, 1.0, 2.0, 0.0}}</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-sum-image">
-            <div class="img-container">
-              <img src="{l2_sum_effects}" alt="Kernel Effects on Image">
-              <div class="img-caption">
-                <strong>YC9: Hiệu ứng trên ảnh màu: Σ=0.5 tối đi một nửa; Σ=1.0 giữ nguyên độ sáng; Σ=2.0 cháy sáng; Σ=0 xóa nền phẳng chỉ giữ biên</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-nl-grid">
-            <div class="img-container">
-              <img src="{l2_nonlinear}" alt="Nonlinear Filtering Comparison">
-              <div class="img-caption">
-                <strong>YC10: Nhiễu muối tiêu 3%. Median 3×3 triệt tiêu 100% cực trị; Bilateral giữ biên sắc nhưng không loại hết muối tiêu</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-all-filters">
-            <div class="img-container">
-              <img src="{l2_all}" alt="All Filters Grid">
-              <div class="img-caption">
-                <strong>YC11 Master Grid: Lưới tổng hợp so sánh trực quan ảnh gốc cùng 7 bộ lọc (Mean, Gaussian, Sharpen, Sobel, Prewitt, Median, Bilateral)</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="slide-footer">
-        <div class="takeaways-pills">
-          <div class="takeaway-pill"><strong>Định luật tổng kernel:</strong> Σ=1 bảo toàn độ sáng, Σ=0 xóa vùng phẳng chỉ giữ biên, Σ>1 cháy sáng, Σ<1 sụp tối.</div>
-          <div class="takeaway-pill"><strong>Chiến thắng của Median:</strong> Do nhiễu muối tiêu chỉ nhận cực trị 0/255, lọc trung vị loại bỏ 100% hạt nhiễu mà không làm nhòe ảnh.</div>
-          <div class="takeaway-pill"><strong>Bilateral Filter:</strong> Kết hợp khoảng cách không gian và độ chênh mức xám, làm mịn vùng phẳng nhưng giữ biên sắc.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================================================
-       SLIDE 06: LAB 03 - 5 STEPS CANNY PIPELINE & YC1 BENCHMARK
-       ======================================================================== -->
-  <section class="slide-screen" id="slide-5">
-    <div class="slide-frame">
-      <div class="slide-header">
-        <div>
-          <span class="slide-tag">CHUYÊN ĐỀ LAB 03 / 01 · 5 BƯỚC TOÁN HỌC & BENCHMARK</span>
-          <h2 class="slide-title">Lab 03 · 5 Bước Toán Học Tách Biên Canny & Đối Chiếu Thư Viện (YC1)</h2>
-          <div class="slide-summary">Chuỗi toán học khép kín từ lọc mượt Gaussian, đạo hàm Sobel, NMS gọt mỏng 1-pixel đến Hysteresis và benchmark thư viện.</div>
-        </div>
-        <span class="slide-badge-num">Slide 06 / 13</span>
-      </div>
-      <div class="slide-body">
-        <div class="visual-canvas">
-          <div class="tab-nav">
-            <button class="tab-btn active" data-tab="tab-u-l3-ribbon">Chuỗi 5 Bước Toán Học Canny</button>
-            <button class="tab-btn" data-tab="tab-u-l3-workflow">Sơ Đồ Kiến Trúc Vector (SVG)</button>
-            <button class="tab-btn" data-tab="tab-u-l3-bench">YC1 · Đối Chiếu OpenCV (30,980 px) vs Skimage (7,554 px)</button>
-            <button class="tab-btn" data-tab="tab-u-l3-theory">So Sánh Canny vs Sobel vs Laplacian</button>
-          </div>
-          <div class="tab-pane active" id="tab-u-l3-ribbon">
-            <div class="pipeline-ribbon">
-              <div class="pipeline-step">
-                <div class="step-header"><span class="step-num">01</span><span class="step-badge">BƯỚC 1: LÀM MỊN</span></div>
-                <div class="step-thumb"><img src="{l3_yc2_sigma}" alt="Gaussian smoothing"></div>
-                <div class="step-title">Gaussian Smoothing</div>
-                <div class="step-formula">exp(-(x²+y²)/(2σ²))</div>
-                <div class="step-desc">Khử nhiễu tần số cao với k = 2·ceil(3σ)+1, bảo toàn năng lượng phân phối Gauss 3-sigma.</div>
-                <span class="step-metric">ksize=7×7 (σ=1.0)</span>
-              </div>
-              <div class="pipeline-step">
-                <div class="step-header"><span class="step-num">02</span><span class="step-badge">BƯỚC 2: GRADIENT</span></div>
-                <div class="step-thumb"><img src="{l3_yc1}" alt="Sobel Gradient"></div>
-                <div class="step-title">Sobel G & Hướng θ</div>
-                <div class="step-formula">G=√(Gx²+Gy²), θ=atan2</div>
-                <div class="step-desc">Đạo hàm không gian bậc một tính biên độ thay đổi và góc vector pháp tuyến của đường biên.</div>
-                <span class="step-metric">L2gradient = True</span>
-              </div>
-              <div class="pipeline-step">
-                <div class="step-header"><span class="step-num">03</span><span class="step-badge">BƯỚC 3: NMS</span></div>
-                <div class="step-thumb"><img src="{l3_yc2_thresh}" alt="NMS"></div>
-                <div class="step-title">Non-Max Suppression</div>
-                <div class="step-formula">Lượng tử 4 hướng (0°,45°,90°,135°)</div>
-                <div class="step-desc">So sánh pixel với 2 lân cận dọc theo hướng gradient, gọt mỏng đường biên về độ dày đúng 1 pixel.</div>
-                <span class="step-metric">Độ Dày = 1 Pixel</span>
-              </div>
-              <div class="pipeline-step">
-                <div class="step-header"><span class="step-num">04</span><span class="step-badge">BƯỚC 4–5: HYSTERESIS</span></div>
-                <div class="step-thumb"><img src="{l3_yc4_regions}" alt="Hysteresis"></div>
-                <div class="step-title">Double Threshold & Link</div>
-                <div class="step-formula">T_low &lt; Weak &lt; T_high</div>
-                <div class="step-desc">Phân 3 loại (Strong / Weak / Loại bỏ); duyệt 8-lân cận giữ lại biên yếu nối với biên mạnh.</div>
-                <span class="step-metric">T_low=50, T_high=150</span>
-              </div>
-              <div class="pipeline-step">
-                <div class="step-header"><span class="step-num">05</span><span class="step-badge">HÌNH HỌC HẠ NGUỒN</span></div>
-                <div class="step-thumb"><img src="{l3_yc4_circles}" alt="Hough Circles"></div>
-                <div class="step-title">Phân Đoạn & Hough</div>
-                <div class="step-formula">Hough Gradient (dp, minDist, R)</div>
-                <div class="step-desc">Morphology đóng khe hở tạo mask vùng kín và bỏ phiếu Hough định vị chính xác 24/24 hình tròn.</div>
-                <span class="step-metric">24/24 Đồng Xu Tròn</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-l3-workflow">
-            <div class="img-container">
-              <img src="{svg_lab03}" alt="Workflow Architecture Lab 03">
-              <div class="img-caption">
-                <strong>Sơ đồ kiến trúc toàn thể luồng xử lý Lab 03: 5 bước toán học Canny kết hợp phân đoạn hình thái học và Hough Circles (Vector SVG)</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-l3-bench">
-            <div class="img-container">
-              <img src="{l3_yc1}" alt="OpenCV vs Skimage Comparison">
-              <div class="img-caption">
-                <strong>YC1: Đối chiếu trực tiếp: OpenCV (30,980 pixel biên) vs Scikit-Image (7,554 pixel biên) trên ảnh camera 512×512 (cùng ngưỡng 50/150)</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-l3-theory">
-            <div class="visual-canvas" style="justify-content: center;">
-              <table class="data-table">
-                <thead>
-                  <tr><th>Phương Pháp</th><th>Bản Chất Toán Học</th><th>Độ Dày Biên</th><th>Độ Nhạy Nhiễu</th><th>Đánh Giá Kỹ Thuật</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td><strong>Sobel / Prewitt</strong></td><td>Đạo hàm bậc một ∇f = [Gx, Gy]ᵀ</td><td>Dày nhiều pixel theo sườn dốc</td><td>Dễ bị kích hoạt bởi nhiễu nếu không lọc trước</td><td>Tính toán nhanh nhưng biên dày, không khép kín</td></tr>
-                  <tr><td><strong>Laplacian</strong></td><td>Đạo hàm bậc hai ∇²f = ∂²f/∂x² + ∂²f/∂y²</td><td>Zero-crossing cặp âm/dương quanh biên</td><td>Rất nhạy cảm với nhiễu vì khuếch đại tần số cao</td><td>Không định hướng được biên; cần kết hợp LoG</td></tr>
-                  <tr><td><strong>Canny Detector</strong></td><td>Tối ưu hóa 3 tiêu chí John Canny</td><td>Đúng 1 pixel nhờ Non-Maximum Suppression</td><td>Rất bền vững nhờ lọc Gauss và Hysteresis</td><td>Chuẩn vàng xử lý ảnh; biên mảnh liên tục</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="slide-footer">
-        <div class="takeaways-pills">
-          <div class="takeaway-pill"><strong>Tiêu chí John Canny:</strong> (1) Low error rate (bắt đúng biên), (2) Localization (gần biên thật nhất), (3) Single response (đúng 1 pixel).</div>
-          <div class="takeaway-pill"><strong>Non-Maximum Suppression:</strong> Lượng tử hóa góc gradient về 4 hướng chính (0°, 45°, 90°, 135°) để triệt tiêu các pixel không phải cực đại cục bộ.</div>
-          <div class="takeaway-pill"><strong>Chênh lệch YC1:</strong> cv2.Canny giữ 30,980 px vs skimage giữ 7,554 px do skimage tự động làm mịn Gauss nội bộ và chuẩn hóa dải float.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================================================
-       SLIDE 07: LAB 03 - PARAMETER SWEEPS & PREPROCESSING
-       ======================================================================== -->
-  <section class="slide-screen" id="slide-6">
-    <div class="slide-frame">
-      <div class="slide-header">
-        <div>
-          <span class="slide-tag">CHUYÊN ĐỀ LAB 03 / 02 · KHẢO SÁT THAM SỐ & TIỀN XỬ LÝ</span>
-          <h2 class="slide-title">Lab 03 · Khảo Sát Tham Số σ & Ngưỡng (YC2) & Tiền Xử Lý Ảnh Khó (YC3)</h2>
-          <div class="slide-summary">Quét định lượng σ ∈ {0.5, 1.0, 2.0, 3.5}, khử nhiễu Gauss/muối tiêu và cứu ảnh tương phản thấp bằng cv2.equalizeHist (0 → 13,897 px).</div>
-        </div>
-        <span class="slide-badge-num">Slide 07 / 13</span>
-      </div>
-      <div class="slide-body">
-        <div class="visual-canvas">
-          <div class="tab-nav">
-            <button class="tab-btn active" data-tab="tab-u-yc2-sigma">YC2.1 · Quét Gaussian σ (20,012 → 793 px)</button>
-            <button class="tab-btn" data-tab="tab-u-yc2-thresh">YC2.2 · Quét Cặp Ngưỡng Kép</button>
-            <button class="tab-btn" data-tab="tab-u-yc3-noise-img">YC3 · Ảnh Nhiễu Gauss & Muối Tiêu</button>
-            <button class="tab-btn" data-tab="tab-u-yc3-noise-edge">YC3 · Biên Canny Trước vs Sau Lọc</button>
-            <button class="tab-btn" data-tab="tab-u-yc3-texture">YC3 · Ảnh Nhiều Vân Gạch (brick 512×512)</button>
-            <button class="tab-btn" data-tab="tab-u-yc3-contrast">YC3 · Cứu Tương Phản Thấp (0 → 13,897 px)</button>
-          </div>
-          <div class="tab-pane active" id="tab-u-yc2-sigma">
-            <div class="img-container">
-              <img src="{l3_yc2_sigma}" alt="Gaussian Sigma Sweep">
-              <div class="img-caption">
-                <strong>YC2.1: Quét σ từ 0.5 (20,012 px) → 1.0 (7,937 px) → 2.0 (4,740 px) → 3.5 (793 px). Sigma lớn xóa sạch chi tiết mịn và texture</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-yc2-thresh">
-            <div class="img-container">
-              <img src="{l3_yc2_thresh}" alt="Threshold Sweep">
-              <div class="img-caption">
-                <strong>YC2.2: Quét cặp ngưỡng T_low/T_high: 30/90 (15,972 px), 50/150 (7,937 px), 100/200 (6,025 px), 20/180 (8,483 px)</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-yc3-noise-img">
-            <div class="img-container">
-              <img src="{l3_yc3_noise_img}" alt="Noise Images">
-              <div class="img-caption">
-                <strong>YC3: Minh họa ảnh thách thức: Nhiễu Gauss (std=20), Nhiễu muối tiêu (3%) và kết quả làm mịn bằng Bilateral / Median</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-yc3-noise-edge">
-            <div class="img-container">
-              <img src="{l3_yc3_noise_edge}" alt="Noise Edges">
-              <div class="img-caption">
-                <strong>YC3: Biên Canny: Nhiễu Gauss giảm từ 9,003 → 5,938 px nhờ Bilateral; Nhiễu muối tiêu giảm từ 13,201 → 6,963 px nhờ Median 3×3</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-yc3-texture">
-            <div class="img-container">
-              <img src="{l3_yc3_texture}" alt="Texture Brick">
-              <div class="img-caption">
-                <strong>YC3: Ảnh brick 512×512: Lọc Bilateral (d=9, 50, 5) giảm số pixel biên vân bề mặt từ 18,750 → 9,319 px mà vẫn giữ trọn đường ron gạch</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-yc3-contrast">
-            <div class="img-container">
-              <img src="{l3_yc3_contrast}" alt="Contrast Improvement">
-              <div class="img-caption">
-                <strong>YC3: Đối chiếu 3 trạng thái: Ảnh gốc (7,937 px) → Ảnh tương phản thấp [100, 163] (0 px) → Sau cv2.equalizeHist phục hồi 13,897 px</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="slide-footer">
-        <div class="takeaways-pills">
-          <div class="takeaway-pill"><strong>Tỉ lệ chuẩn 1:3:</strong> Cấu hình tham chiếu 50/150 cho đường biên sạch, loại bỏ hoàn toàn nhiễu nền mà không đứt nét.</div>
-          <div class="takeaway-pill"><strong>Nhiễu muối tiêu:</strong> Bắt buộc dùng Median 3×3; nếu không Canny sẽ bắt nhầm hàng nghìn vòng tròn quanh từng hạt cực trị.</div>
-          <div class="takeaway-pill"><strong>Cứu ảnh mù biên:</strong> Cân bằng histogram CDF toàn cục trải rộng dải mức xám, giúp độ dốc gradient vượt qua T_high=150.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================================================
-       SLIDE 08: LAB 03 - REGIONS, HOUGH CIRCLES & EXTENSIONS
-       ======================================================================== -->
-  <section class="slide-screen" id="slide-7">
-    <div class="slide-frame">
-      <div class="slide-header">
-        <div>
-          <span class="slide-tag">CHUYÊN ĐỀ LAB 03 / 03 · PHÂN ĐOẠN & MỞ RỘNG</span>
-          <h2 class="slide-title">Lab 03 · Phân Đoạn Vùng & Nhận Dạng 24/24 Đồng Xu (YC4) & 4 Câu Hỏi Mở Rộng</h2>
-          <div class="slide-summary">Morphology đóng khe hở tạo mask nhị phân 41,111 px, biến đổi Hough Circles nhận diện 100% đồng xu và 4 định hướng nghiên cứu.</div>
-        </div>
-        <span class="slide-badge-num">Slide 08 / 13</span>
-      </div>
-      <div class="slide-body">
-        <div class="visual-canvas">
-          <div class="tab-nav">
-            <button class="tab-btn active" data-tab="tab-u-yc4-regions">YC4.1 · Tìm Vùng Từ Biên (Region Segmentation)</button>
-            <button class="tab-btn" data-tab="tab-u-yc4-circles">YC4.2 · Nhận Dạng Hình Tròn (Hough Circles 24 Xu)</button>
-            <button class="tab-btn" data-tab="tab-u-l3-ext">Phần III · 4 Câu Hỏi Nghiên Cứu Mở Rộng</button>
-          </div>
-          <div class="tab-pane active" id="tab-u-yc4-regions">
-            <div class="img-container">
-              <img src="{l3_yc4_regions}" alt="Region Segmentation">
-              <div class="img-caption">
-                <strong>YC4.1: Canny (50/150) → Đóng hình thái học (cv2.MORPH_CLOSE, Ellipse 3×3) → scipy.ndimage.binary_fill_holes → Mask nhị phân (41,111 px)</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-yc4-circles">
-            <div class="img-container">
-              <img src="{l3_yc4_circles}" alt="Hough Circles Detection">
-              <div class="img-caption">
-                <strong>YC4.2: Tiền xử lý Gaussian 9×9 (σ=2.0) → cv2.HoughCircles (HOUGH_GRADIENT, dp=1.2, minDist=40, param1=100, param2=25) → 24/24 Đồng Xu</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-l3-ext">
-            <div class="hero-kpi-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 0;">
-              <div class="hero-kpi-card" style="padding: 14px;">
-                <div class="hero-kpi-title" style="color: var(--primary);">1. Đánh Giá Chất Lượng Đường Biên</div>
-                <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45; margin-top: 4px;">
-                  • <strong>Khi có Ground Truth:</strong> Precision, Recall, F1-Score với dung sai d &le; 2 px và Pratt FOM = (1/max(N_I, N_A)) &Sigma; (1 / (1 + &alpha;·d_i²)).<br/>
-                  • <strong>Khi không có Ground Truth:</strong> Đo độ liên tục, độ mỏng 1-pixel và độ tương phản vi sai hai bên sườn biên.
-                </div>
-              </div>
-              <div class="hero-kpi-card" style="padding: 14px;">
-                <div class="hero-kpi-title" style="color: var(--primary);">2. Cải Thiện & Tự Động Hóa Canny</div>
-                <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45; margin-top: 4px;">
-                  • <strong>Auto-Canny theo Median:</strong> v = median(img); T_low = max(0, 0.67·v); T_high = min(255, 1.33·v) (rất ổn định).<br/>
-                  • <strong>Tối ưu hóa:</strong> Phân tách kernel Gauss 2D thành hai bộ lọc 1D (O(k²) &rarr; O(2k)), SIMD/CUDA trên GPU.
-                </div>
-              </div>
-              <div class="hero-kpi-card" style="padding: 14px;">
-                <div class="hero-kpi-title" style="color: var(--primary);">3. Tách Biên Trên Ảnh Màu (Color Canny)</div>
-                <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45; margin-top: 4px;">
-                  • <strong>Đa kênh đơn giản:</strong> Chạy Canny độc lập trên từng kênh (R, G, B / Lab) rồi OR bitwise: <code>E = E_R | E_G | E_B</code>.<br/>
-                  • <strong>Di Zenzo Color Tensor:</strong> Tính ma trận biến thiên màu tổng hợp J, tránh triệt tiêu biên khi 2 vùng cùng độ sáng Y nhưng khác màu.
-                </div>
-              </div>
-              <div class="hero-kpi-card" style="padding: 14px;">
-                <div class="hero-kpi-title" style="color: var(--primary);">4. Canny Cho Video Real-Time & Khử Rung</div>
-                <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45; margin-top: 4px;">
-                  • <strong>Thách thức Temporal Flickering:</strong> Nhiễu cảm biến giữa các frame liên tiếp khiến đường biên bị nhấp nháy, đứt nối.<br/>
-                  • <strong>Giải pháp lọc thời gian:</strong> Làm mượt gradient theo dòng thời gian G_t = &lambda;·G_t + (1-&lambda;)·G_(t-1) hoặc Spatio-temporal 3D.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="slide-footer">
-        <div class="takeaways-pills">
-          <div class="takeaway-pill"><strong>YC4.1 Đóng khe hở:</strong> Phép đóng Morphology nối liền các điểm biên bị đứt, binary_fill_holes lấp đầy vùng lõi tạo mask chuẩn 41,111 px.</div>
-          <div class="takeaway-pill"><strong>YC4.2 Truyền ảnh mức xám:</strong> cv2.HoughCircles tự tính Canny nội bộ với param1, phát hiện trọn vẹn 24/24 đồng xu không báo nhầm nền.</div>
-          <div class="takeaway-pill"><strong>Auto-Canny v:</strong> Công thức median(img) giải quyết 90% nhu cầu chọn ngưỡng tự động trong thực tế mà không cần can thiệp thủ công.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================================================
-       SLIDE 09: LAB 04 - wHASH 192-BIT PIPELINE & DATASET DESIGN
-       ======================================================================== -->
-  <section class="slide-screen" id="slide-8">
-    <div class="slide-frame">
-      <div class="slide-header">
-        <div>
-          <span class="slide-tag">CHUYÊN ĐỀ LAB 04 / 01 · TIẾN TRÌNH wHASH & DỮ LIỆU</span>
-          <h2 class="slide-title">Lab 04 · Chu Trình wHash RGB 192-bit & Thiết Kế Tập Dữ Liệu 147 Cặp</h2>
-          <div class="slide-summary">Chuẩn hóa 256×256, phân tách 3 kênh màu, phân rã 2D DWT db4 dải LL1, lượng tử trung vị và chia tập chống rò rỉ (Seed 42).</div>
-        </div>
-        <span class="slide-badge-num">Slide 09 / 13</span>
-      </div>
-      <div class="slide-body">
-        <div class="visual-canvas">
-          <div class="tab-nav">
-            <button class="tab-btn active" data-tab="tab-u-l4-ribbon">Chuỗi 5 Bước Tiến Trình wHash 192-bit</button>
-            <button class="tab-btn" data-tab="tab-u-l4-workflow">Sơ Đồ Kiến Trúc Vector (SVG)</button>
-            <button class="tab-btn" data-tab="tab-u-l4-dataset">Tập Cặp Ảnh: Cùng Nguồn vs Khác Loại</button>
-          </div>
-          <div class="tab-pane active" id="tab-u-l4-ribbon">
-            <div class="pipeline-ribbon">
-              <div class="pipeline-step">
-                <div class="step-header"><span class="step-num">01</span><span class="step-badge">DỮ LIỆU ĐẦU VÀO</span></div>
-                <div class="step-thumb"><img src="{l4_dataset}" alt="Dataset pairs"></div>
-                <div class="step-title">Tách Kênh & Resize</div>
-                <div class="step-formula">Resize(256×256), R, G, B</div>
-                <div class="step-desc">26 ảnh nguồn tạo 104 biến thể (130 ảnh); chuẩn hóa 256×256 INTER_AREA, tách 3 kênh màu độc lập.</div>
-                <span class="step-metric">26 Nguồn / 147 Cặp</span>
-              </div>
-              <div class="pipeline-step">
-                <div class="step-header"><span class="step-num">02</span><span class="step-badge">BIẾN ĐỔI SÓNG NHỎ</span></div>
-                <div class="step-thumb"><img src="{l4_bands}" alt="Wavelet DWT"></div>
-                <div class="step-title">2D DWT db4 Level 1</div>
-                <div class="step-formula">wavedec2(..., db4, level=1)</div>
-                <div class="step-desc">Trích xuất dải xấp xỉ tần số thấp LL1 (131×131) chứa trên 93% năng lượng hình thái, loại bỏ cao tần.</div>
-                <span class="step-metric">LL1 (131×131)</span>
-              </div>
-              <div class="pipeline-step">
-                <div class="step-header"><span class="step-num">03</span><span class="step-badge">LƯỢNG TỬ HÓA</span></div>
-                <div class="step-thumb"><img src="{l4_baseline}" alt="Baseline hash"></div>
-                <div class="step-title">Thu Nhỏ LL & Median</div>
-                <div class="step-formula">bit = 1 if LL_8x8 &gt; m else 0</div>
-                <div class="step-desc">Thu nhỏ LL về 8×8 (64 hệ số); so sánh với trung vị kênh tạo chuỗi nhị phân 64 bit đạt Entropy 1.0.</div>
-                <span class="step-metric">64 bit / Kênh</span>
-              </div>
-              <div class="pipeline-step">
-                <div class="step-header"><span class="step-num">04</span><span class="step-badge">GHÉP NỐI ĐA KÊNH</span></div>
-                <div class="step-thumb"><img src="{l4_rgb}" alt="RGB Channels"></div>
-                <div class="step-title">Ghép wHash 192-bit</div>
-                <div class="step-formula">h = [R_64 | G_64 | B_64]</div>
-                <div class="step-desc">Ghép nối 3 chuỗi 64-bit thành vector 192-bit (48 ký tự Hex), khắc phục triệt để nhược điểm mù màu của pHash.</div>
-                <span class="step-metric">192-bit Vector</span>
-              </div>
-              <div class="pipeline-step">
-                <div class="step-header"><span class="step-num">05</span><span class="step-badge">ĐÁNH GIÁ & TÌM KIẾM</span></div>
-                <div class="step-thumb"><img src="{l4_roc}" alt="ROC evaluation"></div>
-                <div class="step-title">Khoảng Cách Hamming</div>
-                <div class="step-formula">D_H = &Sigma; (h1 &oplus; h2) &le; &tau;=18</div>
-                <div class="step-desc">Tối ưu Youden J chốt ngưỡng &tau;=18 bits trên Calib; đánh giá Evaluation đạt 98.77% và tìm kiếm Top-3.</div>
-                <span class="step-metric">AUC = 1.0000</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-l4-workflow">
-            <div class="img-container">
-              <img src="{svg_lab04}" alt="Workflow Architecture Lab 04">
-              <div class="img-caption">
-                <strong>Sơ đồ luồng toàn thể Lab 04: Chuẩn bị dữ liệu 2 chủ đề, trích xuất wHash RGB 192-bit và đánh giá 2 tập độc lập (Vector SVG)</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-l4-dataset">
-            <div class="img-container">
-              <img src="{l4_dataset}" alt="Dataset pairs preview">
-              <div class="img-caption">
-                <strong>Minh họa các cặp ảnh: Nhãn 1 (Cùng nguồn: bản gốc vs sáng/tối/nhiễu/JPEG) vs Nhãn 0 (Khác đối tượng dễ nhầm: chó vs muffin, mèo vs kem)</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="slide-footer">
-        <div class="takeaways-pills">
-          <div class="takeaway-pill"><strong>Chia tập theo ảnh nguồn:</strong> Chia split theo nguồn gốc hình ảnh (12 Calib / 14 Eval) ngăn chặn tuyệt đối rò rỉ dữ liệu (Data Leakage).</div>
-          <div class="takeaway-pill"><strong>Bản chất wHash 192-bit:</strong> Dải LL1 sóng nhỏ giữ cấu trúc tần số thấp, lượng tử trung vị đảm bảo tính cân bằng bit (32 bit 0, 32 bit 1).</div>
-          <div class="takeaway-pill"><strong>Khác biệt với Cryptographic Hash:</strong> wHash giữ khoảng cách Hamming tỉ lệ thuận với khác biệt thị giác, không có hiệu ứng tuyết lở.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================================================
-       SLIDE 10: LAB 04 - WAVELET DWT, HAMMING MATRIX & ROBUSTNESS
-       ======================================================================== -->
-  <section class="slide-screen" id="slide-9">
-    <div class="slide-frame">
-      <div class="slide-header">
-        <div>
-          <span class="slide-tag">CHUYÊN ĐỀ LAB 04 / 02 · WAVELET & ĐỘ BỀN VỮNG</span>
-          <h2 class="slide-title">Lab 04 · Biến Đổi 2D DWT db4 (YC1), Ma Trận Hamming (YC2) & Độ Bền Vững (YC3)</h2>
-          <div class="slide-summary">Lượng tử hóa trung vị từng kênh màu, khoảng cách Hamming từng cặp và khảo sát độ bền vững qua 7 phép biến đổi.</div>
-        </div>
-        <span class="slide-badge-num">Slide 10 / 13</span>
-      </div>
-      <div class="slide-body">
-        <div class="visual-canvas">
-          <div class="tab-nav">
-            <button class="tab-btn active" data-tab="tab-u-yc1-baseline">YC1 · Baseline Hash: LL (131×131) → LL (8×8) → Bit (8×8)</button>
-            <button class="tab-btn" data-tab="tab-u-yc1-rgb">YC1 · Tách 3 Kênh Màu Độc Lập (R, G, B)</button>
-            <button class="tab-btn" data-tab="tab-u-yc1-bands">YC1 · 4 Dải Tần Sóng Nhỏ (LL, cH, cV, cD)</button>
-            <button class="tab-btn" data-tab="tab-u-yc2-matrix">YC2 · Ma Trận Hamming 26×26</button>
-            <button class="tab-btn" data-tab="tab-u-yc2-channels">YC2 · Khoảng Cách Từng Kênh Màu</button>
-            <button class="tab-btn" data-tab="tab-u-yc3-robust">YC3 · Khảo Sát Độ Bền Vững 7 Phép Biến Đổi</button>
-          </div>
-          <div class="tab-pane active" id="tab-u-yc1-baseline">
-            <div class="img-container">
-              <img src="{l4_baseline}" alt="Baseline Hash Process">
-              <div class="img-caption">
-                <strong>YC1: Kênh màu → Phân rã DWT db4 LL1 (131×131) → Thu nhỏ 8×8 → So sánh Median tạo 64 bit</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-yc1-rgb">
-            <div class="img-container">
-              <img src="{l4_rgb}" alt="RGB Channels Processing">
-              <div class="img-caption">
-                <strong>YC1: Xử lý 3 kênh màu độc lập R, G, B: Mỗi kênh tạo 64 bit; ghép nối thành vector 192-bit (chuỗi Hex 48 ký tự)</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-yc1-bands">
-            <div class="img-container">
-              <img src="{l4_bands}" alt="Wavelet Subbands">
-              <div class="img-caption">
-                <strong>YC1: 4 dải tần 2D DWT: LL1 (Xấp xỉ thấp tần, chứa bố cục chính), cH (Chi tiết ngang), cV (Chi tiết dọc), cD (Chi tiết chéo)</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-yc2-matrix">
-            <div class="img-container">
-              <img src="{l4_hamming}" alt="Hamming Matrix 26x26">
-              <div class="img-caption">
-                <strong>YC2: Ma trận khoảng cách Hamming 26×26 giữa toàn bộ ảnh gốc: Đường chéo chính bằng 0; các ảnh cùng chủ đề có tương đồng nhẹ</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-yc2-channels">
-            <div class="img-container">
-              <img src="{l4_channel_dist}" alt="Channel Distances">
-              <div class="img-caption">
-                <strong>YC2: Khoảng cách từng kênh: Cặp cùng nguồn tập trung d_H &le; 6 bit/kênh; cặp khác loại phân bố rải đều từ 20 đến 40 bit/kênh</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-yc3-robust">
-            <div class="img-container">
-              <img src="{l4_robust}" alt="Robustness Chart">
-              <div class="img-caption">
-                <strong>YC3: Độ bền: Biến đổi cường độ/nén rất bền (dark 0, noise 2, jpeg 3, bright 7 &le; 18 bit); biến đổi hình học làm lệch ô lưới 8×8</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="slide-footer">
-        <div class="takeaways-pills">
-          <div class="takeaway-pill"><strong>Khoảng phân cách lớn:</strong> Cặp cùng nguồn có D_H ∈ [0, 20]; cặp khác loại có D_H ∈ [70, 126] (khoảng phân cách cực kỳ an toàn 50 bit).</div>
-          <div class="takeaway-pill"><strong>Miễn nhiễm giảm sáng:</strong> Phép nhân alpha không làm thay đổi thứ tự tương quan giữa các pixel, giữ nguyên trung vị (median D_H = 0).</div>
-          <div class="takeaway-pill"><strong>Lọc sạch nhiễu:</strong> Nhiễu tần số cao (noise, jpeg) bị triệt tiêu ở các dải chi tiết cao tần cH, cV, cD.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================================================
-       SLIDE 11: LAB 04 - YOUDEN THRESHOLD & EVALUATION
-       ======================================================================== -->
-  <section class="slide-screen" id="slide-10">
-    <div class="slide-frame">
-      <div class="slide-header">
-        <div>
-          <span class="slide-tag">CHUYÊN ĐỀ LAB 04 / 03 · CHỌN NGƯỠNG & ĐÁNH GIÁ</span>
-          <h2 class="slide-title">Lab 04 · Chọn Ngưỡng Youden's J (τ = 18) & Đánh Giá Độc Lập Evaluation</h2>
-          <div class="slide-summary">Tối ưu hóa chỉ số Youden J trên 66 cặp Calibration và kiểm định nghiêm ngặt trên 81 cặp Evaluation (Acc = 98.77%, ROC AUC = 1.0000).</div>
-        </div>
-        <span class="slide-badge-num">Slide 11 / 13</span>
-      </div>
-      <div class="slide-body">
-        <div class="visual-canvas">
-          <div class="tab-nav">
-            <button class="tab-btn active" data-tab="tab-u-yc4-thresh-sel">YC4.1 · Chọn Ngưỡng Youden's J (τ = 18 bit)</button>
-            <button class="tab-btn" data-tab="tab-u-yc4-roc-eval">YC4.2 · Đường Cong ROC & Phân Bố Hamming Evaluation</button>
-            <button class="tab-btn" data-tab="tab-u-yc4-review-pairs">YC4.3 · Kiểm Tra Cặp Điển Hình & Phân Tích 1 FN</button>
-          </div>
-          <div class="tab-pane active" id="tab-u-yc4-thresh-sel">
-            <div class="img-container">
-              <img src="{l4_thresh_sel}" alt="Threshold Selection Calibration">
-              <div class="img-caption">
-                <strong>YC4.1: Tối ưu Youden J = Recall + Specificity - 1 trên 66 cặp Calibration: Ngưỡng τ = 18 đạt Accuracy = 100% (48 TP, 18 TN, 0 FP, 0 FN)</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-yc4-roc-eval">
-            <div class="img-container">
-              <img src="{l4_roc}" alt="ROC Evaluation">
-              <div class="img-caption">
-                <strong>YC4.2: Đánh giá trên 81 cặp Evaluation: Accuracy = 98.77% (80/81 đúng), ROC AUC = 1.0000 hoàn hảo, Precision = 100.0%, Specificity = 100.0%</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-yc4-review-pairs">
-            <div class="img-container">
-              <img src="{l4_review}" alt="Review Pairs and Error Analysis">
-              <div class="img-caption">
-                <strong>YC4.3: Phân tích ca lỗi duy nhất: meo_kem_doi_tuong_12 vs bright có D_H = 20 &gt; 18 (False Negative) do ảnh bị clip cháy sáng vùng kem trắng</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="slide-footer">
-        <div class="takeaways-pills">
-          <div class="takeaway-pill"><strong>Hiệu năng cực cao:</strong> Đạt 80/81 cặp đúng (98.77% Accuracy, 98.21% Recall, 100% Specificity, 100% Precision, F1 = 99.10%).</div>
-          <div class="takeaway-pill"><strong>Không có báo nhầm (FP = 0):</strong> Toàn bộ 25 cặp âm (khác đối tượng) đều có D_H &ge; 70 &gt;&gt; 18, loại bỏ 100% dương tính giả.</div>
-          <div class="takeaway-pill"><strong>Phân tích 1 ca FN:</strong> meo_kem_12_bright có D_H = 20 (R đổi 12 bit, G đổi 6 bit, B đổi 2 bit) do vùng kem trắng bị clip bão hòa 255 diện rộng.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================================================
-       SLIDE 12: LAB 04 - WAVELET COMPARISON & TOP-3 RETRIEVAL
-       ======================================================================== -->
-  <section class="slide-screen" id="slide-11">
-    <div class="slide-frame">
-      <div class="slide-header">
-        <div>
-          <span class="slide-tag">CHUYÊN ĐỀ LAB 04 / 04 · NÂNG CAO 1 & 2</span>
-          <h2 class="slide-title">Lab 04 · So Sánh Cấu Hình Wavelet (Nâng Cao 1) & Tìm Kiếm Top-3 (Nâng Cao 2)</h2>
-          <div class="slide-summary">Khảo sát vì sao nhiều bit hơn không đồng nghĩa tốt hơn và kiểm chứng hệ thống truy vấn tương đồng Top-3 (Top-1 Hamming = 2 ≤ 18).</div>
-        </div>
-        <span class="slide-badge-num">Slide 12 / 13</span>
-      </div>
-      <div class="slide-body">
-        <div class="visual-canvas">
-          <div class="tab-nav">
-            <button class="tab-btn active" data-tab="tab-u-adv1-chart">Nâng Cao 1 · Biểu Đồ So Sánh 4 Cấu Hình Wavelet</button>
-            <button class="tab-btn" data-tab="tab-u-adv1-table">Bảng Đối Chiếu Định Lượng Chuẩn Hóa</button>
-            <button class="tab-btn" data-tab="tab-u-adv2-topk">Nâng Cao 2 · Kết Quả Truy Vấn Top-3</button>
-            <button class="tab-btn" data-tab="tab-u-adv2-questions">4 Câu Hỏi Nghiên Cứu Mở Rộng</button>
-          </div>
-          <div class="tab-pane active" id="tab-u-adv1-chart">
-            <div class="img-container">
-              <img src="{l4_wavelet_comp}" alt="Wavelet Comparison Chart">
-              <div class="img-caption">
-                <strong>So sánh Accuracy, F1-score và ROC AUC giữa 4 cấu hình Wavelet trên cùng bộ dữ liệu 147 cặp</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-adv1-table">
-            <div class="visual-canvas" style="justify-content: center;">
-              <table class="data-table">
-                <thead>
-                  <tr><th>Cấu Hình</th><th>Độ Dài Mã</th><th>Ngưỡng τ_norm</th><th>Accuracy</th><th>Recall</th><th>ROC AUC</th><th>Đánh Giá Kỹ Thuật</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td><strong>RGB db4 L1 (Baseline)</strong></td><td>192 bits</td><td>0.09375 (18/192)</td><td><strong>98.77%</strong></td><td>98.21%</td><td><strong>1.0000</strong></td><td><span class="pill-badge success">Chuẩn tối ưu nhất (Cân bằng dung lượng & độ chính xác)</span></td></tr>
-                  <tr><td><strong>RGB haar L1</strong></td><td>192 bits</td><td>0.07292 (14/192)</td><td><strong>98.77%</strong></td><td>98.21%</td><td><strong>1.0000</strong></td><td><span class="pill-badge info">Hiệu năng tương đương db4; tính toán Haar nhanh hơn nhẹ</span></td></tr>
-                  <tr><td><strong>RGB db4 L2</strong></td><td>192 bits</td><td>0.09375 (18/192)</td><td><strong>97.53%</strong></td><td>96.43%</td><td><strong>1.0000</strong></td><td><span class="pill-badge warning">Phân rã sâu cấp 2 làm mất thêm chi tiết tần số trung bình (2 FN)</span></td></tr>
-                  <tr><td><strong>Gray Step L3 (Slide 17)</strong></td><td>71,542 bits</td><td>0.29416</td><td><strong>69.14%</strong></td><td>55.36%</td><td><strong>0.7157</strong></td><td><span class="pill-badge danger">Kém nhất (25 FN): Lượng tử rint(c/2)%2 quá nhạy cảm với nhiễu</span></td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-adv2-topk">
-            <div class="img-container">
-              <img src="{l4_topk}" alt="Top-K Retrieval">
-              <div class="img-caption">
-                <strong>Truy vấn với ảnh nén JPEG: Trả về chính xác 100% ảnh gốc ở vị trí Top-1 (Hamming = 2 &le; 18). Các vị trí Top-2 và Top-3 có Hamming &gt; 80</strong>
-                <span class="zoom-hint">🔍 Nhấp để phóng to</span>
-              </div>
-            </div>
-          </div>
-          <div class="tab-pane" id="tab-u-adv2-questions">
-            <div class="hero-kpi-grid" style="grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 0;">
-              <div class="hero-kpi-card" style="padding: 14px;">
-                <div class="hero-kpi-title" style="color: var(--primary);">1. Bất Biến Xoay (Rotation Invariance)</div>
-                <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45; margin-top: 4px;">
-                  • <strong>Fourier-Mellin Transform:</strong> Chuyển sang tọa độ cực-logarit (log-polar), biến phép xoay thành phép tịnh tiến.<br/>
-                  • <strong>Ước lượng góc chủ đạo:</strong> Dùng trục quán tính bậc hai (Image Moments) để xoay ảnh chuẩn hóa trước khi DWT.
-                </div>
-              </div>
-              <div class="hero-kpi-card" style="padding: 14px;">
-                <div class="hero-kpi-title" style="color: var(--primary);">2. Đánh Chỉ Mục Triệu Ảnh (Million-Scale)</div>
-                <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45; margin-top: 4px;">
-                  • <strong>Cây BK-Tree:</strong> Tận dụng bất đẳng thức tam giác trong không gian metric nhị phân Hamming.<br/>
-                  • <strong>Multi-Index Hashing (MIH):</strong> Chia 192 bit thành m chuỗi con (chunks), tra cứu bảng băm trực tiếp O(1).
-                </div>
-              </div>
-              <div class="hero-kpi-card" style="padding: 14px;">
-                <div class="hero-kpi-title" style="color: var(--primary);">3. Deep Embeddings vs Perceptual Hash</div>
-                <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45; margin-top: 4px;">
-                  • <strong>Deep Embeddings (CLIP / DINOv2):</strong> Hiểu ngữ nghĩa ngữ cảnh sâu nhưng tốn GPU và vector lớn (512 float32 = 2048 bytes).<br/>
-                  • <strong>wHash 192-bit:</strong> Cực kỳ nhẹ (24 bytes), chạy CPU thời gian thực, hoàn hảo cho bản quyền và chống trùng lặp.
-                </div>
-              </div>
-              <div class="hero-kpi-card" style="padding: 14px;">
-                <div class="hero-kpi-title" style="color: var(--primary);">4. Wavelet Tiên Tiến (WPT & DTCWT)</div>
-                <div style="font-size: 11.5px; color: #cbd5e1; line-height: 1.45; margin-top: 4px;">
-                  • <strong>Wavelet Packet Transform (WPT):</strong> Phân rã đệ quy cả dải cao tần, phù hợp với ảnh có nhiều hoa văn kết cấu lặp.<br/>
-                  • <strong>Dual-Tree Complex Wavelet (DTCWT):</strong> Giảm tính nhạy cảm dịch chuyển và cung cấp tính chọn lọc 6 hướng.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="slide-footer">
-        <div class="takeaways-pills">
-          <div class="takeaway-pill"><strong>Nghịch lý số lượng bit:</strong> Gray Step L3 dùng 71,542 bits nhưng chỉ đạt 69.14% Acc (25 FN), chứng minh nhiều bit hơn không hề tốt hơn.</div>
-          <div class="takeaway-pill"><strong>Truy vấn O(1) với MIH:</strong> wHash 192-bit có thể tra cứu tức thì trong cơ sở dữ liệu hàng triệu ảnh bằng Multi-Index Hashing.</div>
-          <div class="takeaway-pill"><strong>Nhận diện bản quyền hoàn hảo:</strong> Top-1 luôn thuộc về ảnh gốc cùng nguồn với độ tin cậy tuyệt đối (Hamming = 2 &lt;&lt; 18).</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================================================
-       SLIDE 13: MASTER CROSS-LAB COMPARISON MATRIX & QA
-       ======================================================================== -->
-  <section class="slide-screen" id="slide-12">
-    <div class="slide-frame">
-      <div class="slide-header">
-        <div>
-          <span class="slide-tag">TỔNG KẾT NGHIỆM THU · MA TRẬN 3 BÀI LAB</span>
-          <h2 class="slide-title">So Sánh Đối Chiếu Toàn Diện Labs 02, 03 & 04 & Quản Trị Kỹ Nghệ</h2>
-          <div class="slide-summary">Bảng tổng kết đối chiếu mục tiêu, thuật toán cốt lõi, kích thước đầu vào/ra, độ phức tạp và kết quả kiểm thử toàn hệ thống.</div>
-        </div>
-        <span class="slide-badge-num">Slide 13 / 13</span>
-      </div>
-      <div class="slide-body">
-        <div class="visual-canvas" style="justify-content: center;">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Hạng Mục So Sánh</th>
-                <th>Lab 02 (Toán Tử Điểm & Lọc Không Gian)</th>
-                <th>Lab 03 (Tách Biên Canny & Hough)</th>
-                <th>Lab 04 (Wavelet Hash RGB 192-bit)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Mục tiêu cốt lõi</strong></td>
-                <td>Biến đổi cường độ, tích chập không gian, làm nét & lọc khử nhiễu</td>
-                <td>Tách biên mảnh 1-pixel tối ưu, phân đoạn vùng kín & nhận dạng hình tròn</td>
-                <td>Trích xuất đặc trưng nhận thức bất biến, phát hiện ảnh trùng lặp & tìm kiếm</td>
-              </tr>
-              <tr>
-                <td><strong>Thuật toán trọng tâm</strong></td>
-                <td>Tích chập 2D (Mean, Gauss, Sharpen), Đạo hàm Sobel, Lọc Median</td>
-                <td>Lọc Gauss, Sobel Gradient, NMS 1px, Double Threshold, Hysteresis, Hough</td>
-                <td>2D DWT db4 Level 1, Lượng tử hóa trung vị, Khoảng cách Hamming, Youden J</td>
-              </tr>
-              <tr>
-                <td><strong>Đầu vào & Đầu ra</strong></td>
-                <td>Input: BGR/Gray (1920×1080) → Output: Ảnh đã xử lý lọc/biên</td>
-                <td>Input: Gray (512×512, 303×384) → Output: Bản đồ biên nhị phân, Mask, 24 Vòng tròn</td>
-                <td>Input: 130 Ảnh màu (26 nguồn) → Output: Vector 192-bit (48 hex), Nhãn phân loại</td>
-              </tr>
-              <tr>
-                <td><strong>Chỉ số đột phá</strong></td>
-                <td>Sobel vs Prewitt r ≈ 0.996 · Sharpen Σ = 1.000 · Median khử 100% cực trị</td>
-                <td>OpenCV 30,980 px · Cứu ảnh mờ 0 → 13,897 px · 24/24 Coins (100%)</td>
-                <td>Youden τ = 18 · Evaluation Acc = 98.77% · Precision 100% · ROC AUC = 1.0000</td>
-              </tr>
-              <tr>
-                <td><strong>Độ phức tạp</strong></td>
-                <td>O(H · W · k²) (kích thước kernel k nhỏ 3×3 → 21×21)</td>
-                <td>O(H · W) cho Canny + O(H · W · R_range) cho Hough Transform</td>
-                <td>O(H · W) cho DWT cấp 1 + O(1) so khớp Hamming bằng __builtin_popcount</td>
-              </tr>
-              <tr>
-                <td><strong>Unit Tests PyTest</strong></td>
-                <td><span class="pill-badge success">22 / 22 PASS (test_filters.py)</span></td>
-                <td><span class="pill-badge success">11 / 11 PASS (test_canny.py)</span></td>
-                <td><span class="pill-badge success">25 / 25 PASS (test_wavelet_hash, baseline, pairs)</span></td>
-              </tr>
-              <tr style="background: rgba(56, 189, 248, 0.1); font-weight: 700;">
-                <td><strong>TỔNG HỢP 3 LABS</strong></td>
-                <td colspan="3" style="text-align: center; color: var(--primary);">
-                  <strong>58 / 58 UNIT TESTS PASSED (100%) · 0 RUFF WARNINGS · 54 ARTIFACTS · 100% OFFLINE STANDALONE</strong>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div class="slide-footer">
-        <div class="takeaways-pills">
-          <div class="takeaway-pill"><strong>Chu trình khép kín:</strong> Từ xử lý ảnh cấp thấp (pixel/kernel ở Lab 02) lên phân đoạn hình học (Lab 03) và trích xuất đặc trưng nhận thức cấp cao (Lab 04).</div>
-          <div class="takeaway-pill"><strong>Độ tin cậy tuyệt đối:</strong> 100% mã nguồn được module hóa theo Clean Architecture và kiểm định tự động qua 58 test cases.</div>
-          <div class="takeaway-pill"><strong>Báo cáo một chạm:</strong> Toàn bộ 3 bài lab được tích hợp trong 1 slide deck duy nhất, trình chiếu trơn tru trên mọi thiết bị mà không cần internet.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-{LIGHTBOX_MARKUP}
-<script>{SHARED_JS}</script>
+  <script>{UNIFIED_JS}</script>
 </body>
 </html>"""
+
 
 def render_unified_markdown_report() -> str:
     r"""Generate Comprehensive Unified Markdown Report for Labs 02-04."""
@@ -2253,9 +1167,9 @@ flowchart TD
 
 ## 🛠️ 5. HƯỚNG DẪN TÁI LẬP & TRÌNH CHIẾU (REPRODUCIBILITY)
 
-1. **Khởi chạy Slide Trình Chiếu HTML 100vh**:
+1. **Khởi chạy Báo Cáo HTML Toàn Diện**:
    - Mở trực tiếp file [LABS_02_03_04_REPORT.html](LABS_02_03_04_REPORT.html) trong bất kỳ trình duyệt web nào (Chrome, Firefox, Safari, Edge).
-   - Dùng phím `Space`, `↓` hoặc `PageDown` để lướt qua 13 slide trình chiếu toàn màn hình.
+   - Thanh điều hướng trên cùng cho phép nhảy nhanh giữa Tổng quan, Lab 02, Lab 03, Lab 04 và Ma trận so sánh.
    - Nhấp vào bất kỳ hình ảnh nào để mở cửa sổ phóng to **Lightbox Modal** kiểm tra chi tiết.
 
 2. **Chạy lại kiểm thử hồi quy**:
@@ -2270,22 +1184,22 @@ flowchart TD
    ```
 """
 
+
 def main() -> None:
-    """Generate unified HTML and Markdown reports for Labs 02-04."""
+    """Generate full-bleed edge-to-edge unified HTML and Markdown reports for Labs 02-04."""
     LABS_DIR.mkdir(parents=True, exist_ok=True)
 
-    # 1. Generate Unified HTML Slide Presentation
-    html_content = render_unified_labs_02_03_04()
-
+    # 1. Generate Full Edge-to-Edge HTML Report
+    html_content = render_unified_full_html()
     out_unified_html = LABS_DIR / "LABS_02_03_04_REPORT.html"
     out_unified_html.write_text(html_content, encoding="utf-8")
-    print(f"✔ Generated Unified Labs 02-04 Slide Deck: {out_unified_html} ({out_unified_html.stat().st_size // 1024} KB)")
+    print(f"✔ Generated Full-Bleed Unified Report: {out_unified_html} ({out_unified_html.stat().st_size // 1024} KB)")
 
     # 2. Generate Unified Markdown Technical Report
     md_content = render_unified_markdown_report()
     out_unified_md = LABS_DIR / "LABS_02_03_04_REPORT.md"
     out_unified_md.write_text(md_content, encoding="utf-8")
-    print(f"✔ Generated Unified Labs 02-04 Markdown Report: {out_unified_md} ({out_unified_md.stat().st_size // 1024} KB)")
+    print(f"✔ Generated Unified Markdown Report: {out_unified_md} ({out_unified_md.stat().st_size // 1024} KB)")
 
 
 if __name__ == "__main__":
