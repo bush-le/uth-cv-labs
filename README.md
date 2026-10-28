@@ -21,6 +21,8 @@ Cài `pip install -r requirements/base.txt` và `pip install jupyter nbformat nb
 
 Có thể chạy `python scripts/lab04/run_notebook.py` để thực thi notebook, kiểm tra và xuất hình/số liệu vào `docs/assets/lab04/`. Nếu thay thí nghiệm, cập nhật nhận xét và số liệu trong report Markdown rồi chạy `python scripts/lab04/render_report.py` để tạo HTML có nhúng hình. Các file trong `experiments/` là kết quả tạm và không cần để chạy bài hiện tại.
 
+Report HTML đi theo sơ đồ dữ liệu → hash → Hamming → chọn ngưỡng → đánh giá; độ bền và hai bài nâng cao là các nhánh riêng. Nội dung chi tiết lấy từ Markdown và code trích từ notebook. Bố cục nằm trong `scripts/lab04/report_layout.json`; CSS và JavaScript được nhúng để mở HTML độc lập.
+
 Baseline hiện tại là RGB → băm từng kênh bằng db4 level 1 → LL 8×8 → median riêng từng kênh → ghép R|G|B thành 192 bit, do project lựa chọn. Biến thể bước nhảy trên ảnh xám chỉ dùng làm phép đối chiếu ở bài nâng cao. Notebook chọn ngưỡng trên calibration rồi giữ nguyên để đánh giá evaluation. Tham số sinh biến thể lấy từ cấu hình dữ liệu; tham số hash và khảo sát hình học lấy từ cấu hình thí nghiệm.
 
 Luồng thực thi gồm `src/data/lab04_pairs.py`, các hàm hash trong `src/models/classical/wavelet_hash.py`, đánh giá trong `src/pipelines/lab04_evaluation.py` và các hàm vẽ trong `src/pipelines/lab04_visuals.py` để notebook tập trung vào các bước thực hành.

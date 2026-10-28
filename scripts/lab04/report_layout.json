@@ -1,0 +1,167 @@
+{
+  "hero": "Hai ảnh khác nhau bao nhiêu bit?",
+  "subtitle": "Theo dõi ảnh RGB từ Wavelet hash 192 bit đến khoảng cách Hamming, ngưỡng quyết định và những trường hợp dự đoán sai.",
+  "map_title": "Từ ảnh màu đến quyết định so sánh",
+  "description": "Luồng chính: dữ liệu → hash → Hamming → chọn ngưỡng calibration → đánh giá evaluation. Độ bền và hai bài nâng cao là các nhánh riêng từ hash. Evaluation không dùng để điều chỉnh lại ngưỡng.",
+  "result_sections": [
+    3,
+    4
+  ],
+  "paths": [
+    "M280 60H400",
+    "M680 60H800",
+    "M940 98V160",
+    "M800 198H680",
+    "M540 98V126H350V278H540V306",
+    "M350 126H170V306",
+    "M710 60V278H940V306"
+  ],
+  "nodes": [
+    [
+      0,
+      22,
+      280,
+      "dataset",
+      "Dữ liệu RGB & nhãn",
+      "Chia calibration / evaluation"
+    ],
+    [
+      400,
+      22,
+      280,
+      "hash",
+      "YC1 · RGB 192 bit",
+      "LL → 8×8 → median → ghép"
+    ],
+    [
+      800,
+      22,
+      280,
+      "hamming",
+      "YC2 · Hamming",
+      "Đếm bit khác nhau"
+    ],
+    [
+      800,
+      160,
+      280,
+      "threshold",
+      "Chọn ngưỡng",
+      "Chỉ dùng calibration"
+    ],
+    [
+      400,
+      160,
+      280,
+      "threshold",
+      "YC4 · Evaluation",
+      "Cố định ngưỡng đã chọn"
+    ],
+    [
+      30,
+      306,
+      280,
+      "robustness",
+      "YC3 · Độ bền",
+      "Bổ sung · calibration"
+    ],
+    [
+      400,
+      306,
+      280,
+      "methods",
+      "Nâng cao 1",
+      "So sánh cấu hình hash"
+    ],
+    [
+      800,
+      306,
+      280,
+      "retrieval",
+      "Nâng cao 2 · Top-k",
+      "Truy vấn → xếp hạng"
+    ]
+  ],
+  "stages": [
+    [
+      "dataset",
+      "Dữ liệu & nhãn",
+      "26 ảnh nguồn → biến thể → chia calibration / evaluation",
+      "Nhãn 1 là cùng ảnh nguồn và biến thể; nhãn 0 là cặp khác nguồn theo tiêu chí dữ liệu đã chọn.",
+      1,
+      [
+        5
+      ],
+      "Mèo–kem và Chihuahua–muffin thú vị về thị giác. Bài đánh giá chính đang đo cùng nguồn ảnh, không nhận diện cùng loại đối tượng."
+    ],
+    [
+      "hash",
+      "YC1 · Tạo hash RGB",
+      "Mỗi kênh → Wavelet LL → resize 8×8 → median → ghép 3×64 bit",
+      "Ảnh được giữ RGB để tính hash; LL hiển thị xám là ma trận hệ số của từng kênh.",
+      "41-yc1-bien-oi-va-tao-ma",
+      [
+        8,
+        12
+      ],
+      "Mỗi kênh tạo 64 bit từ lưới 8×8; ba kênh ghép thành 192 bit. Đây là thiết kế baseline của project."
+    ],
+    [
+      "hamming",
+      "YC2 · Hamming",
+      "Hai hash 192 bit → đếm vị trí khác nhau → khoảng cách",
+      "Xem từng cặp trước, sau đó đọc đóng góp R/G/B và heatmap các ảnh nguồn.",
+      "42-yc2-so-sanh-hamming",
+      [
+        14,
+        16
+      ],
+      "Hamming nhỏ nghĩa là hai mã gần nhau. 1 − d/192 là độ giống của mã, không phải xác suất cùng đối tượng."
+    ],
+    [
+      "threshold",
+      "YC4 · Ngưỡng & đánh giá",
+      "Calibration → chọn ngưỡng 18 → cố định → evaluation → xem cặp sai",
+      "ROC mô tả thứ tự khoảng cách; confusion matrix dùng một ngưỡng đã chọn.",
+      "44-yc4-chon-nguong-va-anh-gia-cuoi",
+      [
+        22,
+        26
+      ],
+      "Evaluation: 55 TP, 25 TN, 0 FP, 1 FN tại ngưỡng 18. AUC = 1 vẫn có thể đi cùng một cặp bị bỏ sót tại ngưỡng này."
+    ],
+    [
+      "robustness",
+      "YC3 · Độ bền bổ sung",
+      "Ảnh calibration → biến đổi → hash → Hamming với ảnh nguồn",
+      "Thử sáng, tối, nhiễu, JPEG, crop, xoay và lật. Đây là nhánh khảo sát riêng.",
+      "43-yc3-khao-sat-o-ben-bo-sung",
+      [
+        19
+      ],
+      "Hash ổn định hơn với một số biến đổi sáng, nhiễu và JPEG; crop, xoay và lật có thể tăng khoảng cách mạnh."
+    ],
+    [
+      "methods",
+      "Nâng cao 1 · So sánh hash",
+      "Các cấu hình → chọn ngưỡng riêng trên calibration → so sánh evaluation",
+      "Giữ cùng cách chia dữ liệu; không so trực tiếp Hamming thô khi độ dài hash khác nhau.",
+      "51-khao-sat-phuong-phap-bam-wavelet",
+      [
+        28
+      ],
+      "Mỗi phương pháp được hiệu chỉnh ngưỡng trên calibration. Điểm số chỉ phản ánh bộ dữ liệu nhỏ đang dùng."
+    ],
+    [
+      "retrieval",
+      "Nâng cao 2 · Top-k",
+      "Query + database → hash → Hamming → sắp tăng dần → Top-k",
+      "Hạng đầu là gần nhất trong database, chưa chắc đã nằm trong ngưỡng chấp nhận.",
+      "52-tim-kiem-anh-dua-tren-hash",
+      [
+        32
+      ],
+      "Top-k trả về thứ hạng; ngưỡng cho biết kết quả có đủ gần theo tiêu chí hash hay không."
+    ]
+  ]
+}
