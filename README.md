@@ -21,7 +21,6 @@ Repository này chứa toàn bộ mã nguồn, dữ liệu thực nghiệm, pipe
 
 - **Lab 03 Report Tool**: Chạy `python scripts/lab03/render_report.py` để tạo lại báo cáo HTML theo sơ đồ thực nghiệm Canny.
 - **Lab 04 Report Tool**: Chạy `python scripts/lab04/run_notebook.py` để thực thi notebook và `python scripts/lab04/render_report.py` để tạo báo cáo HTML theo sơ đồ luồng Wavelet Hash.
-- **Báo Cáo Tổng Hợp Labs 02–04**: Bản báo cáo HTML trực quan tương tác toàn diện gộp chung cả 3 bài lab tại [`LABS_02_03_04_REPORT.html`](docs/labs/LABS_02_03_04_REPORT.html). Tái tạo bằng `python scripts/render_unified_report.py`.
 - **Master Presentation Deck**: Chạy `python scripts/render_visual_reports.py --lab all` để kết xuất toàn bộ slide presentation 100vh cho Labs 01-04 và báo cáo tổng kết.
 
 ---
