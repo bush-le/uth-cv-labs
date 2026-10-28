@@ -45,7 +45,7 @@ docs/labs/
 | **Lab 2** | **Toán tử điểm ảnh & Lọc không gian (Tuyến tính / Phi tuyến)** | ✅ **Hoàn thành** (17 Tests) | [`lab02/`](lab02/LAB_02_REPORT.md) · [`HTML`](lab02/LAB_02_REPORT.html) | [`lab02_pipeline.py`](../../src/pipelines/lab02_pipeline.py) | [`test_filters.py`](../../tests/test_filters.py) |
 | **Lab 3** | **Canny Edge Detector & Phân đoạn hình thái học** | ✅ **Hoàn thành** (16 Tests) | [`lab03/`](lab03/LAB_03_REPORT.md) · [`HTML`](lab03/LAB_03_REPORT.html) | [`lab03_pipeline.py`](../../src/pipelines/lab03_pipeline.py) | [`test_canny.py`](../../tests/test_canny.py) |
 | **Lab 4** | **So sánh tương đồng ảnh dùng Wavelet Hashing (DWT 2D)** | ✅ **Hoàn thành** (8 Tests) | [`lab04/`](lab04/LAB_04_DESCRIPTION.md) · [`HTML`](lab04/LAB_04_REPORT.html) | [`lab04_pipeline.py`](../../src/pipelines/lab04_pipeline.py) | [`test_wavelet_hash.py`](../../tests/test_wavelet_hash.py) |
-| **Labs 02–04** | **Báo Cáo Tổng Hợp & Slide Trình Chiếu 100vh (Gộp 3 Lab)** | ✅ **Hoàn thành** (58 Tests) | [`LABS_02_03_04_REPORT.md`](LABS_02_03_04_REPORT.md) · [`HTML`](LABS_02_03_04_REPORT.html) | [`render_unified_report.py`](../../scripts/render_unified_report.py) | [`PRESENTATION.html`](PRESENTATION.html) |
+| **Labs 02–04** | **Báo Cáo Tổng Hợp & Slide Trình Chiếu 100vh (Gộp 3 Lab)** | ✅ **Hoàn thành** (58 Tests) | [`LABS_02_03_04_REPORT.md`](LABS_02_03_04_REPORT.md) · [`HTML`](LABS_02_03_04_REPORT.html) | [`render_unified_report.py`](../../scripts/render_unified_report.py) | `58/58 passed` |
 
 ---
 
