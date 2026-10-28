@@ -1,0 +1,264 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 920" width="100%" height="auto" style="max-width: 1200px; display: block; margin: 12px auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb" />
+    </marker>
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" />
+    </marker>
+    <marker id="arrow-indigo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#4f46e5" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#16a34a" />
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#d97706" />
+    </marker>
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0284c7" />
+    </marker>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.07" flood-color="#000000" />
+    </filter>
+  </defs>
+
+  <rect width="1200" height="920" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
+
+  <!-- HEADER -->
+  <g id="header">
+    <rect x="0" y="0" width="1200" height="54" rx="12" fill="#0f172a" />
+    <rect x="0" y="42" width="1200" height="12" fill="#0f172a" />
+    <text x="25" y="34" font-size="15" font-weight="700" fill="#ffffff" letter-spacing="0.5">LAB 3: 5-STAGE CANNY EDGE DETECTION &amp; DOWNSTREAM TASKS PIPELINE</text>
+    <rect x="990" y="14" width="185" height="26" rx="13" fill="#2563eb" />
+    <text x="1082.5" y="31" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">5 STAGES • 20.3x SPEEDUP</text>
+  </g>
+
+  <!-- 1. INPUT LAYER -->
+  <g id="input-layer">
+    <rect x="390" y="68" width="380" height="86" rx="10" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.8" />
+    <path d="M 390 78 Q 390 68 400 68 L 760 68 Q 770 68 770 78 L 770 100 L 390 100 Z" fill="#e0f2fe" />
+    <text x="404" y="89" font-size="11.5" font-weight="700" fill="#0369a1">1. DỮ LIỆU ĐẦU VÀO (INPUT LAYER)</text>
+    <rect x="707" y="75" width="51" height="18" rx="9" fill="#0284c7" />
+    <text x="732.5" y="87" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">INPUT</text>
+
+    <g id="RAW3" filter="url(#shadow)">
+      <rect x="405" y="104" width="350" height="42" rx="8" fill="#ffffff" stroke="#0284c7" stroke-width="1.6" />
+      <rect x="687" y="110" width="60" height="15" rx="7.5" fill="#0284c7" />
+      <text x="717.0" y="121" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">BENCHMARK</text>
+      <text x="417" y="125" font-size="11.5" font-weight="700" fill="#0f172a">data/samples/lab03/ (6 ảnh mẫu)</text>
+      <text x="417" y="140" font-size="9.5" fill="#475569">coins.png • low_contrast.png • noise_salt_pepper • texture</text>
+    </g>
+  </g>
+
+  <!-- 2. CODE LAYER (LEFT COLUMN) -->
+  <g id="code-layer">
+    <rect x="25" y="175" width="285" height="540" rx="10" fill="#f8fafc" stroke="#64748b" stroke-width="1.8" />
+    <path d="M 25 185 Q 25 175 35 175 L 300 175 Q 310 175 310 185 L 310 207 L 25 207 Z" fill="#f1f5f9" />
+    <text x="39" y="196" font-size="11.5" font-weight="700" fill="#334155">2. KIẾN TRÚC MÃ NGUỒN (src/)</text>
+    <rect x="233" y="182" width="65" height="18" rx="9" fill="#64748b" />
+    <text x="265.5" y="194" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">MODULES</text>
+
+    <g id="CANNY_CORE" filter="url(#shadow)">
+      <rect x="40" y="220" width="255" height="68" rx="8" fill="#ffffff" stroke="#3b82f6" stroke-width="1.6" />
+      <rect x="227" y="226" width="60" height="15" rx="7.5" fill="#2563eb" />
+      <text x="257.0" y="237" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">CANNY</text>
+      <text x="52" y="241" font-size="11.5" font-weight="700" fill="#0f172a">src/models/classical/canny.py</text>
+      <text x="52" y="258" font-size="9.5" fill="#475569">5-Stage Custom Pipeline</text>
+      <text x="52" y="273" font-size="9.5" fill="#475569">NMS • Double Thresh • Hysteresis</text>
+    </g>
+
+    <g id="DOWN_CORE" filter="url(#shadow)">
+      <rect x="40" y="320" width="255" height="68" rx="8" fill="#ffffff" stroke="#6366f1" stroke-width="1.6" />
+      <rect x="215" y="326" width="72" height="15" rx="7.5" fill="#4f46e5" />
+      <text x="251.0" y="337" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">DOWNSTREAM</text>
+      <text x="52" y="341" font-size="11.5" font-weight="700" fill="#0f172a">Hough Circles &amp; Morphology</text>
+      <text x="52" y="358" font-size="9.5" fill="#475569">CLAHE Preprocessing</text>
+      <text x="52" y="373" font-size="9.5" fill="#475569">Closing + floodFill Segmentation</text>
+    </g>
+
+    <g id="PIPE3" filter="url(#shadow)">
+      <rect x="40" y="420" width="255" height="74" rx="8" fill="#ffffff" stroke="#0284c7" stroke-width="1.6" />
+      <rect x="188" y="426" width="98" height="15" rx="7.5" fill="#0284c7" />
+      <text x="237" y="437" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">ORCHESTRATOR</text>
+      <text x="52" y="443" font-size="9.5" font-weight="bold" fill="#64748b">src/pipelines/</text>
+      <text x="52" y="458" font-size="11.5" font-weight="700" fill="#0369a1">lab03_pipeline.py</text>
+      <text x="52" y="474" font-size="9.5" fill="#475569">Coordinator Lab03 Experiments</text>
+      <text x="52" y="488" font-size="9" fill="#64748b">Hydra Config &amp; Artifacts Generator</text>
+    </g>
+
+    <g id="TESTS3" filter="url(#shadow)">
+      <rect x="40" y="530" width="255" height="68" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+      <rect x="225" y="536" width="62" height="15" rx="7.5" fill="#16a34a" />
+      <text x="256" y="547" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">TEST SUITE</text>
+      <text x="52" y="551" font-size="11.5" font-weight="700" fill="#0f172a">tests/test_canny.py</text>
+      <text x="52" y="568" font-size="9.5" fill="#475569">16 Comprehensive Unit Tests</text>
+      <text x="52" y="583" font-size="9.5" fill="#475569">Pratt FOM &amp; Benchmark Validations</text>
+    </g>
+  </g>
+
+  <!-- 3. CANNY 5-STAGE CORE (CENTER COLUMN) -->
+  <g id="stages-layer">
+    <rect x="340" y="175" width="480" height="540" rx="10" fill="#fdfaff" stroke="#8b5cf6" stroke-width="1.8" />
+    <path d="M 340 185 Q 340 175 350 175 L 810 175 Q 820 175 820 185 L 820 207 L 340 207 Z" fill="#f5f3ff" />
+    <text x="354" y="196" font-size="11.5" font-weight="700" fill="#6d28d9">3. THUẬT TOÁN CANNY 5 GIAI ĐOẠN TOÁN HỌC</text>
+    <rect x="736" y="182" width="72" height="18" rx="9" fill="#8b5cf6" />
+    <text x="772.0" y="194" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">5 STAGES</text>
+
+    <!-- Stage 1 -->
+    <g id="C1" filter="url(#shadow)">
+      <rect x="355" y="218" width="450" height="54" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.6" />
+      <rect x="743" y="224" width="54" height="15" rx="7.5" fill="#7c3aed" />
+      <text x="770.0" y="235" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">STAGE 1</text>
+      <text x="367" y="239" font-size="11.5" font-weight="700" fill="#0f172a">1. Khử Nhiễu Gaussian Smoothing</text>
+      <text x="367" y="254" font-size="9.5" fill="#475569">Kernel 5x5, sigma=1.4 triệt tiêu thành phần nhiễu tần số cao</text>
+      <text x="367" y="268" font-size="9.5" fill="#475569">Bảo toàn năng lượng dải tần và định hướng gradient chuẩn xác</text>
+    </g>
+
+    <!-- Stage 2 -->
+    <g id="C2" filter="url(#shadow)">
+      <rect x="355" y="308" width="450" height="54" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.6" />
+      <rect x="743" y="314" width="54" height="15" rx="7.5" fill="#7c3aed" />
+      <text x="770.0" y="325" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">STAGE 2</text>
+      <text x="367" y="329" font-size="11.5" font-weight="700" fill="#0f172a">2. Tính Gradient Biên Độ &amp; Hướng Góc</text>
+      <text x="367" y="344" font-size="9.5" fill="#475569">Toán tử Sobel 3x3 tính Gx, Gy • G = sqrt(Gx^2 + Gy^2)</text>
+      <text x="367" y="358" font-size="9.5" fill="#475569">Hướng gradient theta = arctan(Gy / Gx) trực giao với đường biên</text>
+    </g>
+
+    <!-- Stage 3 -->
+    <g id="C3" filter="url(#shadow)">
+      <rect x="355" y="398" width="450" height="54" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.6" />
+      <rect x="743" y="404" width="54" height="15" rx="7.5" fill="#7c3aed" />
+      <text x="770.0" y="415" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">STAGE 3</text>
+      <text x="367" y="419" font-size="11.5" font-weight="700" fill="#0f172a">3. Triệt Tiêu Không Cực Đại (NMS)</text>
+      <text x="367" y="434" font-size="9.5" fill="#475569">Lượng tử hóa theta thành 4 hướng chính (0°, 45°, 90°, 135°)</text>
+      <text x="367" y="448" font-size="9.5" fill="#475569">So sánh pixel với 2 lân cận theo gradient -> Gọt mỏng biên 1-pixel</text>
+    </g>
+
+    <!-- Stage 4 -->
+    <g id="C4" filter="url(#shadow)">
+      <rect x="355" y="488" width="450" height="54" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.6" />
+      <rect x="743" y="494" width="54" height="15" rx="7.5" fill="#7c3aed" />
+      <text x="770.0" y="505" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">STAGE 4</text>
+      <text x="367" y="509" font-size="11.5" font-weight="700" fill="#0f172a">4. Phân Ngưỡng Kép (Double Thresholding)</text>
+      <text x="367" y="524" font-size="9.5" fill="#475569">Thigh = 150 (Biên mạnh) • Tlow = 50 (Biên yếu) • Tỷ lệ chuẩn 3:1</text>
+      <text x="367" y="538" font-size="9.5" fill="#475569">Phân tách thành 3 miền tin cậy: Strong (255), Weak (128), Zero (0)</text>
+    </g>
+
+    <!-- Stage 5 -->
+    <g id="C5" filter="url(#shadow)">
+      <rect x="355" y="578" width="450" height="54" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.6" />
+      <rect x="743" y="584" width="54" height="15" rx="7.5" fill="#7c3aed" />
+      <text x="770.0" y="595" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">STAGE 5</text>
+      <text x="367" y="599" font-size="11.5" font-weight="700" fill="#0f172a">5. Lần Vết Theo Vết Trễ (Hysteresis Tracking)</text>
+      <text x="367" y="614" font-size="9.5" fill="#475569">Liên thông 8-lân cận kết nối các pixel yếu có tiếp xúc với pixel mạnh</text>
+      <text x="367" y="628" font-size="9.5" fill="#475569">Loại bỏ triệt để các đốm biên rời rạc do nhiễu sinh ra</text>
+    </g>
+  </g>
+
+  <!-- 4. DOWNSTREAM & ARTIFACTS (RIGHT COLUMN) -->
+  <g id="artifacts-layer">
+    <rect x="845" y="175" width="330" height="540" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.8" />
+    <path d="M 845 185 Q 845 175 855 175 L 1165 175 Q 1175 175 1175 185 L 1175 207 L 845 207 Z" fill="#dcfce7" />
+    <text x="859" y="196" font-size="11.5" font-weight="700" fill="#15803d">4. TÁC VỤ HẠ NGUỒN &amp; ARTIFACTS</text>
+    <rect x="1083" y="182" width="82" height="18" rx="9" fill="#16a34a" />
+    <text x="1124.0" y="194" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">DOWNSTREAM</text>
+
+    <g id="D1" filter="url(#shadow)">
+      <rect x="860" y="218" width="300" height="54" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+      <text x="872" y="238" font-size="11" font-weight="700" fill="#0f172a">Benchmark OpenCV vs Skimage</text>
+      <text x="872" y="253" font-size="9.5" fill="#475569">yc1_libraries.png • Tăng tốc 20.3x</text>
+      <text x="872" y="266" font-size="9" fill="#15803d">OpenCV C++ (1.54ms) vs Skimage (31.28ms)</text>
+    </g>
+
+    <g id="D2" filter="url(#shadow)">
+      <rect x="860" y="308" width="300" height="54" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+      <text x="872" y="328" font-size="11" font-weight="700" fill="#0f172a">Khảo Sát Độ Nhạy Tham Số</text>
+      <text x="872" y="343" font-size="9.5" fill="#475569">yc2_sigma.png • yc2_threshold.png</text>
+      <text x="872" y="356" font-size="9" fill="#15803d">Biên độ sigma in [0.5, 3.0] • Tỷ lệ ngưỡng kép</text>
+    </g>
+
+    <g id="D3" filter="url(#shadow)">
+      <rect x="860" y="398" width="300" height="54" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+      <text x="872" y="418" font-size="11" font-weight="700" fill="#0f172a">Tiền Xử Lý Ảnh Bất Lợi (CLAHE)</text>
+      <text x="872" y="433" font-size="9.5" fill="#475569">yc3_contrast.png • yc3_noise_edges.png</text>
+      <text x="872" y="446" font-size="9" fill="#15803d">Cân bằng histogram cục bộ khôi phục biên ẩn</text>
+    </g>
+
+    <g id="D4" filter="url(#shadow)">
+      <rect x="860" y="488" width="300" height="54" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+      <text x="872" y="508" font-size="11" font-weight="700" fill="#0f172a">Phân Đoạn Hình Thái Học Đồng Xu</text>
+      <text x="872" y="523" font-size="9.5" fill="#475569">yc4_regions.png • Closing + floodFill</text>
+      <text x="872" y="536" font-size="9" fill="#15803d">Biến viền biên thành mặt nạ đặc khối (Blobs)</text>
+    </g>
+
+    <g id="D5" filter="url(#shadow)">
+      <rect x="860" y="578" width="300" height="54" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+      <text x="872" y="598" font-size="11" font-weight="700" fill="#0f172a">Định Vị Đường Tròn Hough Circles</text>
+      <text x="872" y="613" font-size="9.5" fill="#475569">yc4_circles.png • cv2.HoughCircles</text>
+      <text x="872" y="626" font-size="9" fill="#15803d">Nhận diện chính xác 100% tâm (x,y) &amp; bán kính R</text>
+    </g>
+  </g>
+
+  <!-- 5. QA LAYER (BOTTOM ROW) -->
+  <g id="qa-layer">
+    <rect x="25" y="745" width="1150" height="145" rx="10" fill="#fffbeb" stroke="#d97706" stroke-width="1.8" />
+    <path d="M 25 755 Q 25 745 35 745 L 1165 745 Q 1175 745 1175 755 L 1175 775 L 25 775 Z" fill="#fef3c7" />
+    <text x="39" y="764" font-size="11.5" font-weight="700" fill="#92400e">5. KIỂM ĐỊNH CHẤT LƯỢNG &amp; BENCHMARK ĐỊNH LƯỢNG</text>
+    <rect x="1055" y="750" width="110" height="18" rx="9" fill="#d97706" />
+    <text x="1110.0" y="762" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">BENCHMARKED</text>
+
+    <g id="QA1_3" filter="url(#shadow)">
+      <rect x="40" y="785" width="350" height="85" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+      <rect x="312" y="791" width="68" height="15" rx="7.5" fill="#16a34a" />
+      <text x="346.0" y="802" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">16/16 PASS</text>
+      <text x="52" y="806" font-size="11.5" font-weight="700" fill="#0f172a">PyTest Unit Test Suite</text>
+      <text x="52" y="821" font-size="9.5" fill="#475569">tests/test_canny.py (100% PASS)</text>
+      <text x="52" y="835" font-size="9.5" fill="#475569">• Kiểm tra Pratt Figure of Merit (FOM = 0.957)</text>
+      <text x="52" y="849" font-size="9.5" fill="#475569">• Kiểm định biên mảnh 1-pixel Non-Maximum Suppression</text>
+      <text x="52" y="863" font-size="9.5" fill="#475569">• Ràng buộc ngưỡng kép Thigh &gt; Tlow hợp lệ</text>
+    </g>
+
+    <g id="QA2_3" filter="url(#shadow)">
+      <rect x="415" y="785" width="340" height="85" rx="8" fill="#ffffff" stroke="#d97706" stroke-width="1.6" />
+      <rect x="675" y="791" width="72" height="15" rx="7.5" fill="#0284c7" />
+      <text x="711.0" y="802" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">&gt; 640 FPS</text>
+      <text x="427" y="806" font-size="11.5" font-weight="700" fill="#0f172a">Hiệu Năng Xử Lý Thời Gian Thực</text>
+      <text x="427" y="821" font-size="9.5" fill="#475569">OpenCV SIMD C++ (1.54ms/frame)</text>
+      <text x="427" y="835" font-size="9.5" fill="#475569">• Tốc độ vượt trội 20.3x so với Scikit-Image</text>
+      <text x="427" y="849" font-size="9.5" fill="#475569">• Đạt chuẩn camera công nghiệp tần số cao</text>
+      <text x="427" y="863" font-size="9.5" fill="#475569">• Zero warning linter với Ruff</text>
+    </g>
+
+    <g id="QA3_3" filter="url(#shadow)">
+      <rect x="785" y="785" width="370" height="85" rx="8" fill="#ffffff" stroke="#d97706" stroke-width="1.6" />
+      <rect x="1081" y="791" width="66" height="15" rx="7.5" fill="#7c3aed" />
+      <text x="1114.0" y="802" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">DELIVERED</text>
+      <text x="797" y="806" font-size="11.5" font-weight="700" fill="#0f172a">Báo Cáo Nghiệm Thu Trực Quan</text>
+      <text x="797" y="821" font-size="9.5" fill="#475569">docs/labs/lab03/LAB_03_REPORT.html &amp; .md</text>
+      <text x="797" y="835" font-size="9.5" fill="#475569">• Trực quan hóa lướt xuống với đầy đủ sơ đồ</text>
+      <text x="797" y="849" font-size="9.5" fill="#475569">• Nhúng trực tiếp Base64 100% offline</text>
+      <text x="797" y="863" font-size="9.5" fill="#475569">• Hướng dẫn tái lập thực nghiệm chi tiết</text>
+    </g>
+  </g>
+
+  <!-- ARROWS -->
+  <g id="arrows">
+    <path d="M 580 146 L 580 216" stroke="#2563eb" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)" />
+    <path d="M 580 272 L 580 306" stroke="#2563eb" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)" />
+    <path d="M 580 362 L 580 396" stroke="#2563eb" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)" />
+    <path d="M 580 452 L 580 486" stroke="#2563eb" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)" />
+    <path d="M 580 542 L 580 576" stroke="#2563eb" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)" />
+
+    <path d="M 295 254 L 353 254" stroke="#3b82f6" stroke-width="1.8" stroke-dasharray="5,4" fill="none" marker-end="url(#arrow-blue)" />
+    <path d="M 295 354 C 320 354, 320 605, 353 605" stroke="#6366f1" stroke-width="1.8" stroke-dasharray="5,4" fill="none" marker-end="url(#arrow-indigo)" />
+
+    <path d="M 805 245 L 858 245" stroke="#16a34a" stroke-width="2.2" fill="none" marker-end="url(#arrow-green)" />
+    <path d="M 805 335 L 858 335" stroke="#16a34a" stroke-width="2.2" fill="none" marker-end="url(#arrow-green)" />
+    <path d="M 805 425 L 858 425" stroke="#16a34a" stroke-width="2.2" fill="none" marker-end="url(#arrow-green)" />
+    <path d="M 805 515 L 858 515" stroke="#16a34a" stroke-width="2.2" fill="none" marker-end="url(#arrow-green)" />
+    <path d="M 805 605 L 858 605" stroke="#16a34a" stroke-width="2.2" fill="none" marker-end="url(#arrow-green)" />
+
+    <path d="M 1010 632 L 1010 738" stroke="#d97706" stroke-width="2.5" fill="none" marker-end="url(#arrow-amber)" />
+  </g>
+</svg>

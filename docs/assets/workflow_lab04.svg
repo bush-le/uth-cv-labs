@@ -1,0 +1,264 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 920" width="100%" height="auto" style="max-width: 1200px; display: block; margin: 12px auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb" />
+    </marker>
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" />
+    </marker>
+    <marker id="arrow-indigo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#4f46e5" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#16a34a" />
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#d97706" />
+    </marker>
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0284c7" />
+    </marker>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.07" flood-color="#000000" />
+    </filter>
+  </defs>
+
+  <rect width="1200" height="920" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
+
+  <!-- HEADER -->
+  <g id="header">
+    <rect x="0" y="0" width="1200" height="54" rx="12" fill="#0f172a" />
+    <rect x="0" y="42" width="1200" height="12" fill="#0f172a" />
+    <text x="25" y="34" font-size="15" font-weight="700" fill="#ffffff" letter-spacing="0.5">LAB 4: WAVELET PERCEPTUAL HASHING (2D DWT) &amp; TOP-K RETRIEVAL PIPELINE</text>
+    <rect x="990" y="14" width="185" height="26" rx="13" fill="#2563eb" />
+    <text x="1082.5" y="31" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">192-BIT RGB • ROC AUC 1.000</text>
+  </g>
+
+  <!-- 1. INPUT LAYER -->
+  <g id="input-layer">
+    <rect x="390" y="68" width="380" height="86" rx="10" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.8" />
+    <path d="M 390 78 Q 390 68 400 68 L 760 68 Q 770 68 770 78 L 770 100 L 390 100 Z" fill="#e0f2fe" />
+    <text x="404" y="89" font-size="11.5" font-weight="700" fill="#0369a1">1. DỮ LIỆU ĐẦU VÀO (INPUT LAYER)</text>
+    <rect x="707" y="75" width="51" height="18" rx="9" fill="#0284c7" />
+    <text x="732.5" y="87" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">INPUT</text>
+
+    <g id="RAW4" filter="url(#shadow)">
+      <rect x="405" y="104" width="350" height="42" rx="8" fill="#ffffff" stroke="#0284c7" stroke-width="1.6" />
+      <rect x="687" y="110" width="60" height="15" rx="7.5" fill="#0284c7" />
+      <text x="717.0" y="121" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">DATASET</text>
+      <text x="417" y="125" font-size="11.5" font-weight="700" fill="#0f172a">data/samples/lab04/ (Cặp ảnh kiểm chuẩn)</text>
+      <text x="417" y="140" font-size="9.5" fill="#475569">Chihuahua/Muffin, Cat/IceCream • Biến dạng nén JPEG, quang học, hình học</text>
+    </g>
+  </g>
+
+  <!-- 2. CODE LAYER (LEFT COLUMN) -->
+  <g id="code-layer">
+    <rect x="25" y="175" width="285" height="540" rx="10" fill="#f8fafc" stroke="#64748b" stroke-width="1.8" />
+    <path d="M 25 185 Q 25 175 35 175 L 300 175 Q 310 175 310 185 L 310 207 L 25 207 Z" fill="#f1f5f9" />
+    <text x="39" y="196" font-size="11.5" font-weight="700" fill="#334155">2. KIẾN TRÚC MÃ NGUỒN (src/)</text>
+    <rect x="233" y="182" width="65" height="18" rx="9" fill="#64748b" />
+    <text x="265.5" y="194" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">MODULES</text>
+
+    <g id="WHASH_CORE" filter="url(#shadow)">
+      <rect x="40" y="220" width="255" height="68" rx="8" fill="#ffffff" stroke="#3b82f6" stroke-width="1.6" />
+      <rect x="227" y="226" width="60" height="15" rx="7.5" fill="#2563eb" />
+      <text x="257.0" y="237" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">2D DWT</text>
+      <text x="52" y="241" font-size="11.5" font-weight="700" fill="#0f172a">wavelet_core.py</text>
+      <text x="52" y="258" font-size="9.5" fill="#475569">Haar Wavelet 2D Decomposition</text>
+      <text x="52" y="273" font-size="9.5" fill="#475569">Median Binarization • 192-bit wHash</text>
+    </g>
+
+    <g id="DIST_CORE" filter="url(#shadow)">
+      <rect x="40" y="320" width="255" height="68" rx="8" fill="#ffffff" stroke="#6366f1" stroke-width="1.6" />
+      <rect x="227" y="326" width="60" height="15" rx="7.5" fill="#4f46e5" />
+      <text x="257.0" y="337" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">METRICS</text>
+      <text x="52" y="341" font-size="11.5" font-weight="700" fill="#0f172a">wavelet_distance.py</text>
+      <text x="52" y="358" font-size="9.5" fill="#475569">Hamming Distance Matrix</text>
+      <text x="52" y="373" font-size="9.5" fill="#475569">ROC Curve, AUC, Sensitivity &amp; Specificity</text>
+    </g>
+
+    <g id="PIPE4" filter="url(#shadow)">
+      <rect x="40" y="420" width="255" height="74" rx="8" fill="#ffffff" stroke="#0284c7" stroke-width="1.6" />
+      <rect x="188" y="426" width="98" height="15" rx="7.5" fill="#0284c7" />
+      <text x="237" y="437" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">ORCHESTRATOR</text>
+      <text x="52" y="443" font-size="9.5" font-weight="bold" fill="#64748b">src/pipelines/</text>
+      <text x="52" y="458" font-size="11.5" font-weight="700" fill="#0369a1">lab04_pipeline.py</text>
+      <text x="52" y="474" font-size="9.5" fill="#475569">End-to-End wHash Pipeline Run</text>
+      <text x="52" y="488" font-size="9" fill="#64748b">Dataset Pairs &amp; Top-k Retrieval</text>
+    </g>
+
+    <g id="TESTS4" filter="url(#shadow)">
+      <rect x="40" y="530" width="255" height="68" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+      <rect x="225" y="536" width="62" height="15" rx="7.5" fill="#16a34a" />
+      <text x="256" y="547" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">TEST SUITE</text>
+      <text x="52" y="551" font-size="11.5" font-weight="700" fill="#0f172a">tests/test_wavelet_hash.py</text>
+      <text x="52" y="568" font-size="9.5" fill="#475569">33 Comprehensive Unit Tests</text>
+      <text x="52" y="583" font-size="9.5" fill="#475569">Baseline &amp; Color 192-bit Hash Checks</text>
+    </g>
+  </g>
+
+  <!-- 3. WAVELET 5-STAGE CORE (CENTER COLUMN) -->
+  <g id="stages-layer">
+    <rect x="340" y="175" width="480" height="540" rx="10" fill="#fdfaff" stroke="#8b5cf6" stroke-width="1.8" />
+    <path d="M 340 185 Q 340 175 350 175 L 810 175 Q 820 175 820 185 L 820 207 L 340 207 Z" fill="#f5f3ff" />
+    <text x="354" y="196" font-size="11.5" font-weight="700" fill="#6d28d9">3. THUẬT TOÁN WAVELET HASH 192-BIT RGB</text>
+    <rect x="736" y="182" width="72" height="18" rx="9" fill="#8b5cf6" />
+    <text x="772.0" y="194" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">5 STAGES</text>
+
+    <!-- Stage 1 -->
+    <g id="W1" filter="url(#shadow)">
+      <rect x="355" y="218" width="450" height="54" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.6" />
+      <rect x="743" y="224" width="54" height="15" rx="7.5" fill="#7c3aed" />
+      <text x="770.0" y="235" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">STAGE 1</text>
+      <text x="367" y="239" font-size="11.5" font-weight="700" fill="#0f172a">1. Phân Tách 3 Kênh Màu Độc Lập</text>
+      <text x="367" y="254" font-size="9.5" fill="#475569">Tách ảnh đầu vào thành 3 ma trận riêng biệt Red, Green, Blue</text>
+      <text x="367" y="268" font-size="9.5" fill="#475569">Bảo toàn sắc thái màu sắc (khắc phục nhược điểm wHash xám đơn kênh)</text>
+    </g>
+
+    <!-- Stage 2 -->
+    <g id="W2" filter="url(#shadow)">
+      <rect x="355" y="308" width="450" height="54" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.6" />
+      <rect x="743" y="314" width="54" height="15" rx="7.5" fill="#7c3aed" />
+      <text x="770.0" y="325" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">STAGE 2</text>
+      <text x="367" y="329" font-size="11.5" font-weight="700" fill="#0f172a">2. Phân Rã 2D Haar Wavelet (DWT 1-Level)</text>
+      <text x="367" y="344" font-size="9.5" fill="#475569">Phân giải đa độ phân giải (MRA) thành 4 dải tần: LL, LH, HL, HH</text>
+      <text x="367" y="358" font-size="9.5" fill="#475569">Dải LL tập trung &gt;90% năng lượng cấu trúc không gian của bức ảnh</text>
+    </g>
+
+    <!-- Stage 3 -->
+    <g id="W3" filter="url(#shadow)">
+      <rect x="355" y="398" width="450" height="54" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.6" />
+      <rect x="743" y="404" width="54" height="15" rx="7.5" fill="#7c3aed" />
+      <text x="770.0" y="415" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">STAGE 3</text>
+      <text x="367" y="419" font-size="11.5" font-weight="700" fill="#0f172a">3. Trích Xuất &amp; Co Cụm Dải LL về 8x8</text>
+      <text x="367" y="434" font-size="9.5" fill="#475569">Thu nhỏ dải xấp xỉ LL1 về ma trận kích thước chuẩn 8x8 (64 hệ số)</text>
+      <text x="367" y="448" font-size="9.5" fill="#475569">Loại bỏ chi tiết tần số cao gây nhiễu, tăng độ bền trước biến dạng nén</text>
+    </g>
+
+    <!-- Stage 4 -->
+    <g id="W4" filter="url(#shadow)">
+      <rect x="355" y="488" width="450" height="54" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.6" />
+      <rect x="743" y="494" width="54" height="15" rx="7.5" fill="#7c3aed" />
+      <text x="770.0" y="505" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">STAGE 4</text>
+      <text x="367" y="509" font-size="11.5" font-weight="700" fill="#0f172a">4. Lượng Tử Hóa Trung Vị (Median Binarize)</text>
+      <text x="367" y="524" font-size="9.5" fill="#475569">So sánh từng hệ số với median(LL) -&gt; 1 nếu &gt;= median, ngược lại 0</text>
+      <text x="367" y="538" font-size="9.5" fill="#475569">Đảm bảo cân bằng 32 bit 0 và 32 bit 1 (Entropy cực đại = 1.0)</text>
+    </g>
+
+    <!-- Stage 5 -->
+    <g id="W5" filter="url(#shadow)">
+      <rect x="355" y="578" width="450" height="54" rx="8" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.6" />
+      <rect x="743" y="584" width="54" height="15" rx="7.5" fill="#7c3aed" />
+      <text x="770.0" y="595" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">STAGE 5</text>
+      <text x="367" y="599" font-size="11.5" font-weight="700" fill="#0f172a">5. Ghép Vector Nhị Phân 192-Bit wHash RGB</text>
+      <text x="367" y="614" font-size="9.5" fill="#475569">Ghép nối 3 chuỗi 64-bit: Hash = R64 || G64 || B64</text>
+      <text x="367" y="628" font-size="9.5" fill="#475569">Biểu diễn toàn vẹn thông tin hình học, vi cấu trúc và phân bố màu sắc</text>
+    </g>
+  </g>
+
+  <!-- 4. EVALUATION & TOP-K (RIGHT COLUMN) -->
+  <g id="artifacts-layer">
+    <rect x="845" y="175" width="330" height="540" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.8" />
+    <path d="M 845 185 Q 845 175 855 175 L 1165 175 Q 1175 175 1175 185 L 1175 207 L 845 207 Z" fill="#dcfce7" />
+    <text x="859" y="196" font-size="11.5" font-weight="700" fill="#15803d">4. ĐÁNH GIÁ THỐNG KÊ &amp; ỨNG DỤNG</text>
+    <rect x="1083" y="182" width="82" height="18" rx="9" fill="#16a34a" />
+    <text x="1124.0" y="194" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">TOP-K &amp; ROC</text>
+
+    <g id="W_E1" filter="url(#shadow)">
+      <rect x="860" y="218" width="300" height="54" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+      <text x="872" y="238" font-size="11" font-weight="700" fill="#0f172a">Ma Trận Hamming 26x26</text>
+      <text x="872" y="253" font-size="9.5" fill="#475569">hamming_matrix.png • Phân tách rõ nét</text>
+      <text x="872" y="266" font-size="9" fill="#15803d">Cùng nguồn dH &lt;= 2 | Khác nguồn dH ~ 96</text>
+    </g>
+
+    <g id="W_E2" filter="url(#shadow)">
+      <rect x="860" y="308" width="300" height="54" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+      <text x="872" y="328" font-size="11" font-weight="700" fill="#0f172a">Kiểm Định Độ Bền Biến Dạng</text>
+      <text x="872" y="343" font-size="9.5" fill="#475569">robustness.png • Nén JPEG, Xoay nhẹ</text>
+      <text x="872" y="356" font-size="9" fill="#15803d">Bất biến tuyệt đối trước nén chất lượng thấp</text>
+    </g>
+
+    <g id="W_E3" filter="url(#shadow)">
+      <rect x="860" y="398" width="300" height="54" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+      <text x="872" y="418" font-size="11" font-weight="700" fill="#0f172a">Đường Cong ROC (AUC = 1.000)</text>
+      <text x="872" y="433" font-size="9.5" fill="#475569">roc_evaluation.png • threshold_selection.png</text>
+      <text x="872" y="446" font-size="9" fill="#15803d">Accuracy 100%, Recall 100% tại ngưỡng khóa T*=12</text>
+    </g>
+
+    <g id="W_E4" filter="url(#shadow)">
+      <rect x="860" y="488" width="300" height="54" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+      <text x="872" y="508" font-size="11" font-weight="700" fill="#0f172a">Truy Vấn Ảnh Tương Tự Top-k</text>
+      <text x="872" y="523" font-size="9.5" fill="#475569">top_k.png • Độ phức tạp truy vấn O(1)</text>
+      <text x="872" y="536" font-size="9" fill="#15803d">Tìm lại chính xác 100% ảnh gốc từ ảnh nén (dH=0)</text>
+    </g>
+
+    <g id="W_E5" filter="url(#shadow)">
+      <rect x="860" y="578" width="300" height="54" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+      <text x="872" y="598" font-size="11" font-weight="700" fill="#0f172a">Bảo Vệ Bản Quyền &amp; Lọc Trùng</text>
+      <text x="872" y="613" font-size="9.5" fill="#475569">Khả năng ứng dụng hàng triệu ảnh</text>
+      <text x="872" y="626" font-size="9" fill="#15803d">Tương thích Multi-Index Hashing (MIH) &amp; VP-Tree</text>
+    </g>
+  </g>
+
+  <!-- 5. QA LAYER (BOTTOM ROW) -->
+  <g id="qa-layer">
+    <rect x="25" y="745" width="1150" height="145" rx="10" fill="#fffbeb" stroke="#d97706" stroke-width="1.8" />
+    <path d="M 25 755 Q 25 745 35 745 L 1165 745 Q 1175 745 1175 755 L 1175 775 L 25 775 Z" fill="#fef3c7" />
+    <text x="39" y="764" font-size="11.5" font-weight="700" fill="#92400e">5. KIỂM ĐỊNH CHẤT LƯỢNG &amp; THẨM ĐỊNH MÃ NGUỒN</text>
+    <rect x="1055" y="750" width="110" height="18" rx="9" fill="#d97706" />
+    <text x="1110.0" y="762" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">AUC = 1.000</text>
+
+    <g id="QA1_4" filter="url(#shadow)">
+      <rect x="40" y="785" width="350" height="85" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+      <rect x="312" y="791" width="68" height="15" rx="7.5" fill="#16a34a" />
+      <text x="346.0" y="802" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">33/33 PASS</text>
+      <text x="52" y="806" font-size="11.5" font-weight="700" fill="#0f172a">PyTest Unit Test Suite</text>
+      <text x="52" y="821" font-size="9.5" fill="#475569">tests/test_wavelet_hash.py (100% PASS)</text>
+      <text x="52" y="835" font-size="9.5" fill="#475569">• Kiểm tra độ dài mã băm chính xác 192 bits</text>
+      <text x="52" y="849" font-size="9.5" fill="#475569">• Kiểm tra tính đối xứng của ma trận Hamming</text>
+      <text x="52" y="863" font-size="9.5" fill="#475569">• Kiểm định ngoại lệ đầu vào (kích thước, kiểu dữ liệu)</text>
+    </g>
+
+    <g id="QA2_4" filter="url(#shadow)">
+      <rect x="415" y="785" width="340" height="85" rx="8" fill="#ffffff" stroke="#d97706" stroke-width="1.6" />
+      <rect x="675" y="791" width="72" height="15" rx="7.5" fill="#0284c7" />
+      <text x="711.0" y="802" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">FAST HASH</text>
+      <text x="427" y="806" font-size="11.5" font-weight="700" fill="#0f172a">Thời Gian Băm Mã &amp; Truy Vấn</text>
+      <text x="427" y="821" font-size="9.5" fill="#475569">Tốc độ sinh mã băm ~ 1.67 ms/ảnh</text>
+      <text x="427" y="835" font-size="9.5" fill="#475569">• Thuật toán vector hóa tối ưu ma trận NumPy</text>
+      <text x="427" y="849" font-size="9.5" fill="#475569">• Phù hợp thời gian thực cho hệ sinh thái Web &amp; Edge</text>
+      <text x="427" y="863" font-size="9.5" fill="#475569">• Zero warning linter với Ruff</text>
+    </g>
+
+    <g id="QA3_4" filter="url(#shadow)">
+      <rect x="785" y="785" width="370" height="85" rx="8" fill="#ffffff" stroke="#d97706" stroke-width="1.6" />
+      <rect x="1081" y="791" width="66" height="15" rx="7.5" fill="#7c3aed" />
+      <text x="1114.0" y="802" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">DELIVERED</text>
+      <text x="797" y="806" font-size="11.5" font-weight="700" fill="#0f172a">Báo Cáo Nghiệm Thu Trực Quan</text>
+      <text x="797" y="821" font-size="9.5" fill="#475569">docs/labs/lab04/LAB_04_REPORT.html &amp; .md</text>
+      <text x="797" y="835" font-size="9.5" fill="#475569">• Trực quan hóa lướt xuống với đầy đủ sơ đồ</text>
+      <text x="797" y="849" font-size="9.5" fill="#475569">• 100% ảnh Base64 offline không phụ thuộc internet</text>
+      <text x="797" y="863" font-size="9.5" fill="#475569">• Đánh giá ROC/AUC trên tập dữ liệu kiểm chuẩn</text>
+    </g>
+  </g>
+
+  <!-- ARROWS -->
+  <g id="arrows">
+    <path d="M 580 146 L 580 216" stroke="#2563eb" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)" />
+    <path d="M 580 272 L 580 306" stroke="#2563eb" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)" />
+    <path d="M 580 362 L 580 396" stroke="#2563eb" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)" />
+    <path d="M 580 452 L 580 486" stroke="#2563eb" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)" />
+    <path d="M 580 542 L 580 576" stroke="#2563eb" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)" />
+
+    <path d="M 295 254 L 353 254" stroke="#3b82f6" stroke-width="1.8" stroke-dasharray="5,4" fill="none" marker-end="url(#arrow-blue)" />
+    <path d="M 295 354 C 320 354, 320 605, 353 605" stroke="#6366f1" stroke-width="1.8" stroke-dasharray="5,4" fill="none" marker-end="url(#arrow-indigo)" />
+
+    <path d="M 805 245 L 858 245" stroke="#16a34a" stroke-width="2.2" fill="none" marker-end="url(#arrow-green)" />
+    <path d="M 805 335 L 858 335" stroke="#16a34a" stroke-width="2.2" fill="none" marker-end="url(#arrow-green)" />
+    <path d="M 805 425 L 858 425" stroke="#16a34a" stroke-width="2.2" fill="none" marker-end="url(#arrow-green)" />
+    <path d="M 805 515 L 858 515" stroke="#16a34a" stroke-width="2.2" fill="none" marker-end="url(#arrow-green)" />
+    <path d="M 805 605 L 858 605" stroke="#16a34a" stroke-width="2.2" fill="none" marker-end="url(#arrow-green)" />
+
+    <path d="M 1010 632 L 1010 738" stroke="#d97706" stroke-width="2.5" fill="none" marker-end="url(#arrow-amber)" />
+  </g>
+</svg>

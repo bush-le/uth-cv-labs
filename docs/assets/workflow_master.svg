@@ -1,0 +1,214 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 880" width="100%" height="auto" style="max-width: 1200px; display: block; margin: 12px auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb" />
+    </marker>
+    <marker id="arrow-indigo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#4f46e5" />
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#7c3aed" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#16a34a" />
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#d97706" />
+    </marker>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.07" flood-color="#000000" />
+    </filter>
+  </defs>
+
+  <rect width="1200" height="880" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
+
+  <!-- HEADER -->
+  <g id="header">
+    <rect x="0" y="0" width="1200" height="54" rx="12" fill="#0f172a" />
+    <rect x="0" y="42" width="1200" height="12" fill="#0f172a" />
+    <text x="25" y="34" font-size="15" font-weight="700" fill="#ffffff" letter-spacing="0.5">END-TO-END COMPUTER VISION SYSTEM ARCHITECTURE (LABS 01 - 04)</text>
+    <rect x="990" y="14" width="185" height="26" rx="13" fill="#2563eb" />
+    <text x="1082.5" y="31" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">4 TIERS • 76/76 TESTS PASS</text>
+  </g>
+
+  <!-- ROW 1: LAB 01 -->
+  <g id="ROW_LAB01" filter="url(#shadow)">
+    <rect x="30" y="75" width="1140" height="125" rx="10" fill="#ffffff" stroke="#0284c7" stroke-width="1.8" />
+    <path d="M 30 85 Q 30 75 40 75 L 1160 75 Q 1170 75 1170 85 L 1170 103 L 30 103 Z" fill="#e0f2fe" />
+    <text x="45" y="94" font-size="12" font-weight="700" fill="#0369a1">TẦNG 1 (LAB 01): TIỀN XỬ LÝ DỮ LIỆU, ĐA ĐỊNH DẠNG &amp; KHÔNG GIAN MÀU</text>
+    <rect x="1065" y="80" width="95" height="18" rx="9" fill="#0284c7" />
+    <text x="1112.5" y="92" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">FOUNDATIONS</text>
+
+    <!-- 4 Sub-cards in row 1 -->
+    <rect x="50" y="112" width="250" height="75" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="62" y="130" font-size="11" font-weight="700" fill="#0f172a">Đọc / Ghi Đa Định Dạng</text>
+    <text x="62" y="146" font-size="9.5" fill="#475569">JPEG DCT (Lossy, 81KB)</text>
+    <text x="62" y="160" font-size="9.5" fill="#475569">PNG Deflate (741KB) • BMP (1.2MB)</text>
+    <text x="62" y="174" font-size="9" fill="#0284c7">Hoán vị BGR &lt;-&gt; RGB chuẩn xác</text>
+
+    <rect x="330" y="112" width="250" height="75" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="342" y="130" font-size="11" font-weight="700" fill="#0f172a">Ma Trận 4 Không Gian Màu</text>
+    <text x="342" y="146" font-size="9.5" fill="#475569">Grayscale Rec. 601 (Y=0.299R+...)</text>
+    <text x="342" y="160" font-size="9.5" fill="#475569">HSV Bất biến chiếu sáng • CIE L*a*b*</text>
+    <text x="342" y="174" font-size="9" fill="#0284c7">Phân rã kênh màu nhận dạng</text>
+
+    <rect x="610" y="112" width="250" height="75" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="622" y="130" font-size="11" font-weight="700" fill="#0f172a">Cắt ROI Zero-Copy (NumPy)</text>
+    <text x="622" y="146" font-size="9.5" fill="#475569">img[ymin:ymax, xmin:xmax]</text>
+    <text x="622" y="160" font-size="9.5" fill="#475569">Độ trễ ~ 0.00ms (Strided View)</text>
+    <text x="622" y="174" font-size="9" fill="#0284c7">INTER_AREA vs INTER_CUBIC</text>
+
+    <rect x="890" y="112" width="260" height="75" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="902" y="130" font-size="11" font-weight="700" fill="#0f172a">Chú Thích Pascal VOC</text>
+    <text x="902" y="146" font-size="9.5" fill="#475569">Bounding Box [xmin, ymin, xmax, ymax]</text>
+    <text x="902" y="160" font-size="9.5" fill="#475569">Vẽ điểm tâm đối tượng + Nhãn text</text>
+    <text x="902" y="174" font-size="9" fill="#16a34a">10/10 Tests Passed (14 artifacts)</text>
+  </g>
+
+  <!-- CONNECTOR 1 -> 2 -->
+  <path d="M 600 200 L 600 220" stroke="#2563eb" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)" />
+
+  <!-- ROW 2: LAB 02 -->
+  <g id="ROW_LAB02" filter="url(#shadow)">
+    <rect x="30" y="225" width="1140" height="125" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.8" />
+    <path d="M 30 235 Q 30 225 40 225 L 1160 225 Q 1170 225 1170 235 L 1170 253 L 30 253 Z" fill="#e0e7ff" />
+    <text x="45" y="244" font-size="12" font-weight="700" fill="#3730a3">TẦNG 2 (LAB 02): TOÁN TỬ ĐIỂM ẢNH &amp; LỌC KHÔNG GIAN (TUYẾN TÍNH / PHI TUYẾN)</text>
+    <rect x="1055" y="230" width="105" height="18" rx="9" fill="#4f46e5" />
+    <text x="1107.5" y="242" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">SPATIAL FILTERS</text>
+
+    <!-- 4 Sub-cards in row 2 -->
+    <rect x="50" y="262" width="250" height="75" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="62" y="280" font-size="11" font-weight="700" fill="#0f172a">Toán Tử Điểm Clip uint8</text>
+    <text x="62" y="296" font-size="9.5" fill="#475569">Độ sáng beta=±50 • Tương phản</text>
+    <text x="62" y="310" font-size="9.5" fill="#475569">Gamma phi tuyến (gamma=0.5, 2.2)</text>
+    <text x="62" y="324" font-size="9" fill="#4f46e5">Chống tràn số byte wrap-around</text>
+
+    <rect x="330" y="262" width="250" height="75" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="342" y="280" font-size="11" font-weight="700" fill="#0f172a">Lọc Tuyến Tính &amp; Làm Nét</text>
+    <text x="342" y="296" font-size="9.5" fill="#475569">Mean (7x7, 21x21) • Gauss (k=6*sigma+1)</text>
+    <text x="342" y="310" font-size="9.5" fill="#475569">Kernel làm nét 8-lân cận trọng số</text>
+    <text x="342" y="324" font-size="9" fill="#4f46e5">Tổng hệ số Sigma=1.0 bảo toàn sáng</text>
+
+    <rect x="610" y="262" width="250" height="75" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="622" y="280" font-size="11" font-weight="700" fill="#0f172a">Đạo Hàm Sobel vs Prewitt</text>
+    <text x="622" y="296" font-size="9.5" fill="#475569">Gradient G = sqrt(Gx^2 + Gy^2)</text>
+    <text x="622" y="310" font-size="9.5" fill="#475569">Tương quan Pearson r = 0.9961</text>
+    <text x="622" y="324" font-size="9" fill="#4f46e5">Quy luật tổng hệ số Sigma=0, 1, 2</text>
+
+    <rect x="890" y="262" width="260" height="75" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="902" y="280" font-size="11" font-weight="700" fill="#0f172a">Lọc Phi Tuyến Muối Tiêu</text>
+    <text x="902" y="296" font-size="9.5" fill="#475569">Median Filter triệt tiêu 100% xung</text>
+    <text x="902" y="310" font-size="9.5" fill="#475569">Bilateral Filter giữ cạnh sắc nét</text>
+    <text x="902" y="324" font-size="9" fill="#16a34a">17/17 Tests Passed (19 artifacts)</text>
+  </g>
+
+  <!-- CONNECTOR 2 -> 3 -->
+  <path d="M 600 350 L 600 370" stroke="#4f46e5" stroke-width="2.5" fill="none" marker-end="url(#arrow-indigo)" />
+
+  <!-- ROW 3: LAB 03 -->
+  <g id="ROW_LAB03" filter="url(#shadow)">
+    <rect x="30" y="375" width="1140" height="125" rx="10" fill="#ffffff" stroke="#7c3aed" stroke-width="1.8" />
+    <path d="M 30 385 Q 30 375 40 375 L 1160 375 Q 1170 375 1170 385 L 1170 403 L 30 403 Z" fill="#ede9fe" />
+    <text x="45" y="394" font-size="12" font-weight="700" fill="#5b21b6">TẦNG 3 (LAB 03): TÁCH BIÊN TỐI ƯU CANNY 5 BƯỚC &amp; TÁC VỤ HẠ NGUỒN</text>
+    <rect x="1055" y="380" width="105" height="18" rx="9" fill="#7c3aed" />
+    <text x="1107.5" y="392" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">EDGE DETECTION</text>
+
+    <!-- 4 Sub-cards in row 3 -->
+    <rect x="50" y="412" width="250" height="75" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="62" y="430" font-size="11" font-weight="700" fill="#0f172a">Khử Nhiễu &amp; Gradient Sobel</text>
+    <text x="62" y="446" font-size="9.5" fill="#475569">Gauss 5x5, sigma=1.4 mượt mà</text>
+    <text x="62" y="460" font-size="9.5" fill="#475569">Gradient G &amp; Hướng góc theta</text>
+    <text x="62" y="474" font-size="9" fill="#7c3aed">Giai đoạn 1 &amp; 2 Canny toán học</text>
+
+    <rect x="330" y="412" width="250" height="75" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="342" y="430" font-size="11" font-weight="700" fill="#0f172a">NMS &amp; Hysteresis Tracking</text>
+    <text x="342" y="446" font-size="9.5" fill="#475569">Lượng tử hóa 4 hướng gọt 1-px</text>
+    <text x="342" y="460" font-size="9.5" fill="#475569">Ngưỡng kép (Thigh=150, Tlow=50)</text>
+    <text x="342" y="474" font-size="9" fill="#7c3aed">Giai đoạn 3, 4 &amp; 5 Canny chuẩn</text>
+
+    <rect x="610" y="412" width="250" height="75" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="622" y="430" font-size="11" font-weight="700" fill="#0f172a">Tiền Xử Lý Ảnh Khó (CLAHE)</text>
+    <text x="622" y="446" font-size="9.5" fill="#475569">Thích ứng tương phản cục bộ</text>
+    <text x="622" y="460" font-size="9.5" fill="#475569">Khôi phục 100% đường biên ẩn</text>
+    <text x="622" y="474" font-size="9" fill="#7c3aed">Canny trên ảnh phơi sáng kém</text>
+
+    <rect x="890" y="412" width="260" height="75" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="902" y="430" font-size="11" font-weight="700" fill="#0f172a">Hough Circles &amp; Morphology</text>
+    <text x="902" y="446" font-size="9.5" fill="#475569">Closing + floodFill lấp lỗ đồng xu</text>
+    <text x="902" y="460" font-size="9.5" fill="#475569">OpenCV 1.54ms (Nhanh gấp 20.3x)</text>
+    <text x="902" y="474" font-size="9" fill="#16a34a">16/16 Tests Passed (9 artifacts)</text>
+  </g>
+
+  <!-- CONNECTOR 3 -> 4 -->
+  <path d="M 600 500 L 600 520" stroke="#7c3aed" stroke-width="2.5" fill="none" marker-end="url(#arrow-purple)" />
+
+  <!-- ROW 4: LAB 04 -->
+  <g id="ROW_LAB04" filter="url(#shadow)">
+    <rect x="30" y="525" width="1140" height="125" rx="10" fill="#ffffff" stroke="#16a34a" stroke-width="1.8" />
+    <path d="M 30 535 Q 30 525 40 525 L 1160 525 Q 1170 525 1170 535 L 1170 553 L 30 553 Z" fill="#dcfce7" />
+    <text x="45" y="544" font-size="12" font-weight="700" fill="#15803d">TẦNG 4 (LAB 04): PHÂN RÃ 2D HAAR WAVELET &amp; MÃ BĂM NHẬN THỨC 192-BIT RGB</text>
+    <rect x="1045" y="530" width="115" height="18" rx="9" fill="#16a34a" />
+    <text x="1102.5" y="542" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">PERCEPTUAL HASH</text>
+
+    <!-- 4 Sub-cards in row 4 -->
+    <rect x="50" y="562" width="250" height="75" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="62" y="580" font-size="11" font-weight="700" fill="#0f172a">Tách Kênh &amp; 2D Haar DWT</text>
+    <text x="62" y="596" font-size="9.5" fill="#475569">Phân rã 3 kênh độc lập R, G, B</text>
+    <text x="62" y="610" font-size="9.5" fill="#475569">4 dải tần: LL, LH, HL, HH</text>
+    <text x="62" y="624" font-size="9" fill="#16a34a">Dải LL giữ &gt;90% năng lượng</text>
+
+    <rect x="330" y="562" width="250" height="75" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="342" y="580" font-size="11" font-weight="700" fill="#0f172a">Lượng Tử Hóa Trung Vị</text>
+    <text x="342" y="596" font-size="9.5" fill="#475569">LL1 co cụm về 8x8 (64 hệ số)</text>
+    <text x="342" y="610" font-size="9.5" fill="#475569">b_i = 1 nếu &gt;= median(LL1)</text>
+    <text x="342" y="624" font-size="9" fill="#16a34a">Cân bằng tuyệt đối 32 bit 0 / 1</text>
+
+    <rect x="610" y="562" width="250" height="75" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="622" y="580" font-size="11" font-weight="700" fill="#0f172a">Vector 192-Bit wHash RGB</text>
+    <text x="622" y="596" font-size="9.5" fill="#475569">Hash = R64 || G64 || B64</text>
+    <text x="622" y="610" font-size="9.5" fill="#475569">Bảo toàn cấu trúc &amp; sắc thái màu</text>
+    <text x="622" y="624" font-size="9" fill="#16a34a">Bất biến trước nén JPEG &amp; ánh sáng</text>
+
+    <rect x="890" y="562" width="260" height="75" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+    <text x="902" y="580" font-size="11" font-weight="700" fill="#0f172a">Hamming, ROC &amp; Top-k</text>
+    <text x="902" y="596" font-size="9.5" fill="#475569">ROC AUC = 1.000 (Accuracy 100%)</text>
+    <text x="902" y="610" font-size="9.5" fill="#475569">Ma trận 26x26 phân tách dH &lt;= 2</text>
+    <text x="902" y="624" font-size="9" fill="#16a34a">33/33 Tests Passed (13 artifacts)</text>
+  </g>
+
+  <!-- CONNECTOR 4 -> QA -->
+  <path d="M 600 650 L 600 670" stroke="#16a34a" stroke-width="2.5" fill="none" marker-end="url(#arrow-green)" />
+
+  <!-- ROW 5: QA & ENTERPRISE GOVERNANCE -->
+  <g id="ROW_QA" filter="url(#shadow)">
+    <rect x="30" y="675" width="1140" height="180" rx="10" fill="#fffbeb" stroke="#d97706" stroke-width="1.8" />
+    <path d="M 30 685 Q 30 675 40 675 L 1160 675 Q 1170 675 1170 685 L 1170 703 L 30 703 Z" fill="#fef3c7" />
+    <text x="45" y="694" font-size="12" font-weight="700" fill="#92400e">5. NGHIỆM THU HỆ THỐNG TOÀN DIỆN (ENTERPRISE VERIFICATION &amp; DELIVERABLES)</text>
+    <rect x="1035" y="680" width="125" height="18" rx="9" fill="#d97706" />
+    <text x="1097.5" y="692" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">76/76 TESTS PASS</text>
+
+    <rect x="50" y="712" width="345" height="125" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="1.6" />
+    <text x="65" y="734" font-size="12" font-weight="700" fill="#0f172a">Kiểm Thử Hồi Quy Tự Động (PyTest)</text>
+    <text x="65" y="753" font-size="10" fill="#475569">Toàn bộ 76 unit tests pass 100% trong 2.80 giây:</text>
+    <text x="65" y="770" font-size="9.5" fill="#15803d">• Lab 01: 10/10 tests (transforms, color, slicing)</text>
+    <text x="65" y="785" font-size="9.5" fill="#15803d">• Lab 02: 17/17 tests (point ops, kernels, sum rule)</text>
+    <text x="65" y="799" font-size="9.5" fill="#15803d">• Lab 03: 16/16 tests (Canny 5-stage, FOM, Hough)</text>
+    <text x="65" y="813" font-size="9.5" fill="#15803d">• Lab 04: 33/33 tests (Haar DWT, 192-bit wHash)</text>
+
+    <rect x="425" y="712" width="345" height="125" rx="8" fill="#ffffff" stroke="#0284c7" stroke-width="1.6" />
+    <text x="440" y="734" font-size="12" font-weight="700" fill="#0f172a">Tiêu Chuẩn Kỹ Nghệ Clean Code</text>
+    <text x="440" y="753" font-size="10" fill="#475569">Ruff Linter: All checks passed (0 warnings):</text>
+    <text x="440" y="770" font-size="9.5" fill="#0369a1">• Clean Architecture phân tầng nghiêm ngặt</text>
+    <text x="440" y="785" font-size="9.5" fill="#0369a1">• Tuân thủ PEP 8, Type Annotations PEP 484</text>
+    <text x="440" y="799" font-size="9.5" fill="#0369a1">• Quản lý siêu tham số bằng Hydra / YAML</text>
+    <text x="440" y="813" font-size="9.5" fill="#0369a1">• Tính tái lập thực nghiệm 100%</text>
+
+    <rect x="800" y="712" width="350" height="125" rx="8" fill="#ffffff" stroke="#7c3aed" stroke-width="1.6" />
+    <text x="815" y="734" font-size="12" font-weight="700" fill="#0f172a">Hệ Thống Báo Cáo Kỹ Thuật Độc Lập</text>
+    <text x="815" y="753" font-size="10" fill="#475569">Bộ tài liệu nghiệm thu thị giác cao cấp:</text>
+    <text x="815" y="770" font-size="9.5" fill="#5b21b6">• 4 Visual Dashboards cuộn dọc cho từng bài Lab</text>
+    <text x="815" y="785" font-size="9.5" fill="#5b21b6">• 1 Master Executive Dashboard xâu chuỗi toàn đề tài</text>
+    <text x="815" y="799" font-size="9.5" fill="#5b21b6">• 100% tài nguyên ảnh nhúng Base64 offline</text>
+    <text x="815" y="813" font-size="9.5" fill="#5b21b6">• Không phụ thuộc internet hay CDN ngoại vi</text>
+  </g>
+</svg>
