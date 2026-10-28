@@ -1,8 +1,8 @@
 # UTH Computer Vision Workspace (`uth-cv-labs`)
 
-[![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.14-blue.svg)](https://www.python.org/)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
-[![Tests: pytest](https://img.shields.io/badge/tests-51%20passed-brightgreen.svg)](https://docs.pytest.org/)
+[![Tests: pytest](https://img.shields.io/badge/tests-passing-brightgreen.svg)](https://docs.pytest.org/)
 
 ---
 
@@ -12,12 +12,12 @@ Repository này chứa toàn bộ mã nguồn, dữ liệu thực nghiệm, pipe
 
 ### 📋 Tiến Độ Thực Hiện Các Bài Thực Hành (Labs Roadmap)
 
-| Lab | Chủ đề Kỹ thuật | Trạng thái | Pipeline Thực thi | Báo cáo Kỹ thuật | Unit Tests |
-| :---: | :--- | :---: | :--- | :---: | :---: |
-| **Lab 01** | **Xử lý ảnh cơ bản & Không gian màu** (OpenCV, Pillow, BGR/RGB/HSV/LAB, ROI, Annotations) | ✅ **100%** | [`lab01_pipeline.py`](src/pipelines/lab01_pipeline.py) | [Markdown](docs/labs/lab01/LAB_01_REPORT.md) · [HTML](docs/labs/lab01/LAB_01_REPORT.html) | 10 passed |
-| **Lab 02** | **Toán tử điểm ảnh & Lọc không gian** (Brightness/Contrast/Negative, Gaussian, Sobel/Prewitt, Bilateral/Median) | ✅ **100%** | [`lab02_pipeline.py`](src/pipelines/lab02_pipeline.py) | [Markdown](docs/labs/lab02/LAB_02_REPORT.md) · [HTML](docs/labs/lab02/LAB_02_REPORT.html) | 17 passed |
-| **Lab 03** | **Canny Edge Detector Chuyên sâu** (5-stage Canny, Noise Robustness, Pratt FOM, Hough Shapes, Di Zenzo Tensor) | ✅ **100%** | [`lab03_pipeline.py`](src/pipelines/lab03_pipeline.py) | [Markdown](docs/labs/lab03/LAB_03_REPORT.md) · [HTML](docs/labs/lab03/LAB_03_REPORT.html) | 16 passed |
-| **Lab 04** | **So sánh tương đồng ảnh dùng Wavelet Hashing** (2D DWT Haar/db4, Quantization, ROC/PR Curves, Top-k Retrieval, MIH) | ✅ **100%** | [`lab04_pipeline.py`](src/pipelines/lab04_pipeline.py) | [Markdown](docs/labs/lab04/LAB_04_REPORT.md) · [HTML](docs/labs/lab04/LAB_04_REPORT.html) | 8 passed |
+| Lab | Chủ đề Kỹ thuật | Trạng thái | Notebook | Pipeline Thực thi | Báo cáo Kỹ thuật | Unit Tests |
+| :---: | :--- | :---: | :---: | :--- | :---: | :---: |
+| **Lab 01** | **Xử lý ảnh cơ bản & Không gian màu** (OpenCV, Pillow, BGR/RGB/HSV/LAB, ROI, Annotations) | ✅ **100%** | [`lab_01.ipynb`](notebooks/labs/lab_01.ipynb) | [`lab01_pipeline.py`](src/pipelines/lab01_pipeline.py) | [Markdown](docs/labs/lab01/LAB_01_REPORT.md) · [HTML](docs/labs/lab01/LAB_01_REPORT.html) | 10 passed |
+| **Lab 02** | **Toán tử điểm ảnh & Lọc không gian** (Brightness/Contrast/Negative, Gaussian, Sobel/Prewitt, Bilateral/Median) | ✅ **100%** | [`lab_02.ipynb`](notebooks/labs/lab_02.ipynb) | [`lab02_pipeline.py`](src/pipelines/lab02_pipeline.py) | [Markdown](docs/labs/lab02/LAB_02_REPORT.md) · [HTML](docs/labs/lab02/LAB_02_REPORT.html) | 17 passed |
+| **Lab 03** | **Canny Edge Detector Chuyên sâu** (5-stage Canny, Noise Robustness, Pratt FOM, Hough Shapes, Segmentation) | ✅ **100%** | [`lab_03.ipynb`](notebooks/labs/lab_03.ipynb) | [`lab03_pipeline.py`](src/pipelines/lab03_pipeline.py) | [Markdown](docs/labs/lab03/LAB_03_REPORT.md) · [HTML](docs/labs/lab03/LAB_03_REPORT.html) | 16 passed |
+| **Lab 04** | **So sánh tương đồng ảnh dùng Wavelet Hashing** (2D DWT Haar/db4, Quantization, ROC/PR Curves, Top-k Retrieval, MIH) | ✅ **100%** | [`lab_04.ipynb`](notebooks/labs/lab_04.ipynb) | [`lab04_pipeline.py`](src/pipelines/lab04_pipeline.py) | [Markdown](docs/labs/lab04/LAB_04_REPORT.md) · [HTML](docs/labs/lab04/LAB_04_REPORT.html) | 8 passed |
 
 ---
 
@@ -33,22 +33,30 @@ Repository này chứa toàn bộ mã nguồn, dữ liệu thực nghiệm, pipe
 │   ├── AI_REFERENCE.md                # Bất biến CV/DL, chuẩn PEP 484 & docstrings
 │   └── CODEBASE_AUDIT.md              # Kiểm toán mã nguồn & an toàn CV
 ├── configs/                           # Quản lý cấu hình bằng Hydra / YAML
-│   ├── experiment/
-│   │   ├── lab03_canny.yaml           # Cấu hình siêu tham số Lab 03 Canny
-│   │   └── lab04_wavelet.yaml         # Cấu hình siêu tham số Lab 04 Wavelet Hashing
-│   └── ...
+│   ├── dataset/
+│   │   └── lab04_pairs.yaml           # Cấu hình bộ cặp ảnh đánh giá Lab 04
+│   └── experiment/
+│       ├── lab03_canny.yaml           # Cấu hình siêu tham số Lab 03 Canny
+│       └── lab04_wavelet.yaml         # Cấu hình siêu tham số Lab 04 Wavelet Hashing
 ├── data/                              # Dữ liệu phân tầng
 │   └── samples/                       # Ảnh mẫu kiểm chuẩn (Self-contained & Git-tracked)
 │       ├── image-2.jpg                # Ảnh mẫu cho Lab 01 & Lab 02
 │       ├── sample_traffic.jpg         # Ảnh giao thông cho Lab 01
-│       ├── lab03/                     # 9 ảnh mẫu kiểm chuẩn đặc thù cho Lab 03
-│       └── lab04/                     # 6 ảnh mẫu danh mục chuẩn cho Lab 04
+│       ├── lab03/                     # 6 ảnh mẫu kiểm chuẩn đặc thù cho Lab 03
+│       └── lab04/                     # Dữ liệu ảnh Chihuahua/Muffin & Mèo/Kem
 ├── docs/                              # Tài liệu & Báo cáo lab
+│   ├── assets/                        # Hình ảnh trích xuất cho báo cáo (lab03, lab04)
 │   └── labs/                          # Báo cáo kỹ thuật chi tiết của từng bài Lab
 │       ├── lab01/                     # Markdown & HTML Report Lab 01
 │       ├── lab02/                     # Markdown & HTML Report Lab 02
 │       ├── lab03/                     # Markdown & HTML Report Lab 03
 │       └── lab04/                     # Markdown & HTML Report Lab 04
+├── notebooks/                         # Jupyter Notebooks tương tác trực tiếp
+│   └── labs/
+│       ├── lab_01.ipynb
+│       ├── lab_02.ipynb
+│       ├── lab_03.ipynb
+│       └── lab_04.ipynb
 ├── experiments/                       # Nơi lưu trữ artifacts (Ignored by Git)
 │   ├── logs/                          # Metrics summary JSON
 │   └── predictions/                   # Biểu đồ và ảnh đầu ra của từng lab
@@ -60,27 +68,14 @@ Repository này chứa toàn bộ mã nguồn, dữ liệu thực nghiệm, pipe
 │   ├── base.txt                       # OpenCV, NumPy, Matplotlib, Pillow, Scikit-Image, SciPy, PyWavelets
 │   └── dev.txt                        # Pytest, Ruff, Pre-commit
 ├── scripts/                           # Shell scripts tự động hóa
-│   └── run_lab.sh                     # Script chạy lab tự động (1, 2, 3, 4, all)
+│   ├── run_lab.sh                     # Script chạy lab tự động (1, 2, 3, 4, all)
+│   └── lab04/                         # Scripts phụ trợ cho Lab 04
 ├── src/                               # Package mã nguồn chính (Clean Architecture)
-│   ├── common/                        # Tiện ích dùng chung
-│   │   ├── logger.py                  # Logger chuẩn hóa, không dùng print()
-│   │   └── visualizer.py              # Suite trực quan hóa đa phương tiện
-│   ├── data/
-│   │   ├── transforms.py              # Xử lý ảnh không gian, kênh màu, annotations
-│   │   └── filters.py                 # Bộ lọc tuyến tính và phi tuyến tính
-│   ├── models/classical/
-│   │   ├── canny.py                   # Canny 5-stage, Di Zenzo tensor, Pratt FOM
-│   │   └── wavelet_hash.py            # DWT 2D, Wavelet Hashing, Hamming distance, ROC
+│   ├── common/                        # Tiện ích dùng chung (Logger, Visualizers, Metrics)
+│   ├── data/                          # Xử lý dữ liệu (Transforms, Filters, Pairs)
+│   ├── models/classical/              # Thuật toán cổ điển (Canny, Wavelet Hashing)
 │   └── pipelines/                     # Master pipelines điều phối
-│       ├── lab01_pipeline.py
-│       ├── lab02_pipeline.py
-│       ├── lab03_pipeline.py
-│       └── lab04_pipeline.py
-├── tests/                             # Bộ kiểm thử 51 unit tests
-│   ├── test_transforms.py
-│   ├── test_filters.py
-│   ├── test_canny.py
-│   └── test_wavelet_hash.py
+├── tests/                             # Bộ kiểm thử unit tests
 └── README.md
 ```
 
@@ -117,7 +112,7 @@ bash scripts/run_lab.sh all
 ### 3. Kiểm thử & Kiểm toán Mã nguồn
 
 ```bash
-# Chạy toàn bộ 51 unit tests
+# Chạy toàn bộ unit tests
 pytest tests/
 
 # Kiểm tra chất lượng mã nguồn với linter

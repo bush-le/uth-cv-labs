@@ -41,8 +41,8 @@ preprocessing:
 
 segmentation:
   morph_kernel_size: [3, 3]
-  closing_iterations: 2
-  dilation_iterations: 1
+  closing_iterations: 1
+  dilation_iterations: 0
 
 shape_detection:
   hough_lines:
@@ -52,14 +52,39 @@ shape_detection:
     min_line_length: 30
     max_line_gap: 10
   hough_circles:
+    blur_ksize: [9, 9]
+    blur_sigma: 2.0
     dp: 1.2
     min_dist: 40
     param1: 100
     param2: 25
     min_radius: 15
-    max_radius: 80
+    max_radius: 40
   contour_approx:
     epsilon_factor: 0.03
 
 auto_canny:
   sigma_factor: 0.33
+
+# Teaching notebook settings; default_params and tuning_grid above are shared.
+# Keep the existing notebook's L2, median and bilateral behavior.
+notebook:
+  l2_gradient: true
+  gaussian_radius_sigmas: 3.0
+  median_ksize: 3
+  bilateral:
+    d: 9
+    sigmaColor: 50
+    sigmaSpace: 5
+  noise_std: 20.0
+  salt_pepper_amount: 0.03
+  low_contrast_offset: 100.0
+  low_contrast_gain: 0.25
+  region_segmentation:
+    threshold: 120
+    kernel_size: [3, 3]
+    opening_iterations: 1
+    closing_iterations: 1
+  top_hat_detection:
+    kernel_size: [81, 81]
+    threshold: 40
