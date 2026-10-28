@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 """Unified Interactive Visual Dashboard Generator for Labs 02, 03, and 04.
 
-Generates an edge-to-edge, zero-border-radius interactive HTML dashboard report
+Generates a sleek, edge-to-edge, zero-border-radius interactive HTML dashboard report
 (LABS_02_03_04_REPORT.html) with:
-1. Stepper / Two-Tier Tabbed Navigation (DEFAULT): View each experiment step-by-step
-   without needing to manually scroll or swipe ("không phải lướt tay"), navigated via
-   the top master tabs, dynamic sub-ribbon, left sidebar tree, or keyboard arrows (← / → / Space).
-2. Continuous Scroll Mode: Switchable via button to view all sections sequentially.
-3. 100% Full Content Preservation: Every single image (36 base64 images),
+1. No bulky sidebar, no bulky multi-row headers - straight to the point ("thẳng vào việc luôn").
+2. Single slim 48px top control bar with:
+   - Primary Lab Tabs: [🚀 Tổng Quan] [⚡ Lab 02] [🎯 Lab 03] [🌊 Lab 04] [📊 Ma Trận]
+   - Stepper Navigation: ◀ [Quick Jump Dropdown (28 steps)] ▶ [Step counter 01/28]
+   - Utility controls: [Cuộn liên tục / Từng bước], [Thu gọn chi tiết], [In / PDF]
+3. Stepper Mode (DEFAULT): View each experiment step-by-step without scrolling ("không phải lướt tay"),
+   controlled via keyboard arrows (← / → / Space), the stepper buttons, or the dropdown list.
+4. 100% Full Content Preservation: Every single image (36 base64 images),
    notebook code block (44 pre blocks), mathematical explanation table,
    takeaway, and research extension from Labs 02, 03, and 04 is fully retained
    and visually displayed (<details open> by default).
-4. Strictly HTML only (no .md generated as requested).
+5. Strictly HTML only (no .md generated).
 """
 from __future__ import annotations
 
@@ -44,7 +47,7 @@ def get_base64_img(rel_path: str) -> str:
     return f"data:{mime};base64,{b64}"
 
 
-# Edge-to-Edge Dashboard CSS (Zero border-radius, Two-Tier Ribbon & Stepper Navigation)
+# Sleek, Modern, Straight-To-Point CSS (Zero border-radius, No bulky sidebar)
 DASHBOARD_CSS = """
 /* Universal Reset & Full Bleed Layout (Zero Border-Radius) */
 *, *::before, *::after {
@@ -53,18 +56,16 @@ DASHBOARD_CSS = """
 }
 
 :root {
-  --primary-2: #1e3a8a;
-  --primary-3: #183f35;
-  --primary-4: #4c1d95;
+  --primary-2: #0284c7;
+  --primary-3: #16a34a;
+  --primary-4: #7c3aed;
   --bg-page: #f8fafc;
-  --bg-sidebar: #090d16;
   --bg-card: #ffffff;
   --border: #cbd5e1;
   --border-dark: #334155;
   --text-main: #0f172a;
   --text-muted: #475569;
-  --text-light: #f8fafc;
-  --sidebar-w: 320px;
+  --topbar-bg: #090d16;
 }
 
 html, body {
@@ -79,46 +80,35 @@ html, body {
   scroll-behavior: smooth;
 }
 
-/* Master Layout Grid: Sidebar + Main Content */
-.dashboard-app {
-  display: flex;
-  width: 100%;
-  min-height: 100vh;
-}
-
-/* Left Navigation Sidebar */
-aside.dashboard-sidebar {
-  width: var(--sidebar-w);
-  flex-shrink: 0;
-  background: var(--bg-sidebar);
-  color: #cbd5e1;
-  border-right: 2px solid #1e293b;
-  height: 100vh;
+/* Master Top Sticky Bar (Sleek, Compact: 48px) */
+header.master-topbar {
   position: sticky;
   top: 0;
-  display: flex;
-  flex-direction: column;
-  z-index: 950;
-  box-shadow: 4px 0 16px rgba(0,0,0,0.25);
-}
-
-.sidebar-header {
-  padding: 16px 20px;
-  background: #060911;
-  border-bottom: 1px solid #1e293b;
-}
-
-.sidebar-brand {
+  z-index: 1000;
+  width: 100%;
+  height: 48px;
+  background: var(--topbar-bg);
+  border-bottom: 2px solid #22c55e;
+  padding: 0 clamp(10px, 2vw, 32px);
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
-  font-weight: 800;
-  font-size: 15px;
-  color: #ffffff;
-  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
 }
 
-.sidebar-brand .tag {
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 14px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand-tag {
   background: #16a34a;
   color: #fff;
   padding: 2px 7px;
@@ -128,305 +118,151 @@ aside.dashboard-sidebar {
   text-transform: uppercase;
 }
 
-.sidebar-sub {
-  font-size: 11px;
-  color: #94a3b8;
-  margin-top: 4px;
-}
-
-/* Sidebar Stepper Quick Controls */
-.sidebar-stepper {
-  padding: 10px 16px;
-  background: #0f172a;
-  border-bottom: 1px solid #1e293b;
+/* Master Lab Tabs */
+.topbar-tabs {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 4px;
 }
 
-.sidebar-stepper button {
-  background: #1e293b;
-  border: 1px solid #334155;
-  color: #f8fafc;
-  padding: 6px 12px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.sidebar-stepper button:hover {
-  background: #38bdf8;
-  color: #02122b;
-  border-color: #38bdf8;
-}
-
-.stepper-progress {
-  font-size: 12px;
-  font-weight: 700;
-  color: #38bdf8;
-  white-space: nowrap;
-}
-
-/* Sidebar Treeview Scroll Area */
-.sidebar-tree {
-  flex-grow: 1;
-  overflow-y: auto;
-  padding: 12px 0 24px 0;
-}
-
-.sidebar-tree::-webkit-scrollbar {
-  width: 5px;
-}
-.sidebar-tree::-webkit-scrollbar-thumb {
-  background: #334155;
-}
-
-.tree-group {
-  margin-bottom: 14px;
-}
-
-.tree-group-header {
-  padding: 8px 18px 4px 18px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #94a3b8;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.tree-group-header.group-l2 { color: #38bdf8; border-left: 3px solid #38bdf8; }
-.tree-group-header.group-l3 { color: #4ade80; border-left: 3px solid #4ade80; }
-.tree-group-header.group-l4 { color: #c084fc; border-left: 3px solid #c084fc; }
-.tree-group-header.group-mat { color: #fbbf24; border-left: 3px solid #fbbf24; }
-
-.tree-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 18px;
-  color: #94a3b8;
-  text-decoration: none;
-  font-size: 12.5px;
-  font-weight: 600;
-  border-left: 3px solid transparent;
-  transition: all 0.12s ease;
-  cursor: pointer;
-}
-
-.tree-item:hover {
+.tab-btn {
   background: rgba(255, 255, 255, 0.05);
-  color: #ffffff;
-}
-
-.tree-item.active {
-  background: rgba(56, 189, 248, 0.12);
-  color: #ffffff;
-  border-left-color: #38bdf8;
-  font-weight: 700;
-}
-
-.tree-item.active.group-l3-item {
-  background: rgba(74, 222, 128, 0.12);
-  border-left-color: #4ade80;
-}
-
-.tree-item.active.group-l4-item {
-  background: rgba(192, 132, 252, 0.12);
-  border-left-color: #c084fc;
-}
-
-.tree-item.active.group-mat-item {
-  background: rgba(251, 191, 36, 0.12);
-  border-left-color: #fbbf24;
-}
-
-/* Main Viewport Content */
-main.dashboard-main {
-  flex-grow: 1;
-  min-width: 0;
-  background: var(--bg-page);
-  display: flex;
-  flex-direction: column;
-}
-
-/* Tier 1: Master Top Sticky Control Bar */
-.master-topbar {
-  position: sticky;
-  top: 0;
-  z-index: 850;
-  width: 100%;
-  background: #091310;
-  border-bottom: 2px solid #22c55e;
-  padding: 8px clamp(16px, 3vw, 36px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.btn-sidebar-toggle {
-  display: none;
-  background: #0f172a;
-  border: 1px solid #334155;
-  color: #f8fafc;
-  padding: 6px 12px;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-/* Master Lab Selectors */
-.master-lab-tabs {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.master-lab-tab {
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: #cbd5e1;
-  text-decoration: none;
-  font-size: 13px;
+  padding: 5px 12px;
+  font-size: 12.5px;
   font-weight: 700;
-  padding: 6px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.05);
   cursor: pointer;
+  white-space: nowrap;
   transition: all 0.15s ease;
 }
 
-.master-lab-tab:hover, .master-lab-tab.active {
+.tab-btn:hover, .tab-btn.active {
   background: #22c55e;
   color: #091310;
   border-color: #22c55e;
 }
 
-.master-lab-tab.tab-l2.active { background: #38bdf8; color: #02122b; border-color: #38bdf8; }
-.master-lab-tab.tab-l3.active { background: #4ade80; color: #052e16; border-color: #4ade80; }
-.master-lab-tab.tab-l4.active { background: #c084fc; color: #2e1065; border-color: #c084fc; }
-.master-lab-tab.tab-mat.active { background: #fbbf24; color: #451a03; border-color: #fbbf24; }
+.tab-btn.tab-l2.active { background: #38bdf8; color: #02122b; border-color: #38bdf8; }
+.tab-btn.tab-l3.active { background: #4ade80; color: #052e16; border-color: #4ade80; }
+.tab-btn.tab-l4.active { background: #c084fc; color: #2e1065; border-color: #c084fc; }
+.tab-btn.tab-mat.active { background: #fbbf24; color: #451a03; border-color: #fbbf24; }
 
-.topbar-right {
+/* Stepper Controller in Topbar */
+.topbar-stepper {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 6px;
 }
 
-.btn-ctrl {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+.btn-step {
+  background: #1e293b;
+  border: 1px solid #334155;
   color: #f8fafc;
-  padding: 6px 14px;
-  font-size: 12px;
-  font-weight: 700;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 800;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
-.btn-ctrl:hover {
+.btn-step:hover {
+  background: #38bdf8;
+  color: #02122b;
+  border-color: #38bdf8;
+}
+
+.step-select {
+  background: #0f172a;
+  border: 1px solid #334155;
+  color: #f8fafc;
+  padding: 5px 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  max-width: 380px;
+  outline: none;
+}
+
+.step-select optgroup {
+  background: #090d16;
+  color: #38bdf8;
+  font-weight: 800;
+}
+
+.step-select option {
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 4px;
+}
+
+.step-counter {
+  font-size: 12px;
+  font-weight: 800;
+  color: #38bdf8;
+  white-space: nowrap;
+}
+
+/* Action Controls in Topbar */
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-action {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f8fafc;
+  padding: 5px 11px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-action:hover {
   background: #ffffff;
   color: #0f172a;
 }
 
-.btn-ctrl.btn-mode.active-mode {
-  background: #0284c7;
-  color: #ffffff;
-  border-color: #0284c7;
-}
-
-/* Tier 2: Dynamic Sub-Ribbon for Active Lab Stage Navigation */
-.master-subribbon {
-  position: sticky;
-  top: 48px;
-  z-index: 800;
-  width: 100%;
-  background: #ffffff;
-  border-bottom: 2px solid var(--border);
-  padding: 8px clamp(16px, 3vw, 36px);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  overflow-x: auto;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
-
-.master-subribbon::-webkit-scrollbar {
-  height: 4px;
-}
-.master-subribbon::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-}
-
-.subribbon-btn {
-  white-space: nowrap;
-  font-size: 12.5px;
-  font-weight: 700;
-  padding: 5px 11px;
-  border: 1px solid #cbd5e1;
-  background: #f8fafc;
-  color: #334155;
-  cursor: pointer;
-  transition: all 0.12s ease;
-}
-
-.subribbon-btn:hover, .subribbon-btn.active {
-  background: #0f172a;
-  color: #ffffff;
-  border-color: #0f172a;
-}
-
-.subribbon-btn.l2-ribbon.active { background: #0284c7; border-color: #0284c7; color: #fff; }
-.subribbon-btn.l3-ribbon.active { background: #16a34a; border-color: #16a34a; color: #fff; }
-.subribbon-btn.l4-ribbon.active { background: #7c3aed; border-color: #7c3aed; color: #fff; }
-.subribbon-btn.mat-ribbon.active { background: #d97706; border-color: #d97706; color: #fff; }
-
-/* Stepper Mode (Default: show only active panel without scrolling) */
+/* Stepper Mode (Default: Zero Scrolling Needed) */
 body.mode-stepper .content-panel {
   display: none;
 }
 
 body.mode-stepper .content-panel.active {
   display: block;
-  animation: panelFade 0.15s ease-in;
+  animation: panelIn 0.12s ease-in;
 }
 
-@keyframes panelFade {
-  from { opacity: 0.6; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes panelIn {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
 }
 
 /* Continuous Scroll Mode */
 body.mode-scroll .content-panel {
   display: block;
-  border-bottom: 6px solid #cbd5e1;
+  border-bottom: 8px solid #cbd5e1;
 }
 
-/* Panel Containers Full Bleed */
+/* Content Panel Full Bleed */
 .content-panel {
   width: 100%;
-  padding: 32px clamp(20px, 4vw, 56px);
+  padding: 28px clamp(16px, 4vw, 56px);
   background: #ffffff;
 }
 
 .panel-header-banner {
   width: 100%;
-  padding: 24px 32px;
+  padding: 20px 28px;
   color: #ffffff;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   border-bottom: 3px solid rgba(255,255,255,0.2);
 }
 
@@ -442,29 +278,29 @@ body.mode-scroll .content-panel {
   text-transform: uppercase;
   font-weight: 800;
   opacity: 0.85;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .panel-header-banner h2 {
-  font-size: clamp(22px, 2.8vw, 36px);
-  margin: 0 0 8px 0;
+  font-size: clamp(20px, 2.6vw, 32px);
+  margin: 0 0 6px 0;
   font-weight: 800;
 }
 
 .panel-header-banner p {
-  font-size: 15px;
+  font-size: 14.5px;
   margin: 0;
   max-width: 1100px;
   opacity: 0.92;
 }
 
-/* Visual Stage Elements */
+/* Stage elements */
 .flow-map {
   width: 100%;
   background: #ffffff;
-  padding: 16px 0 24px 0;
+  padding: 12px 0 20px 0;
   border-bottom: 1px solid var(--border);
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .map-scroll {
@@ -483,61 +319,60 @@ body.mode-scroll .content-panel {
 
 .stage, .flow-stage {
   border-left: 3px solid #94a3b8;
-  margin: 0 0 28px 16px;
-  padding: 0 0 20px 24px;
+  margin: 0 0 24px 16px;
+  padding: 0 0 16px 24px;
 }
 
 .stage-head, .stage-heading {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .number, .stage-number {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  margin-left: -47px;
+  width: 42px;
+  height: 42px;
+  margin-left: -46px;
   background: #0f172a;
   color: #ffffff;
   border: 3px solid var(--bg-page);
   font-weight: 700;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .stage h2, .flow-stage h2 {
-  font-size: 24px;
+  font-size: 22px;
   line-height: 1.3;
   margin: 4px 0;
   color: var(--text-main);
 }
 
 .mini-flow {
-  padding: 12px 18px;
+  padding: 10px 16px;
   background: #e2e8f0;
   font-size: 13px;
   font-weight: 700;
   color: #0f172a;
   border-left: 4px solid #0284c7;
-  margin: 12px 0 18px 0;
+  margin: 10px 0 16px 0;
 }
 
 .intro, .stage-intro {
   color: var(--text-muted);
-  font-size: 15px;
-  margin: 12px 0 20px 0;
-  max-width: 100%;
+  font-size: 14.5px;
+  margin: 10px 0 18px 0;
 }
 
-/* Visual Image Cards */
+/* Images & Visual Galleries */
 .image-card, .gallery-item {
   background: #ffffff;
   border: 1px solid var(--border);
   overflow: hidden;
-  margin: 20px 0;
+  margin: 18px 0;
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
@@ -552,8 +387,8 @@ body.mode-scroll .content-panel {
 }
 
 .image-card figcaption, .gallery-item .caption {
-  padding: 14px 20px;
-  font-size: 14px;
+  padding: 12px 18px;
+  font-size: 13.5px;
   color: #334155;
   border-top: 1px solid #e2e8f0;
   background: #f8fafc;
@@ -562,44 +397,38 @@ body.mode-scroll .content-panel {
 .image-card figcaption b, .gallery-item .caption strong {
   display: block;
   color: var(--text-main);
-  font-size: 15px;
-  margin-bottom: 4px;
+  font-size: 14.5px;
+  margin-bottom: 3px;
 }
 
 .gallery {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 20px;
-  margin-top: 16px;
+  gap: 18px;
+  margin-top: 14px;
 }
 
 .takeaway, .callout {
-  padding: 16px 20px;
+  padding: 14px 18px;
   background: #f0fdf4;
   border-left: 4px solid #16a34a;
   font-size: 14px;
   color: #14532d;
-  margin: 20px 0;
+  margin: 18px 0;
 }
 
-.callout.warn {
-  background: #fffbeb;
-  border-left-color: #f59e0b;
-  color: #78350f;
-}
-
-/* Visual Details & Code Blocks (OPEN by default for high visual impact) */
+/* Visual Details & Code Blocks (OPEN by default) */
 details {
   background: #ffffff;
   border: 1px solid var(--border);
-  margin: 16px 0;
+  margin: 14px 0;
 }
 
 summary {
-  padding: 12px 18px;
+  padding: 10px 16px;
   cursor: pointer;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13.5px;
   color: #0f172a;
   background: #f1f5f9;
   border-bottom: 1px solid var(--border);
@@ -607,25 +436,25 @@ summary {
 }
 
 .detail-body {
-  padding: 18px 20px;
+  padding: 16px 18px;
   overflow-wrap: anywhere;
 }
 
 .code-note {
-  font-size: 13px;
+  font-size: 12.5px;
   color: #64748b;
-  margin: 6px 0;
+  margin: 4px 0;
 }
 
 pre {
-  padding: 16px 20px;
+  padding: 14px 18px;
   background: #0f172a;
   color: #e2e8f0;
   overflow-x: auto;
-  line-height: 1.6;
+  line-height: 1.55;
   font-size: 13px;
   font-family: Consolas, "SFMono-Regular", Menlo, Monaco, monospace;
-  margin: 10px 0;
+  margin: 8px 0;
 }
 
 code {
@@ -633,7 +462,7 @@ code {
   background: #e2e8f0;
   color: #0f172a;
   padding: 2px 5px;
-  font-size: 0.9em;
+  font-size: 0.88em;
 }
 
 pre code {
@@ -645,12 +474,12 @@ pre code {
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 16px 0;
-  font-size: 14px;
+  margin: 14px 0;
+  font-size: 13.5px;
 }
 
 th, td {
-  padding: 10px 14px;
+  padding: 8px 12px;
   border: 1px solid var(--border);
   text-align: left;
 }
@@ -660,7 +489,7 @@ th {
   font-weight: 700;
 }
 
-/* Master Overview KPI Cards */
+/* KPI Cards */
 .kpi-strip {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -712,7 +541,7 @@ dialog#viewer::backdrop {
 dialog#viewer .dialog-header {
   display: flex;
   justify-content: flex-end;
-  padding: 8px 14px;
+  padding: 6px 12px;
   background: #0f172a;
   border-bottom: 1px solid #334155;
 }
@@ -721,7 +550,7 @@ dialog#viewer button {
   background: #e2e8f0;
   color: #0f172a;
   border: none;
-  padding: 6px 14px;
+  padding: 5px 12px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -735,23 +564,20 @@ dialog#viewer img {
 }
 
 /* Responsive Media Queries */
-@media (max-width: 960px) {
-  aside.dashboard-sidebar {
-    position: fixed;
-    left: -320px;
-    transition: left 0.2s ease-in-out;
-  }
-  aside.dashboard-sidebar.open {
-    left: 0;
-  }
-  .btn-sidebar-toggle {
-    display: block;
-  }
+@media (max-width: 1050px) {
+  .topbar-brand { display: none; }
+  .step-select { max-width: 260px; }
+}
+
+@media (max-width: 768px) {
+  .topbar-tabs { display: none; }
+  .step-select { max-width: 200px; }
+  header.master-topbar { padding: 0 10px; }
 }
 
 /* Print Styles */
 @media print {
-  aside.dashboard-sidebar, .master-topbar, .master-subribbon, dialog#viewer {
+  header.master-topbar, dialog#viewer {
     display: none !important;
   }
   body.mode-stepper .content-panel {
@@ -764,63 +590,42 @@ dialog#viewer img {
 }
 """
 
-# Interactive JavaScript for Stepper, Two-Tier Ribbon Navigation, and Keyboard Controls
+# Interactive JavaScript for Stepper, Quick Dropdown, and Keyboard Controls
 DASHBOARD_JS = """
 // 28 Sequential Panels
 const panelList = [
-  { id: 'overview', lab: 'overview', labName: 'Tổng Quan', title: 'Toàn Cảnh & KPIs 3 Chuyên Đề' },
-  { id: 'lab02-flow', lab: 'lab02', labName: 'Lab 02', title: 'Sơ Đồ 5 Nhánh Thí Nghiệm' },
-  { id: 'lab02-prepare', lab: 'lab02', labName: 'Lab 02', title: '01 · Đọc Ảnh & Chuẩn Bị (BGR / Gray)' },
-  { id: 'lab02-point', lab: 'lab02', labName: 'Lab 02', title: '02 · Điểm Ảnh YC1–4 (Sáng, Tương Phản, Âm Bản, Ngưỡng)' },
-  { id: 'lab02-linear', lab: 'lab02', labName: 'Lab 02', title: '03 · Lọc Tuyến Tính YC5–7 (Mean, Gauss, Làm Nét)' },
-  { id: 'lab02-edges', lab: 'lab02', labName: 'Lab 02', title: '04 · Đạo Hàm Biên YC8 (Sobel vs Prewitt)' },
-  { id: 'lab02-kernel', lab: 'lab02', labName: 'Lab 02', title: '05 · Tổng Kernel YC9 (Vùng Phẳng & Ảnh Màu)' },
-  { id: 'lab02-nonlinear', lab: 'lab02', labName: 'Lab 02', title: '06 · Lọc Phi Tuyến YC10 (Median vs Bilateral)' },
-  { id: 'lab02-comparison', lab: 'lab02', labName: 'Lab 02', title: '07 · So Sánh Tổng Hợp YC11 (Master Grid)' },
-  { id: 'lab02-principles', lab: 'lab02', labName: 'Lab 02', title: '08 · Nguyên Lý & Kiểm Thử (22 Tests)' },
-  { id: 'lab03-flow', lab: 'lab03', labName: 'Lab 03', title: 'Sơ Đồ 5 Bước Canny & 2 Hướng' },
-  { id: 'lab03-input', lab: 'lab03', labName: 'Lab 03', title: '01 · Dữ Liệu Đầu Vào (Camera, Brick, Coins)' },
-  { id: 'lab03-libraries', lab: 'lab03', labName: 'Lab 03', title: '02 · YC1 Hai Thư Viện (OpenCV vs Skimage)' },
-  { id: 'lab03-parameters', lab: 'lab03', labName: 'Lab 03', title: '03 · YC2 Quét Tham Số (Sigma & Ngưỡng)' },
-  { id: 'lab03-preprocess', lab: 'lab03', labName: 'Lab 03', title: '04 · YC3 Tiền Xử Lý (Nhiễu, Brick, EqualizeHist)' },
-  { id: 'lab03-regions', lab: 'lab03', labName: 'Lab 03', title: '05 · YC4.1 Phân Đoạn Vùng (Closing + Fill Holes)' },
-  { id: 'lab03-shapes', lab: 'lab03', labName: 'Lab 03', title: '06 · YC4.2 Nhận Dạng Hình Tròn (Hough 24/24 Xu)' },
-  { id: 'lab03-support', lab: 'lab03', labName: 'Lab 03', title: '07 · Câu Hỏi Nghiên Cứu Mở Rộng' },
-  { id: 'lab04-flow', lab: 'lab04', labName: 'Lab 04', title: 'Sơ Đồ 2D DWT db4 & Luồng Quyết Định' },
-  { id: 'lab04-dataset', lab: 'lab04', labName: 'Lab 04', title: '01 · Dữ Liệu & Gán Nhãn (26 Nguồn, 147 Cặp)' },
-  { id: 'lab04-hash', lab: 'lab04', labName: 'Lab 04', title: '02 · YC1 Trích Xuất wHash RGB 192-bit' },
-  { id: 'lab04-hamming', lab: 'lab04', labName: 'Lab 04', title: '03 · YC2 Ma Trận Hamming 26×26' },
-  { id: 'lab04-threshold', lab: 'lab04', labName: 'Lab 04', title: '04 · YC4 Ngưỡng Youden (τ=18) & Đánh Giá 98.77%' },
-  { id: 'lab04-robustness', lab: 'lab04', labName: 'Lab 04', title: '05 · YC3 Khảo Sát Độ Bền Vững (7 Biến Đổi)' },
-  { id: 'lab04-methods', lab: 'lab04', labName: 'Lab 04', title: '06 · Nâng Cao 1 So Sánh 4 Cấu Hình Wavelet' },
-  { id: 'lab04-retrieval', lab: 'lab04', labName: 'Lab 04', title: '07 · Nâng Cao 2 Truy Vấn Top-3 (Top-1 100%)' },
-  { id: 'lab04-support', lab: 'lab04', labName: 'Lab 04', title: '08 · Mở Rộng Cấu Trúc Tìm Kiếm (BK-Tree, MIH)' },
-  { id: 'matrix', lab: 'matrix', labName: 'Tổng Kết', title: 'Ma Trận Nghiệm Thu & So Sánh Chéo 3 Lab' }
+  { id: 'overview', lab: 'overview', title: '🚀 Toàn Cảnh & KPIs 3 Chuyên Đề' },
+  { id: 'lab02-flow', lab: 'lab02', title: 'Lab 02 · 🗺️ Sơ Đồ 5 Nhánh Thí Nghiệm' },
+  { id: 'lab02-prepare', lab: 'lab02', title: 'Lab 02 · 01 Chuẩn Bị Ảnh (BGR / Gray)' },
+  { id: 'lab02-point', lab: 'lab02', title: 'Lab 02 · 02 Điểm Ảnh YC1–4 (Sáng, Tương Phản, Âm Bản, Ngưỡng)' },
+  { id: 'lab02-linear', lab: 'lab02', title: 'Lab 02 · 03 Lọc Tuyến Tính YC5–7 (Mean, Gauss, Làm Nét)' },
+  { id: 'lab02-edges', lab: 'lab02', title: 'Lab 02 · 04 Đạo Hàm Biên YC8 (Sobel vs Prewitt)' },
+  { id: 'lab02-kernel', lab: 'lab02', title: 'Lab 02 · 05 Tổng Kernel YC9 (Vùng Phẳng & Ảnh Màu)' },
+  { id: 'lab02-nonlinear', lab: 'lab02', title: 'Lab 02 · 06 Lọc Phi Tuyến YC10 (Median vs Bilateral)' },
+  { id: 'lab02-comparison', lab: 'lab02', title: 'Lab 02 · 07 So Sánh Tổng Hợp YC11 (Master 12 Bộ Lọc)' },
+  { id: 'lab02-principles', lab: 'lab02', title: 'Lab 02 · 08 Nguyên Lý & Xác Thực 22 Tests' },
+  { id: 'lab03-flow', lab: 'lab03', title: 'Lab 03 · 🗺️ Sơ Đồ 5 Bước Canny & 2 Hướng' },
+  { id: 'lab03-input', lab: 'lab03', title: 'Lab 03 · 01 Dữ Liệu Đầu Vào (Camera, Brick, Coins)' },
+  { id: 'lab03-libraries', lab: 'lab03', title: 'Lab 03 · 02 YC1 Hai Thư Viện (OpenCV vs Skimage)' },
+  { id: 'lab03-parameters', lab: 'lab03', title: 'Lab 03 · 03 YC2 Quét Tham Số (Sigma & Ngưỡng Kép)' },
+  { id: 'lab03-preprocess', lab: 'lab03', title: 'Lab 03 · 04 YC3 Tiền Xử Lý Ảnh Khó (Nhiễu, Vân Gạch, Tương Phản)' },
+  { id: 'lab03-regions', lab: 'lab03', title: 'Lab 03 · 05 YC4.1 Phân Đoạn Vùng (Closing + Fill Holes)' },
+  { id: 'lab03-shapes', lab: 'lab03', title: 'Lab 03 · 06 YC4.2 Nhận Dạng Hình Tròn (Hough 24/24 Xu)' },
+  { id: 'lab03-support', lab: 'lab03', title: 'Lab 03 · 07 Câu Hỏi Nghiên Cứu Mở Rộng' },
+  { id: 'lab04-flow', lab: 'lab04', title: 'Lab 04 · 🗺️ Sơ Đồ 2D DWT db4 & Luồng Quyết Định' },
+  { id: 'lab04-dataset', lab: 'lab04', title: 'Lab 04 · 01 Dữ Liệu & Gán Nhãn (26 Nguồn, 147 Cặp Không Rò Rỉ)' },
+  { id: 'lab04-hash', lab: 'lab04', title: 'Lab 04 · 02 YC1 Trích Xuất wHash RGB 192-bit' },
+  { id: 'lab04-hamming', lab: 'lab04', title: 'Lab 04 · 03 YC2 Ma Trận Hamming 26x26 & 3 Kênh R,G,B' },
+  { id: 'lab04-threshold', lab: 'lab04', title: 'Lab 04 · 04 YC4 Ngưỡng Youden (tau=18) & Đánh Giá 98.77% Acc' },
+  { id: 'lab04-robustness', lab: 'lab04', title: 'Lab 04 · 05 YC3 Khảo Sát Độ Bền Vững (7 Biến Đổi)' },
+  { id: 'lab04-methods', lab: 'lab04', title: 'Lab 04 · 06 Nâng Cao 1 So Sánh 4 Cấu Hình Wavelet' },
+  { id: 'lab04-retrieval', lab: 'lab04', title: 'Lab 04 · 07 Nâng Cao 2 Truy Vấn Top-3 (Top-1 100%)' },
+  { id: 'lab04-support', lab: 'lab04', title: 'Lab 04 · 08 Mở Rộng Cấu Trúc Tìm Kiếm (BK-Tree, MIH, DTCWT)' },
+  { id: 'matrix', lab: 'matrix', title: '📊 Ma Trận Nghiệm Thu & So Sánh Chéo 3 Lab (58/58 Tests)' }
 ];
 
 let currentIndex = 0;
 let isStepperMode = true;
-
-// Render dynamic sub-ribbon buttons based on active lab
-function updateSubribbon(activeLab) {
-  const ribbonContainer = document.querySelector('#master-subribbon');
-  if (!ribbonContainer) return;
-  ribbonContainer.innerHTML = '';
-
-  const relevantPanels = panelList.filter(p => p.lab === activeLab);
-  relevantPanels.forEach(p => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = `subribbon-btn ${activeLab}-ribbon`;
-    btn.textContent = p.title.split('(')[0].trim();
-    if (p.id === panelList[currentIndex].id) btn.classList.add('active');
-    btn.addEventListener('click', () => {
-      const idx = panelList.findIndex(item => item.id === p.id);
-      if (idx !== -1) activatePanel(idx, true);
-    });
-    ribbonContainer.appendChild(btn);
-  });
-}
 
 function activatePanel(index, scrollToTop = true) {
   if (index < 0 || index >= panelList.length) return;
@@ -828,7 +633,7 @@ function activatePanel(index, scrollToTop = true) {
   const current = panelList[currentIndex];
 
   // Update Master Lab Tabs (Top Bar)
-  document.querySelectorAll('.master-lab-tab').forEach(tab => {
+  document.querySelectorAll('.tab-btn').forEach(tab => {
     if (tab.getAttribute('data-lab') === current.lab) {
       tab.classList.add('active');
     } else {
@@ -836,23 +641,13 @@ function activatePanel(index, scrollToTop = true) {
     }
   });
 
-  // Update Dynamic Sub-Ribbon
-  updateSubribbon(current.lab);
+  // Update Select Dropdown
+  const selectEl = document.querySelector('#step-selector');
+  if (selectEl) selectEl.value = current.id;
 
-  // Update Progress Indicator
-  document.querySelectorAll('.stepper-progress').forEach(el => {
-    el.textContent = `${currentIndex + 1} / ${panelList.length}`;
-  });
-
-  // Update Sidebar Tree Active States
-  document.querySelectorAll('.tree-item').forEach(item => {
-    if (item.getAttribute('data-target') === current.id) {
-      item.classList.add('active');
-      item.scrollIntoView({ block: 'nearest' });
-    } else {
-      item.classList.remove('active');
-    }
-  });
+  // Update Counter
+  const counterEl = document.querySelector('#step-counter');
+  if (counterEl) counterEl.textContent = `${currentIndex + 1} / ${panelList.length}`;
 
   // Activate panel in DOM
   if (isStepperMode) {
@@ -871,7 +666,7 @@ function activatePanel(index, scrollToTop = true) {
     }
   }
 
-  // Update SVG node highlighting if present
+  // Highlight SVG node
   document.querySelectorAll('svg a').forEach(a => {
     if (a.getAttribute('href') === '#' + current.id) {
       a.querySelector('rect')?.setAttribute('stroke-width', '3');
@@ -882,15 +677,16 @@ function activatePanel(index, scrollToTop = true) {
 }
 
 function nextPanel() {
-  if (currentIndex < panelList.length - 1) {
-    activatePanel(currentIndex + 1);
-  }
+  if (currentIndex < panelList.length - 1) activatePanel(currentIndex + 1);
 }
 
 function prevPanel() {
-  if (currentIndex > 0) {
-    activatePanel(currentIndex - 1);
-  }
+  if (currentIndex > 0) activatePanel(currentIndex - 1);
+}
+
+function jumpToPanel(panelId) {
+  const idx = panelList.findIndex(p => p.id === panelId);
+  if (idx !== -1) activatePanel(idx, true);
 }
 
 function toggleMode(targetMode) {
@@ -904,75 +700,57 @@ function toggleMode(targetMode) {
   if (isStepperMode) {
     document.body.classList.remove('mode-scroll');
     document.body.classList.add('mode-stepper');
-    if (btnMode) btnMode.textContent = 'Chế độ: Từng bước (Không lướt)';
+    if (btnMode) btnMode.textContent = 'Cuộn liên tục';
     activatePanel(currentIndex, true);
   } else {
     document.body.classList.remove('mode-stepper');
     document.body.classList.add('mode-scroll');
-    if (btnMode) btnMode.textContent = 'Chế độ: Cuộn toàn bộ';
+    if (btnMode) btnMode.textContent = 'Từng bước (Không lướt)';
   }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize Default Mode: Stepper (zero scrolling needed)
   toggleMode('stepper');
   activatePanel(0, false);
 
-  // Bind Master Lab Tabs Clicks
-  document.querySelectorAll('.master-lab-tab').forEach(tab => {
-    tab.addEventListener('click', (e) => {
-      e.preventDefault();
-      const labName = tab.getAttribute('data-lab');
-      const firstPanelIdx = panelList.findIndex(p => p.lab === labName);
-      if (firstPanelIdx !== -1) activatePanel(firstPanelIdx, true);
-    });
-  });
-
-  // Bind Treeview Item Clicks
-  document.querySelectorAll('.tree-item').forEach(item => {
-    item.addEventListener('click', (e) => {
-      e.preventDefault();
-      const targetId = item.getAttribute('data-target');
-      const idx = panelList.findIndex(p => p.id === targetId);
+  // Tab buttons click
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lab = btn.getAttribute('data-lab');
+      const idx = panelList.findIndex(p => p.lab === lab);
       if (idx !== -1) activatePanel(idx, true);
     });
   });
 
-  // Bind SVG Links
+  // SVG link clicks
   document.querySelectorAll('svg a').forEach(a => {
     a.addEventListener('click', (e) => {
       const href = a.getAttribute('href');
       if (href && href.startsWith('#')) {
         e.preventDefault();
-        const targetId = href.substring(1);
-        const idx = panelList.findIndex(p => p.id === targetId);
-        if (idx !== -1) activatePanel(idx, true);
+        jumpToPanel(href.substring(1));
       }
     });
   });
 
-  // Global Image Lightbox Modal
+  // Lightbox viewer
   const viewer = document.querySelector('#viewer');
   const viewerImg = viewer.querySelector('img');
   document.querySelectorAll('.image-card img, .gallery-item img, figure img').forEach(image => {
     image.tabIndex = 0;
     const openModal = () => {
       viewerImg.src = image.src;
-      viewerImg.alt = image.alt || 'Chi tiết hình ảnh thực nghiệm';
+      viewerImg.alt = image.alt || 'Hình ảnh thực nghiệm';
       viewer.showModal();
     };
     image.addEventListener('click', openModal);
-    image.addEventListener('keydown', event => {
-      if (event.key === 'Enter') openModal();
-    });
+    image.addEventListener('keydown', e => { if (e.key === 'Enter') openModal(); });
   });
   const closeBtn = viewer.querySelector('button');
   if (closeBtn) closeBtn.addEventListener('click', () => viewer.close());
-  viewer.addEventListener('click', event => {
-    if (event.target === viewer) viewer.close();
-  });
+  viewer.addEventListener('click', e => { if (e.target === viewer) viewer.close(); });
 
-  // Keyboard Navigation: ArrowRight, ArrowLeft, Space, PageDown, PageUp
+  // Keyboard navigation: ArrowRight, ArrowLeft, Space, PageDown, PageUp
   document.addEventListener('keydown', (e) => {
     if (viewer && viewer.open) {
       if (e.key === 'Escape') viewer.close();
@@ -992,18 +770,8 @@ document.addEventListener('DOMContentLoaded', () => {
       activatePanel(panelList.length - 1);
     }
   });
-
-  // Mobile Sidebar Toggle
-  const btnToggleSidebar = document.querySelector('#btn-toggle-sidebar');
-  const sidebar = document.querySelector('aside.dashboard-sidebar');
-  if (btnToggleSidebar && sidebar) {
-    btnToggleSidebar.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
-    });
-  }
 });
 
-// Toggle all details tags
 let allOpen = true;
 function toggleAllDetails() {
   allOpen = !allOpen;
@@ -1093,16 +861,43 @@ def render_unified_full_html() -> str:
         l4_content = re.sub(rf'href="#{id_name}"', f'href="#lab04-{id_name}"', l4_content)
 
     # Wrap each section into a .content-panel
+    def mark_panel(text: str, sid: str) -> str:
+        def _repl(m: re.Match[str]) -> str:
+            tag = m.group(0)
+            if 'class="' in tag:
+                return re.sub(r'class="([^"]*)"', r'class="content-panel \1"', tag)
+            return tag.replace("<section", '<section class="content-panel"', 1)
+
+        return re.sub(rf'<section\b[^>]*\bid="{sid}"[^>]*>', _repl, text)
+
     for sec_id in [
-        'lab02-prepare', 'lab02-point', 'lab02-linear', 'lab02-edges', 'lab02-kernel', 'lab02-nonlinear', 'lab02-comparison', 'lab02-principles',
-        'lab03-input', 'lab03-libraries', 'lab03-parameters', 'lab03-preprocess', 'lab03-regions', 'lab03-shapes', 'lab03-support',
-        'lab04-dataset', 'lab04-hash', 'lab04-hamming', 'lab04-threshold', 'lab04-robustness', 'lab04-methods', 'lab04-retrieval', 'lab04-support'
+        "lab02-prepare",
+        "lab02-point",
+        "lab02-linear",
+        "lab02-edges",
+        "lab02-kernel",
+        "lab02-nonlinear",
+        "lab02-comparison",
+        "lab02-principles",
+        "lab03-input",
+        "lab03-libraries",
+        "lab03-parameters",
+        "lab03-preprocess",
+        "lab03-regions",
+        "lab03-shapes",
+        "lab03-support",
+        "lab04-dataset",
+        "lab04-hash",
+        "lab04-hamming",
+        "lab04-threshold",
+        "lab04-robustness",
+        "lab04-methods",
+        "lab04-retrieval",
+        "lab04-support",
     ]:
-        pattern = rf'<section class="([^"]*)" id="{sec_id}"'
-        repl = rf'<section class="content-panel \1" id="{sec_id}"'
-        l2_content = re.sub(pattern, repl, l2_content)
-        l3_content = re.sub(pattern, repl, l3_content)
-        l4_content = re.sub(pattern, repl, l4_content)
+        l2_content = mark_panel(l2_content, sec_id)
+        l3_content = mark_panel(l3_content, sec_id)
+        l4_content = mark_panel(l4_content, sec_id)
 
     # Force all details to have open attribute by default for high visual impact
     l2_content = re.sub(r'<details(?![^>]*\bopen\b)', '<details open', l2_content)
@@ -1118,249 +913,211 @@ def render_unified_full_html() -> str:
   <style>{DASHBOARD_CSS}</style>
 </head>
 <body class="mode-stepper">
-  <div class="dashboard-app">
-    <!-- Left Navigation Sidebar -->
-    <aside class="dashboard-sidebar">
-      <div class="sidebar-header">
-        <a href="#overview" class="sidebar-brand">
-          <span class="tag">UTH CV</span>
-          <span>BÁO CÁO LABS 02–04</span>
-        </a>
-        <div class="sidebar-sub">58/58 Unit Tests Passed &bull; Python 3.14.8</div>
+  <!-- Master Top Sticky Control Bar (Slim 48px: Zero Clutter, Straight to Point) -->
+  <header class="master-topbar">
+    <div class="topbar-brand">
+      <span class="brand-tag">UTH CV</span>
+      <span>BÁO CÁO LABS 02–04</span>
+    </div>
+
+    <!-- Master Lab Tabs -->
+    <nav class="topbar-tabs" aria-label="Chọn chuyên đề">
+      <button type="button" class="tab-btn active" data-lab="overview">🚀 Tổng Quan</button>
+      <button type="button" class="tab-btn tab-l2" data-lab="lab02">⚡ Lab 02: Lọc Không Gian</button>
+      <button type="button" class="tab-btn tab-l3" data-lab="lab03">🎯 Lab 03: Tách Biên Canny</button>
+      <button type="button" class="tab-btn tab-l4" data-lab="lab04">🌊 Lab 04: Wavelet Hash RGB</button>
+      <button type="button" class="tab-btn tab-mat" data-lab="matrix">📊 Ma Trận Nghiệm Thu</button>
+    </nav>
+
+    <!-- Stepper Navigation & Quick Jump Dropdown -->
+    <div class="topbar-stepper">
+      <button type="button" class="btn-step" onclick="prevPanel()" title="Phím tắt: &larr; (Mũi tên trái)">◀</button>
+      <select id="step-selector" class="step-select" onchange="jumpToPanel(this.value)">
+        <optgroup label="🚀 TỔNG QUAN">
+          <option value="overview">Toàn Cảnh &amp; KPIs 3 Chuyên Đề</option>
+        </optgroup>
+        <optgroup label="⚡ LAB 02: LỌC KHÔNG GIAN &amp; ĐIỂM ẢNH">
+          <option value="lab02-flow">Lab 02 · 🗺️ Sơ Đồ 5 Nhánh Thí Nghiệm</option>
+          <option value="lab02-prepare">Lab 02 · 01 Chuẩn Bị Ảnh (BGR / Gray)</option>
+          <option value="lab02-point">Lab 02 · 02 Điểm Ảnh YC1–4 (Sáng, Tương Phản, Âm Bản, Ngưỡng)</option>
+          <option value="lab02-linear">Lab 02 · 03 Lọc Tuyến Tính YC5–7 (Mean, Gauss, Làm Nét)</option>
+          <option value="lab02-edges">Lab 02 · 04 Đạo Hàm Biên YC8 (Sobel vs Prewitt)</option>
+          <option value="lab02-kernel">Lab 02 · 05 Tổng Kernel YC9 (Vùng Phẳng &amp; Ảnh Màu)</option>
+          <option value="lab02-nonlinear">Lab 02 · 06 Lọc Phi Tuyến YC10 (Median vs Bilateral)</option>
+          <option value="lab02-comparison">Lab 02 · 07 So Sánh Tổng Hợp YC11 (Master 12 Bộ Lọc)</option>
+          <option value="lab02-principles">Lab 02 · 08 Nguyên Lý &amp; Xác Thực 22 Tests</option>
+        </optgroup>
+        <optgroup label="🎯 LAB 03: TÁCH BIÊN CẢI TIẾN CANNY &amp; HÌNH HỌC">
+          <option value="lab03-flow">Lab 03 · 🗺️ Sơ Đồ 5 Bước Canny &amp; 2 Hướng</option>
+          <option value="lab03-input">Lab 03 · 01 Dữ Liệu Đầu Vào (Camera, Brick, Coins)</option>
+          <option value="lab03-libraries">Lab 03 · 02 YC1 Hai Thư Viện (OpenCV vs Skimage)</option>
+          <option value="lab03-parameters">Lab 03 · 03 YC2 Quét Tham Số (Sigma &amp; Ngưỡng Kép)</option>
+          <option value="lab03-preprocess">Lab 03 · 04 YC3 Tiền Xử Lý Ảnh Khó (Nhiễu, Vân Gạch, Tương Phản)</option>
+          <option value="lab03-regions">Lab 03 · 05 YC4.1 Phân Đoạn Vùng (Closing + Fill Holes)</option>
+          <option value="lab03-shapes">Lab 03 · 06 YC4.2 Nhận Dạng Hình Tròn (Hough 24/24 Xu)</option>
+          <option value="lab03-support">Lab 03 · 07 Câu Hỏi Nghiên Cứu Mở Rộng</option>
+        </optgroup>
+        <optgroup label="🌊 LAB 04: WAVELET HASH RGB 192-BIT">
+          <option value="lab04-flow">Lab 04 · 🗺️ Sơ Đồ 2D DWT db4 &amp; Luồng Quyết Định</option>
+          <option value="lab04-dataset">Lab 04 · 01 Dữ Liệu &amp; Gán Nhãn (26 Nguồn, 147 Cặp)</option>
+          <option value="lab04-hash">Lab 04 · 02 YC1 Trích Xuất wHash RGB 192-bit</option>
+          <option value="lab04-hamming">Lab 04 · 03 YC2 Ma Trận Hamming 26&times;26</option>
+          <option value="lab04-threshold">Lab 04 · 04 YC4 Ngưỡng Youden (&tau;=18) &amp; Đánh Giá 98.77%</option>
+          <option value="lab04-robustness">Lab 04 · 05 YC3 Khảo Sát Độ Bền Vững (7 Biến Đổi)</option>
+          <option value="lab04-methods">Lab 04 · 06 Nâng Cao 1 So Sánh 4 Cấu Hình Wavelet</option>
+          <option value="lab04-retrieval">Lab 04 · 07 Nâng Cao 2 Truy Vấn Top-3 (Top-1 100%)</option>
+          <option value="lab04-support">Lab 04 · 08 Mở Rộng Cấu Trúc Tìm Kiếm (BK-Tree, MIH)</option>
+        </optgroup>
+        <optgroup label="📊 TỔNG KẾT &amp; ĐỐI SÁNH">
+          <option value="matrix">Ma Trận Nghiệm Thu &amp; So Sánh Chéo 3 Lab</option>
+        </optgroup>
+      </select>
+      <button type="button" class="btn-step" onclick="nextPanel()" title="Phím tắt: &rarr; hoặc Space">▶</button>
+      <span class="step-counter" id="step-counter">01 / 28</span>
+    </div>
+
+    <!-- Actions -->
+    <div class="topbar-actions">
+      <button type="button" class="btn-action" id="btn-toggle-mode" onclick="toggleMode()">Cuộn liên tục</button>
+      <button type="button" class="btn-action" id="btn-toggle-details" onclick="toggleAllDetails()">Thu gọn chi tiết</button>
+      <button type="button" class="btn-action" onclick="window.print()">In / PDF</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Panel 01: Overview -->
+    <section class="content-panel active" id="overview">
+      <div class="panel-header-banner banner-overview">
+        <div class="eyebrow">TRƯỜNG ĐẠI HỌC GIAO THÔNG VẬN TẢI TP.HCM (UTH) — KHOA CÔNG NGHỆ THÔNG TIN</div>
+        <h2>BÁO CÁO TOÀN DIỆN THỰC HÀNH THỊ GIÁC MÁY TÍNH<br/>CHUYÊN ĐỀ LIÊN HOÀN: LAB 02 – LAB 03 – LAB 04</h2>
+        <p>Hệ thống thực nghiệm kết nối xuyên suốt 3 tầng kiến trúc thị giác máy tính: từ xử lý mức xám &amp; tích chập không gian (Lab 02), tối ưu vi sai tách biên đa hướng &amp; trích chọn hình học (Lab 03), đến biểu diễn nhận thức sóng nhỏ tần số không gian Wavelet Hash RGB 192-bit (Lab 04).</p>
       </div>
 
-      <!-- Stepper Quick Controls -->
-      <div class="sidebar-stepper">
-        <button type="button" onclick="prevPanel()" title="Phím tắt: &larr; (Mũi tên trái)">◀ Trước</button>
-        <span class="stepper-progress">1 / 28</span>
-        <button type="button" onclick="nextPanel()" title="Phím tắt: &rarr; (Mũi tên phải) hoặc Space">Tiếp ▶</button>
-      </div>
-
-      <!-- Treeview of all 28 panels -->
-      <div class="sidebar-tree">
-        <!-- Overview Group -->
-        <div class="tree-group">
-          <div class="tree-group-header">TỔNG QUAN</div>
-          <a class="tree-item active" data-target="overview">
-            <span>🚀</span> <span>Toàn Cảnh &amp; KPIs 3 Lab</span>
-          </a>
+      <div class="kpi-strip">
+        <div class="kpi-card" style="border-left-color: #38bdf8;">
+          <div class="kpi-val">11 / 11 YC</div>
+          <div class="kpi-title">Lab 02: Lọc Không Gian</div>
+          <div class="kpi-sub">Pearson r &approx; 0.9961, &Sigma;=1.000, 100% khử muối tiêu</div>
         </div>
-
-        <!-- Lab 02 Group -->
-        <div class="tree-group">
-          <div class="tree-group-header group-l2">LAB 02 · LỌC KHÔNG GIAN</div>
-          <a class="tree-item" data-target="lab02-flow"><span>🗺️</span> <span>Sơ Đồ 5 Nhánh Lab 02</span></a>
-          <a class="tree-item" data-target="lab02-prepare"><span>01</span> <span>Đọc Ảnh &amp; Chuẩn Bị</span></a>
-          <a class="tree-item" data-target="lab02-point"><span>02</span> <span>Điểm Ảnh YC1–4 (Sáng/Ngưỡng)</span></a>
-          <a class="tree-item" data-target="lab02-linear"><span>03</span> <span>Lọc Tuyến Tính YC5–7</span></a>
-          <a class="tree-item" data-target="lab02-edges"><span>04</span> <span>Phát Hiện Biên YC8</span></a>
-          <a class="tree-item" data-target="lab02-kernel"><span>05</span> <span>Tổng Kernel YC9</span></a>
-          <a class="tree-item" data-target="lab02-nonlinear"><span>06</span> <span>Lọc Phi Tuyến YC10</span></a>
-          <a class="tree-item" data-target="lab02-comparison"><span>07</span> <span>So Sánh Tổng Hợp YC11</span></a>
-          <a class="tree-item" data-target="lab02-principles"><span>08</span> <span>Nguyên Lý &amp; Kiểm Thử</span></a>
+        <div class="kpi-card" style="border-left-color: #4ade80;">
+          <div class="kpi-val">24 / 24 Xu</div>
+          <div class="kpi-title">Lab 03: Tách Biên Canny</div>
+          <div class="kpi-sub">100% phát hiện hình tròn, phục hồi ảnh mờ 0 &rarr; 13,897 px</div>
         </div>
-
-        <!-- Lab 03 Group -->
-        <div class="tree-group">
-          <div class="tree-group-header group-l3">LAB 03 · TÁCH BIÊN CANNY</div>
-          <a class="tree-item group-l3-item" data-target="lab03-flow"><span>🗺️</span> <span>Sơ Đồ 5 Bước Canny</span></a>
-          <a class="tree-item group-l3-item" data-target="lab03-input"><span>01</span> <span>Dữ Liệu Đầu Vào</span></a>
-          <a class="tree-item group-l3-item" data-target="lab03-libraries"><span>02</span> <span>YC1 Hai Thư Viện</span></a>
-          <a class="tree-item group-l3-item" data-target="lab03-parameters"><span>03</span> <span>YC2 Quét Tham Số</span></a>
-          <a class="tree-item group-l3-item" data-target="lab03-preprocess"><span>04</span> <span>YC3 Tiền Xử Lý Ảnh Khó</span></a>
-          <a class="tree-item group-l3-item" data-target="lab03-regions"><span>05</span> <span>YC4.1 Phân Đoạn Vùng</span></a>
-          <a class="tree-item group-l3-item" data-target="lab03-shapes"><span>06</span> <span>YC4.2 Hough 24/24 Xu</span></a>
-          <a class="tree-item group-l3-item" data-target="lab03-support"><span>07</span> <span>Câu Hỏi Mở Rộng</span></a>
+        <div class="kpi-card" style="border-left-color: #c084fc;">
+          <div class="kpi-val">98.77% Acc</div>
+          <div class="kpi-title">Lab 04: Wavelet Hash RGB</div>
+          <div class="kpi-sub">ROC AUC 1.0000, 192-bit Hex, Youden &tau; = 18 bits</div>
         </div>
-
-        <!-- Lab 04 Group -->
-        <div class="tree-group">
-          <div class="tree-group-header group-l4">LAB 04 · WAVELET HASH RGB</div>
-          <a class="tree-item group-l4-item" data-target="lab04-flow"><span>🗺️</span> <span>Sơ Đồ 2D DWT db4</span></a>
-          <a class="tree-item group-l4-item" data-target="lab04-dataset"><span>01</span> <span>Dữ Liệu &amp; Gán Nhãn</span></a>
-          <a class="tree-item group-l4-item" data-target="lab04-hash"><span>02</span> <span>YC1 Hash RGB 192-bit</span></a>
-          <a class="tree-item group-l4-item" data-target="lab04-hamming"><span>03</span> <span>YC2 Hamming 26&times;26</span></a>
-          <a class="tree-item group-l4-item" data-target="lab04-threshold"><span>04</span> <span>YC4 Ngưỡng Youden &tau;=18</span></a>
-          <a class="tree-item group-l4-item" data-target="lab04-robustness"><span>05</span> <span>YC3 Độ Bền Vững</span></a>
-          <a class="tree-item group-l4-item" data-target="lab04-methods"><span>06</span> <span>Nâng Cao 1 So Sánh Wavelet</span></a>
-          <a class="tree-item group-l4-item" data-target="lab04-retrieval"><span>07</span> <span>Nâng Cao 2 Top-3</span></a>
-          <a class="tree-item group-l4-item" data-target="lab04-support"><span>08</span> <span>Mở Rộng Tìm Kiếm</span></a>
-        </div>
-
-        <!-- Matrix Group -->
-        <div class="tree-group">
-          <div class="tree-group-header group-mat">ĐỐI SÁNH &amp; TỔNG KẾT</div>
-          <a class="tree-item group-mat-item" data-target="matrix"><span>📊</span> <span>Ma Trận Nghiệm Thu 3 Lab</span></a>
+        <div class="kpi-card" style="border-left-color: #fbbf24;">
+          <div class="kpi-val">58 / 58 PASS</div>
+          <div class="kpi-title">Kiểm Thử Hồi Quy</div>
+          <div class="kpi-sub">100% Unit Tests vượt qua (22 Lab 02 + 11 Lab 03 + 25 Lab 04)</div>
         </div>
       </div>
-    </aside>
 
-    <!-- Main Content Area -->
-    <main class="dashboard-main">
-      <!-- Tier 1: Master Top Sticky Control Bar -->
-      <header class="master-topbar">
-        <div class="topbar-left">
-          <button type="button" class="btn-sidebar-toggle" id="btn-toggle-sidebar">☰ Mục Lục</button>
+      <div class="takeaway">
+        <strong>HƯỚNG DẪN XEM BÁO CÁO NHANH CHÓNG (KHÔNG CẦN LƯỚT):</strong>
+        <ul style="margin:8px 0 0 20px;padding:0;">
+          <li>Dùng <strong>Hộp Chọn Thí Nghiệm (trên thanh đầu trang)</strong> để nhảy thẳng đến bất kỳ bước nào trong 1 click.</li>
+          <li>Dùng phím mũi tên <strong>&rarr; (Phải) / Phím Cách (Space)</strong> để tiến bước kế tiếp; phím <strong>&larr; (Trái)</strong> để lùi bước trước.</li>
+          <li>Toàn bộ mã nguồn thực thi, bảng số liệu thực nghiệm và hình ảnh đều được <strong>mở trực quan đầy đủ</strong>.</li>
+          <li>Bấm vào bất kỳ hình ảnh nào để <strong>phóng to xem chi tiết</strong> ở độ phân giải gốc trong Lightbox modal.</li>
+        </ul>
+      </div>
 
-          <!-- Master Lab Tabs -->
-          <nav class="master-lab-tabs" aria-label="Chọn chuyên đề">
-            <button type="button" class="master-lab-tab active" data-lab="overview">🚀 Tổng Quan</button>
-            <button type="button" class="master-lab-tab tab-l2" data-lab="lab02">⚡ Lab 02: Lọc Không Gian</button>
-            <button type="button" class="master-lab-tab tab-l3" data-lab="lab03">🎯 Lab 03: Tách Biên Canny</button>
-            <button type="button" class="master-lab-tab tab-l4" data-lab="lab04">🌊 Lab 04: Wavelet Hash RGB</button>
-            <button type="button" class="master-lab-tab tab-mat" data-lab="matrix">📊 Ma Trận Nghiệm Thu</button>
-          </nav>
-        </div>
+      <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
+        <button type="button" class="btn-step" style="width:auto;padding:8px 20px;font-size:14px;background:#0f172a;color:#fff;" onclick="nextPanel()">Bắt Đầu Xem Lab 02 ▶</button>
+        <a href="../../notebooks/labs/lab_02.ipynb" class="btn-step" style="text-decoration:none;width:auto;padding:8px 16px;background:#1e293b;color:#f8fafc;">Notebook Lab 02 ↗</a>
+        <a href="../../notebooks/labs/lab_03.ipynb" class="btn-step" style="text-decoration:none;width:auto;padding:8px 16px;background:#1e293b;color:#f8fafc;">Notebook Lab 03 ↗</a>
+        <a href="../../notebooks/labs/lab_04.ipynb" class="btn-step" style="text-decoration:none;width:auto;padding:8px 16px;background:#1e293b;color:#f8fafc;">Notebook Lab 04 ↗</a>
+      </div>
+    </section>
 
-        <div class="topbar-right">
-          <button type="button" class="btn-ctrl" onclick="prevPanel()" title="Phím tắt: &larr;">◀ Trước</button>
-          <span class="stepper-progress" style="font-size:13px;font-weight:700;color:#0284c7;">1 / 28</span>
-          <button type="button" class="btn-ctrl" onclick="nextPanel()" title="Phím tắt: &rarr; hoặc Space">Tiếp ▶</button>
-          <button type="button" class="btn-ctrl btn-mode active-mode" id="btn-toggle-mode" onclick="toggleMode()">Chế độ: Từng bước (Không lướt)</button>
-          <button type="button" class="btn-ctrl" id="btn-toggle-details" onclick="toggleAllDetails()">Thu gọn chi tiết</button>
-          <button type="button" class="btn-ctrl" onclick="window.print()">In / PDF</button>
-        </div>
-      </header>
+    <!-- Lab 02 Panels -->
+    {l2_content}
 
-      <!-- Tier 2: Dynamic Sub-Ribbon for Active Lab Stage Navigation -->
-      <nav class="master-subribbon" id="master-subribbon" aria-label="Thanh điều hướng nhanh thí nghiệm con">
-        <!-- Dynamically injected via JavaScript -->
-      </nav>
+    <!-- Lab 03 Panels -->
+    {l3_content}
 
-      <!-- Panel 01: Overview -->
-      <section class="content-panel active" id="overview">
-        <div class="panel-header-banner banner-overview">
-          <div class="eyebrow">TRƯỜNG ĐẠI HỌC GIAO THÔNG VẬN TẢI TP.HCM (UTH) — KHOA CÔNG NGHỆ THÔNG TIN</div>
-          <h2>BÁO CÁO TOÀN DIỆN THỰC HÀNH THỊ GIÁC MÁY TÍNH<br/>CHUYÊN ĐỀ LIÊN HOÀN: LAB 02 – LAB 03 – LAB 04</h2>
-          <p>Hệ thống thực nghiệm kết nối xuyên suốt 3 tầng kiến trúc thị giác máy tính: từ xử lý mức xám &amp; tích chập không gian (Lab 02), tối ưu vi sai tách biên đa hướng &amp; trích chọn hình học (Lab 03), đến biểu diễn nhận thức sóng nhỏ tần số không gian Wavelet Hash RGB 192-bit (Lab 04).</p>
-        </div>
+    <!-- Lab 04 Panels -->
+    {l4_content}
 
-        <div class="kpi-strip">
-          <div class="kpi-card" style="border-left-color: #38bdf8;">
-            <div class="kpi-val">11 / 11 YC</div>
-            <div class="kpi-title">Lab 02: Lọc Không Gian</div>
-            <div class="kpi-sub">Pearson r &approx; 0.9961, &Sigma;=1.000, 100% khử muối tiêu</div>
-          </div>
-          <div class="kpi-card" style="border-left-color: #4ade80;">
-            <div class="kpi-val">24 / 24 Xu</div>
-            <div class="kpi-title">Lab 03: Tách Biên Canny</div>
-            <div class="kpi-sub">100% phát hiện hình tròn, phục hồi ảnh mờ 0 &rarr; 13,897 px</div>
-          </div>
-          <div class="kpi-card" style="border-left-color: #c084fc;">
-            <div class="kpi-val">98.77% Acc</div>
-            <div class="kpi-title">Lab 04: Wavelet Hash RGB</div>
-            <div class="kpi-sub">ROC AUC 1.0000, 192-bit Hex, Youden &tau; = 18 bits</div>
-          </div>
-          <div class="kpi-card" style="border-left-color: #fbbf24;">
-            <div class="kpi-val">58 / 58 PASS</div>
-            <div class="kpi-title">Kiểm Thử Hồi Quy</div>
-            <div class="kpi-sub">100% Unit Tests vượt qua (22 Lab 02 + 11 Lab 03 + 25 Lab 04)</div>
-          </div>
-        </div>
+    <!-- Panel 28: Master Comparison Matrix -->
+    <section class="content-panel" id="matrix">
+      <div class="panel-header-banner banner-mat">
+        <div class="eyebrow">TỔNG KẾT ĐỐI SÁNH KỸ THUẬT</div>
+        <h2>Ma Trận Nghiệm Thu &amp; So Sánh Chéo 3 Chuyên Đề</h2>
+        <p>Đối chiếu toàn diện các khía cạnh toán học, kích thước đặc trưng, độ phức tạp thuật toán và giá trị kỹ thuật thực tiễn được kiểm chứng qua 58 bài kiểm thử tự động.</p>
+      </div>
 
-        <div class="takeaway">
-          <strong>HƯỚNG DẪN XEM BÁO CÁO TRỰC QUAN KHÔNG CẦN LƯỚT:</strong>
-          <ul style="margin:8px 0 0 20px;padding:0;">
-            <li>Bấm vào từng mục ở <strong>Thanh Ribbon Thí Nghiệm Con (ở ngay trên đầu)</strong> hoặc <strong>Cột Danh Mục bên trái</strong> để chuyển ngay đến nội dung thí nghiệm tương ứng mà không phải cuộn trang.</li>
-            <li>Dùng phím mũi tên <strong>&rarr; (Phải) / Phím Cách (Space)</strong> để tiến bước kế tiếp; phím <strong>&larr; (Trái)</strong> để lùi bước trước.</li>
-            <li>Toàn bộ mã nguồn thực thi, bảng số liệu thực nghiệm và hình ảnh đều được <strong>mở trực quan đầy đủ</strong>.</li>
-            <li>Bấm vào bất kỳ hình ảnh nào để <strong>phóng to xem chi tiết</strong> ở độ phân giải gốc.</li>
-          </ul>
-        </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th style="min-width: 180px;">Tiêu Chí Đánh Giá</th>
+              <th>Lab 02: Lọc Không Gian &amp; Điểm Ảnh</th>
+              <th>Lab 03: Tách Biên Canny &amp; Hình Học</th>
+              <th>Lab 04: Wavelet Hash RGB 192-bit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Bản chất toán học</strong></td>
+              <td>Ánh xạ mức xám điểm ảnh &amp; Tích chập 2D không gian</td>
+              <td>Tối ưu hóa hàm tiêu chuẩn John Canny &amp; Không gian tích lũy Hough</td>
+              <td>Biến đổi sóng nhỏ 2D DWT Daubechies 4 (`db4`) &amp; Khoảng cách Hamming</td>
+            </tr>
+            <tr>
+              <td><strong>Kích thước đặc trưng</strong></td>
+              <td>Giữ nguyên kích thước ma trận ảnh gốc (1920&times;1080 uint8)</td>
+              <td>Bản đồ nhị phân cạnh 1-pixel &amp; Vector tọa độ hình học (x, y, r)</td>
+              <td>Vector nhị phân cô đọng <strong>192-bit</strong> (48 ký tự Hex, 24 bytes)</td>
+            </tr>
+            <tr>
+              <td><strong>Độ phức tạp thuật toán</strong></td>
+              <td>&Omicron;(H &middot; W &middot; k<sup>2</sup>)</td>
+              <td>&Omicron;(H &middot; W) + &Omicron;(H &middot; W &middot; R)</td>
+              <td>&Omicron;(H &middot; W) trích xuất + &Omicron;(1) so khớp bit bằng POPCNT</td>
+            </tr>
+            <tr>
+              <td><strong>Kết quả then chốt</strong></td>
+              <td>
+                &bull; Sobel vs Prewitt tương quan Pearson r &approx; 0.9961<br>
+                &bull; Sharpening bảo toàn năng lượng sáng &Sigma;=1.000<br>
+                &bull; Median khử triệt để 100% điểm cực trị muối tiêu 3%
+              </td>
+              <td>
+                &bull; OpenCV 30,980 px vs Skimage 7,554 px<br>
+                &bull; Cân bằng tương phản phục hồi ảnh mù: 0 &rarr; 13,897 px<br>
+                &bull; HoughCircles phát hiện chính xác <strong>24 / 24 đồng xu (100%)</strong>
+              </td>
+              <td>
+                &bull; Ngưỡng tối ưu Youden &tau; = 18 bits (Acc 100% trên Calibration)<br>
+                &bull; Evaluation: <strong>80 / 81 đúng (98.77% Acc)</strong>, ROC AUC = <strong>1.0000</strong><br>
+                &bull; Top-1 Retrieval đạt 100% chính xác (D<sub>H</sub> = 2)
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Kiểm thử hồi quy</strong></td>
+              <td><span style="color:#16a34a;font-weight:700;">22 / 22 PASS</span> (<code>tests/test_filters.py</code>)</td>
+              <td><span style="color:#16a34a;font-weight:700;">11 / 11 PASS</span> (<code>tests/test_canny.py</code>)</td>
+              <td><span style="color:#16a34a;font-weight:700;">25 / 25 PASS</span> (<code>test_wavelet_hash</code>, <code>pairs</code>)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-        <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;">
-          <button type="button" class="btn-ctrl" style="padding:10px 20px;font-size:14px;background:#0f172a;color:#fff;" onclick="nextPanel()">Bắt Đầu Xem Lab 02 ▶</button>
-          <a href="../../notebooks/labs/lab_02.ipynb" class="btn-ctrl" style="text-decoration:none;padding:10px 16px;">Notebook Lab 02 ↗</a>
-          <a href="../../notebooks/labs/lab_03.ipynb" class="btn-ctrl" style="text-decoration:none;padding:10px 16px;">Notebook Lab 03 ↗</a>
-          <a href="../../notebooks/labs/lab_04.ipynb" class="btn-ctrl" style="text-decoration:none;padding:10px 16px;">Notebook Lab 04 ↗</a>
-        </div>
-      </section>
-
-      <!-- Lab 02 Panels -->
-      {l2_content}
-
-      <!-- Lab 03 Panels -->
-      {l3_content}
-
-      <!-- Lab 04 Panels -->
-      {l4_content}
-
-      <!-- Panel 28: Master Comparison Matrix -->
-      <section class="content-panel" id="matrix">
-        <div class="panel-header-banner banner-mat">
-          <div class="eyebrow">TỔNG KẾT ĐỐI SÁNH KỸ THUẬT</div>
-          <h2>Ma Trận Nghiệm Thu &amp; So Sánh Chéo 3 Chuyên Đề</h2>
-          <p>Đối chiếu toàn diện các khía cạnh toán học, kích thước đặc trưng, độ phức tạp thuật toán và giá trị kỹ thuật thực tiễn được kiểm chứng qua 58 bài kiểm thử tự động.</p>
-        </div>
-
-        <div style="overflow-x:auto;">
-          <table>
-            <thead>
-              <tr>
-                <th style="min-width: 180px;">Tiêu Chí Đánh Giá</th>
-                <th>Lab 02: Lọc Không Gian &amp; Điểm Ảnh</th>
-                <th>Lab 03: Tách Biên Canny &amp; Hình Học</th>
-                <th>Lab 04: Wavelet Hash RGB 192-bit</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Bản chất toán học</strong></td>
-                <td>Ánh xạ mức xám điểm ảnh &amp; Tích chập 2D không gian</td>
-                <td>Tối ưu hóa hàm tiêu chuẩn John Canny &amp; Không gian tích lũy Hough</td>
-                <td>Biến đổi sóng nhỏ 2D DWT Daubechies 4 (`db4`) &amp; Khoảng cách Hamming</td>
-              </tr>
-              <tr>
-                <td><strong>Kích thước đặc trưng</strong></td>
-                <td>Giữ nguyên kích thước ma trận ảnh gốc (1920&times;1080 uint8)</td>
-                <td>Bản đồ nhị phân cạnh 1-pixel &amp; Vector tọa độ hình học (x, y, r)</td>
-                <td>Vector nhị phân cô đọng <strong>192-bit</strong> (48 ký tự Hex, 24 bytes)</td>
-              </tr>
-              <tr>
-                <td><strong>Độ phức tạp thuật toán</strong></td>
-                <td>&Omicron;(H &middot; W &middot; k<sup>2</sup>)</td>
-                <td>&Omicron;(H &middot; W) + &Omicron;(H &middot; W &middot; R)</td>
-                <td>&Omicron;(H &middot; W) trích xuất + &Omicron;(1) so khớp bit bằng POPCNT</td>
-              </tr>
-              <tr>
-                <td><strong>Kết quả then chốt</strong></td>
-                <td>
-                  &bull; Sobel vs Prewitt tương quan Pearson r &approx; 0.9961<br>
-                  &bull; Sharpening bảo toàn năng lượng sáng &Sigma;=1.000<br>
-                  &bull; Median khử triệt để 100% điểm cực trị muối tiêu 3%
-                </td>
-                <td>
-                  &bull; OpenCV 30,980 px vs Skimage 7,554 px<br>
-                  &bull; Cân bằng tương phản phục hồi ảnh mù: 0 &rarr; 13,897 px<br>
-                  &bull; HoughCircles phát hiện chính xác <strong>24 / 24 đồng xu (100%)</strong>
-                </td>
-                <td>
-                  &bull; Ngưỡng tối ưu Youden &tau; = 18 bits (Acc 100% trên Calibration)<br>
-                  &bull; Evaluation: <strong>80 / 81 đúng (98.77% Acc)</strong>, ROC AUC = <strong>1.0000</strong><br>
-                  &bull; Top-1 Retrieval đạt 100% chính xác (D<sub>H</sub> = 2)
-                </td>
-              </tr>
-              <tr>
-                <td><strong>Kiểm thử hồi quy</strong></td>
-                <td><span style="color:#16a34a;font-weight:700;">22 / 22 PASS</span> (<code>tests/test_filters.py</code>)</td>
-                <td><span style="color:#16a34a;font-weight:700;">11 / 11 PASS</span> (<code>tests/test_canny.py</code>)</td>
-                <td><span style="color:#16a34a;font-weight:700;">25 / 25 PASS</span> (<code>test_wavelet_hash</code>, <code>pairs</code>)</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div style="margin-top:28px;padding:20px;background:#f8fafc;border:1px solid #cbd5e1;">
-          <h4 style="margin-top:0;font-size:16px;color:#0f172a;">Lệnh Tái Lập Thí Nghiệm &amp; Kiểm Thử Toàn Cục</h4>
-          <pre><code class="language-bash"># Chạy toàn bộ 58 bài kiểm thử tự động cho cả 3 chuyên đề
+      <div style="margin-top:28px;padding:20px;background:#f8fafc;border:1px solid #cbd5e1;">
+        <h4 style="margin-top:0;font-size:16px;color:#0f172a;">Lệnh Tái Lập Thí Nghiệm &amp; Kiểm Thử Toàn Cục</h4>
+        <pre><code class="language-bash"># Chạy toàn bộ 58 bài kiểm thử tự động cho cả 3 chuyên đề
 .venv/bin/pytest tests/test_filters.py tests/test_canny.py tests/test_wavelet_hash.py tests/test_lab04_baseline.py tests/test_lab04_pairs.py
 
 # Kết xuất lại báo cáo HTML toàn diện full màn hình
 python scripts/render_unified_report.py</code></pre>
-        </div>
-      </section>
-    </main>
-  </div>
+      </div>
+    </section>
+  </main>
 
   <!-- Lightbox Viewer Modal -->
   <dialog id="viewer" aria-label="Xem ảnh phóng to">
