@@ -114,9 +114,15 @@ flowchart TD
 
 ### 3.2. Yêu cầu 2: Thay Đổi Độ Tương Phản (Contrast)
 
-- Công thức: `g(x, y) = α · f(x, y)` với `α ∈ {0.5, 1.8}`.
-- `α = 0.5`: ảnh bạc màu (dải động co lại về phía giá trị trung bình).
-- `α = 1.8`: ảnh tương phản mạnh hơn (dải động giãn ra).
+- Công thức: `g(x, y) = clip(α · f(x, y), 0, 255)` với `α ∈ {0.5, 1.8}`.
+- `α = 0.5`: ảnh tối hơn, phân bố cường độ co về 0; chênh lệch giữa các giá trị giảm.
+- `α = 1.8`: phân bố giãn về phía sáng; giá trị vượt 255 bị cắt về 255, có thể mất chi tiết vùng sáng. Phép nhân này thay đổi cả độ sáng và độ tương phản.
+- Cell ngay sau phần chỉnh tương phản chỉ vẽ histogram RGB dạng cột của ảnh gốc, `α = 0.5` và `α = 1.8`; không áp dụng cân bằng histogram.
+- Trục X đếm 256 mức cường độ trong khoảng `[0, 256)`, hiển thị đến 260 để thấy đủ cột tại 255. Mỗi biểu đồ có trục Y riêng, biểu diễn số pixel; cần đọc giá trị trục khi so sánh chiều cao cột.
+- Các cột R/G/B được vẽ chồng với độ trong suốt 0.45. Đỉnh cao tại 255 của ảnh `α = 1.8` là các pixel bão hòa, làm những cột khác trông thấp hơn; không cắt đỉnh hoặc giới hạn trục Y để che hiện tượng này.
+
+![Histogram RGB trước và sau khi nhân hệ số tương phản](../../assets/lab02/contrast_histograms.png)
+
 - Artifact: `point_ops/contrast_0.5x.jpg`, `point_ops/contrast_1.8x.jpg`.
 
 ### 3.3. Yêu cầu 3: Biến Đổi Âm Bản (Negative)
