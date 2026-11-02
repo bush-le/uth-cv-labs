@@ -1,0 +1,14 @@
+dataset:
+  name: "uth_lab05_registered_faces"
+  raw_faces_dir: "data/raw/lab05/faces"
+  database_path: "data/processed/lab05/face_embeddings.npz"
+  supported_extensions:
+    - ".jpg"
+    - ".jpeg"
+    - ".png"
+    - ".bmp"
+  image_size: 160
+  margin: 14
+  min_images_per_person: 1
+  require_single_face_on_registration: true
+  standardization: "fixed"  # (pixel - 127.5) / 128.0 

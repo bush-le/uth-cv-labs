@@ -1,0 +1,36 @@
+experiment:
+  name: "lab05_realtime_facenet_mtcnn"
+  seed: 42
+  device: "auto" 
+  log_level: "INFO"
+  log_file: "experiments/logs/lab05.log"
+  output_dir: "experiments/predictions/lab05"
+
+webcam:
+  camera_index: 0
+  frame_width: 640
+  frame_height: 480
+  target_fps: 30
+  mirror_display: true
+  window_name: "UTH CV Lab05 - FaceNet & MTCNN Real-time Recognition"
+
+mtcnn:
+  image_size: 160
+  margin: 14
+  min_face_size: 40
+  thresholds: [0.6, 0.7, 0.7]  # Ngưỡng P-Net, R-Net, O-Net
+  factor: 0.709
+  keep_all: true
+  min_confidence: 0.90
+
+facenet:
+  pretrained_dataset: "vggface2"  # Hoặc "casia-webface"
+  checkpoint_dir: "experiments/checkpoints/lab05"
+  embedding_dim: 512
+  l2_normalize: true
+
+matcher:
+  metric: "cosine"
+  similarity_threshold: 0.7  # Yêu cầu: > 0.7 là Matched, < 0.7 là Unknown
+  boundary_policy: "unknown" # Khi similarity == 0.7 thì quy về Unknown
+  aggregation_mode: "max"    # So sánh với mọi vector và/hoặc centroid để lấy điểm cao nhất
