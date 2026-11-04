@@ -13,7 +13,9 @@ from src.models.deep.mtcnn_detector import MTCNNDetector
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Tải và xác thực trọng số MTCNN & FaceNet.")
+    parser = argparse.ArgumentParser(
+        description="Tải và xác thực trọng số MTCNN & FaceNet."
+    )
     parser.add_argument(
         "--config",
         type=str,
@@ -45,7 +47,9 @@ def main() -> None:
         device=device,
     )
 
-    logger.info("Đang tải/kiểm tra trọng số FaceNet (%s)...", facenet_cfg["pretrained_dataset"])
+    logger.info(
+        "Đang tải/kiểm tra trọng số FaceNet (%s)...", facenet_cfg["pretrained_dataset"]
+    )
     extractor = FaceNetExtractor(
         pretrained_dataset=facenet_cfg["pretrained_dataset"],
         checkpoint_dir=ckpt_dir,

@@ -109,7 +109,9 @@ class RealtimeRecognitionPipeline:
         self.image_size = image_size
         self.fps_meter = FPSMeter()
 
-    def process_frame(self, frame_bgr: np.ndarray) -> tuple[np.ndarray, list[RecognitionResult]]:
+    def process_frame(
+        self, frame_bgr: np.ndarray
+    ) -> tuple[np.ndarray, list[RecognitionResult]]:
         """Xử lý một khung hình đơn lẻ: phát hiện mặt, trích xuất đặc trưng, đối sánh và vẽ kết quả."""
         if frame_bgr is None or frame_bgr.size == 0:
             raise ValueError("Khung hình đầu vào không hợp lệ (None hoặc rỗng).")
@@ -177,8 +179,10 @@ class RealtimeRecognitionPipeline:
                         if key in (ord("q"), ord("Q"), 27):  # Phím Q hoặc ESC để thoát
                             logger.info("Người dùng nhấn phím thoát chương trình.")
                             break
-                        if key in (ord("s"), ord("S")):      # Phím S để lưu ảnh minh chứng
-                            snap_path = save_dir / f"webcam_snapshot_{frame_count:04d}.png"
+                        if key in (ord("s"), ord("S")):  # Phím S để lưu ảnh minh chứng
+                            snap_path = (
+                                save_dir / f"webcam_snapshot_{frame_count:04d}.png"
+                            )
                             cv2.imwrite(str(snap_path), annotated)
                             logger.info("Đã lưu ảnh chụp màn hình tại: %s", snap_path)
 

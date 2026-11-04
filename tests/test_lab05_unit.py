@@ -146,7 +146,10 @@ def test_registration_rejects_no_face_and_multiple_faces() -> None:
         DetectedFace((80, 80, 140, 140), 0.95),
     ]
     reg_multi = FaceRegistrationPipeline(
-        DummyDetector(two_faces), extractor, db, require_single_face=True  # type: ignore[arg-type]
+        DummyDetector(two_faces),
+        extractor,
+        db,
+        require_single_face=True,  # type: ignore[arg-type]
     )
     assert reg_multi.register_single_frame("User1", frame) is False
     assert db.is_empty
@@ -213,4 +216,3 @@ def test_run_lab05_pipeline_batch_mode(tmp_path: Path) -> None:
     assert results["mode"] == "batch"
     assert results["faces_registered"] >= 0
     assert (tmp_path / "predictions").exists()
-

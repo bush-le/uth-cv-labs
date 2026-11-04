@@ -51,7 +51,9 @@ def capture_from_webcam(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Đăng ký khuôn mặt vào cơ sở dữ liệu Lab05.")
+    parser = argparse.ArgumentParser(
+        description="Đăng ký khuôn mặt vào cơ sở dữ liệu Lab05."
+    )
     parser.add_argument(
         "--dataset-config",
         type=str,
@@ -99,7 +101,9 @@ def main() -> None:
 
     if args.mode == "capture":
         if not args.identity.strip():
-            raise ValueError("Phải cung cấp --identity <Tên_Người> khi ở chế độ capture.")
+            raise ValueError(
+                "Phải cung cấp --identity <Tên_Người> khi ở chế độ capture."
+            )
         capture_from_webcam(
             identity=args.identity.strip(),
             num_samples=args.num_samples,

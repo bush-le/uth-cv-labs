@@ -24,11 +24,9 @@ from src.common.lab05_utils import (
     setup_logger,
 )
 from src.data.face_database import FaceDatabase, l2_normalize_numpy
-from src.data.face_preprocessing import preprocess_face
 from src.models.deep.facenet_extractor import FaceNetExtractor
 from src.models.deep.mtcnn_detector import MTCNNDetector
 from src.models.similarity_matcher import SimilarityMatcher
-from src.pipelines.lab05_face_registration import FaceRegistrationPipeline
 from src.pipelines.lab05_webcam_recognition import (
     RealtimeRecognitionPipeline,
     WebcamManager,
@@ -110,11 +108,15 @@ def run_lab05_pipeline(
     ds_cfg = load_yaml_config(dataset_config_path)
 
     threshold = float(exp_cfg.get("matcher", {}).get("similarity_threshold", 0.7))
-    db_file = Path(ds_cfg.get("database", {}).get("save_path", "data/processed/faces_database.npz"))
+    db_file = Path(
+        ds_cfg.get("database", {}).get("save_path", "data/processed/faces_database.npz")
+    )
     device_cfg = exp_cfg.get("device", "auto")
     device = resolve_device(device_cfg)
 
-    logger.info("Khởi động Lab 05 Pipeline trên thiết bị: %s | Ngưỡng: %.2f", device, threshold)
+    logger.info(
+        "Khởi động Lab 05 Pipeline trên thiết bị: %s | Ngưỡng: %.2f", device, threshold
+    )
 
     # 2. Xác định chế độ thực thi (Adaptive Selection)
     effective_mode = mode.lower()
@@ -123,10 +125,14 @@ def run_lab05_pipeline(
         has_camera = _is_webcam_available(camera_index)
         if has_camera and is_interactive:
             effective_mode = "webcam"
-            logger.info("Phát hiện Webcam sẵn sàng trong môi trường tương tác. Chọn mode='webcam'.")
+            logger.info(
+                "Phát hiện Webcam sẵn sàng trong môi trường tương tác. Chọn mode='webcam'."
+            )
         else:
             effective_mode = "batch"
-            logger.info("Không có Webcam hoặc chạy non-interactive. Fallback sang mode='batch'.")
+            logger.info(
+                "Không có Webcam hoặc chạy non-interactive. Fallback sang mode='batch'."
+            )
 
     # 3. Chế độ WEBCAM
     if effective_mode == "webcam":
@@ -141,10 +147,14 @@ def run_lab05_pipeline(
 
         if db_file.exists():
             database = FaceDatabase.load(db_file)
-            logger.info("Đã nạp DB với %d danh tính từ %s", len(database.identities), db_file)
+            logger.info(
+                "Đã nạp DB với %d danh tính từ %s", len(database.identities), db_file
+            )
         else:
             database = FaceDatabase(embedding_dim=512)
-            logger.warning("Chưa có cơ sở dữ liệu khuôn mặt tại %s. Chạy với DB rỗng.", db_file)
+            logger.warning(
+                "Chưa có cơ sở dữ liệu khuôn mặt tại %s. Chạy với DB rỗng.", db_file
+            )
 
         pipeline = RealtimeRecognitionPipeline(
             detector=detector,
@@ -200,7 +210,9 @@ def run_lab05_pipeline(
     matcher = SimilarityMatcher(similarity_threshold=threshold)
 
     # Tạo các kịch bản kiểm thử: Matched, Unknown, Boundary
-    query_matched = l2_normalize_numpy(known_vector_alice + np.random.randn(512).astype(np.float32) * 0.1)
+    query_matched = l2_normalize_numpy(
+        known_vector_alice + np.random.randn(512).astype(np.float32) * 0.1
+    )
     res_matched = matcher.match(query_matched, db)
 
     query_unknown = l2_normalize_numpy(np.random.randn(512).astype(np.float32))
@@ -216,12 +228,18 @@ def run_lab05_pipeline(
         similarity=res_matched.similarity,
     )
     vis_matched = FaceVisualizer.draw_results(
-        frame_matched, [rec_matched], fps=32.4, registered_count=len(db.identities), threshold=threshold
+        frame_matched,
+        [rec_matched],
+        fps=32.4,
+        registered_count=len(db.identities),
+        threshold=threshold,
     )
     snap_matched_path = out_path / "webcam_snapshot_matched.png"
     cv2.imwrite(str(snap_matched_path), vis_matched)
 
-    frame_unknown = _create_synthetic_face_image("Intruder (Unregistered)", (160, 160, 220))
+    frame_unknown = _create_synthetic_face_image(
+        "Intruder (Unregistered)", (160, 160, 220)
+    )
     rec_unknown = RecognitionResult(
         bbox=(210, 100, 430, 370),
         detection_confidence=0.98,
@@ -230,7 +248,11 @@ def run_lab05_pipeline(
         similarity=res_unknown.similarity,
     )
     vis_unknown = FaceVisualizer.draw_results(
-        frame_unknown, [rec_unknown], fps=31.8, registered_count=len(db.identities), threshold=threshold
+        frame_unknown,
+        [rec_unknown],
+        fps=31.8,
+        registered_count=len(db.identities),
+        threshold=threshold,
     )
     snap_unknown_path = out_path / "webcam_snapshot_unknown.png"
     cv2.imwrite(str(snap_unknown_path), vis_unknown)

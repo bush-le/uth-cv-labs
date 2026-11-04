@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import base64
-import html
-import json
 from pathlib import Path
 
 
@@ -511,7 +509,9 @@ for box, prob in zip(boxes, probs):
     with out_file.open("w", encoding="utf-8") as f:
         f.write(html_content)
 
-    print(f"Đã tạo thành công báo cáo HTML: {out_file} (dung lượng: {len(html_content)} bytes)")
+    print(
+        f"Đã tạo thành công báo cáo HTML: {out_file} (dung lượng: {len(html_content)} bytes)"
+    )
     return out_file
 
 

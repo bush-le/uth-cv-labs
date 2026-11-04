@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -59,7 +58,11 @@ def setup_logger(
     log_file: str | Path | None = None,
 ) -> logging.Logger:
     """Thiết lập logger chuẩn ghi ra console và file log, kế thừa từ common.logger."""
-    numeric_level = getattr(logging, level.upper(), logging.INFO) if isinstance(level, str) else level
+    numeric_level = (
+        getattr(logging, level.upper(), logging.INFO)
+        if isinstance(level, str)
+        else level
+    )
     return get_logger(name=name, level=numeric_level, log_file=log_file)
 
 
@@ -81,7 +84,9 @@ class FPSMeter:
                 if self._fps == 0.0:
                     self._fps = instant_fps
                 else:
-                    self._fps = self.alpha * self._fps + (1.0 - self.alpha) * instant_fps
+                    self._fps = (
+                        self.alpha * self._fps + (1.0 - self.alpha) * instant_fps
+                    )
         self._last_time = now
         return self._fps
 
@@ -94,10 +99,10 @@ class FPSMeter:
 class FaceVisualizer:
     """Chịu trách nhiệm vẽ bounding box, nhãn Matched/Unknown, điểm similarity và FPS."""
 
-    COLOR_MATCHED = (0, 200, 0)    # Xanh lá (BGR) cho trạng thái Matched
-    COLOR_UNKNOWN = (0, 0, 220)    # Đỏ (BGR) cho trạng thái Unknown
-    COLOR_HUD_BG = (25, 25, 25)    # Nền đen xám cho thanh thông tin hệ thống
-    COLOR_TEXT = (255, 255, 255)   # Chữ trắng
+    COLOR_MATCHED = (0, 200, 0)  # Xanh lá (BGR) cho trạng thái Matched
+    COLOR_UNKNOWN = (0, 0, 220)  # Đỏ (BGR) cho trạng thái Unknown
+    COLOR_HUD_BG = (25, 25, 25)  # Nền đen xám cho thanh thông tin hệ thống
+    COLOR_TEXT = (255, 255, 255)  # Chữ trắng
 
     @classmethod
     def draw_results(

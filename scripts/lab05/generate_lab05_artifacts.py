@@ -89,7 +89,9 @@ def main() -> None:
         },
     }
     json_path = out_dir / "simulation_evaluation.json"
-    json_path.write_text(json.dumps(report_metrics, indent=2, ensure_ascii=False), encoding="utf-8")
+    json_path.write_text(
+        json.dumps(report_metrics, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
     logger.info("Đã sinh artifact mô phỏng tại: %s và %s", sim_img_path, json_path)
 
 

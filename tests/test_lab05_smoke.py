@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from src.common.lab05_utils import (
     FaceVisualizer,
@@ -18,6 +19,7 @@ from src.data.face_preprocessing import preprocess_face, validate_and_clip_bbox
 from src.models.similarity_matcher import SimilarityMatcher
 
 
+@pytest.mark.smoke
 def test_smoke_configs_loadable() -> None:
     """Kiểm tra cả hai file YAML cấu hình của Lab05 đọc được và đủ khóa chính."""
     ds_cfg = load_yaml_config("configs/dataset/lab05_faces.yaml")
@@ -29,10 +31,13 @@ def test_smoke_configs_loadable() -> None:
     assert exp_cfg["matcher"]["similarity_threshold"] == 0.7
 
 
+@pytest.mark.smoke
 def test_smoke_preprocessing_and_visualizer() -> None:
     """Kiểm tra luồng tiền xử lý tensor và vẽ kết quả trên khung hình giả lập."""
     dummy_frame = np.zeros((480, 640, 3), dtype=np.uint8)
-    bbox = validate_and_clip_bbox((100, 100, 260, 260), frame_width=640, frame_height=480)
+    bbox = validate_and_clip_bbox(
+        (100, 100, 260, 260), frame_width=640, frame_height=480
+    )
     assert bbox == (100, 100, 260, 260)
 
     face_tensor = preprocess_face(dummy_frame, bbox=bbox, image_size=160, device="cpu")
@@ -51,6 +56,7 @@ def test_smoke_preprocessing_and_visualizer() -> None:
     assert canvas.shape == dummy_frame.shape
 
 
+@pytest.mark.smoke
 def test_smoke_database_and_matcher_end_to_end(tmp_path: Path) -> None:
     """Kiểm tra khởi tạo FaceDatabase, lưu/nạp .npz và đối sánh ngưỡng 0.7."""
     db = FaceDatabase(embedding_dim=512)
@@ -67,6 +73,7 @@ def test_smoke_database_and_matcher_end_to_end(tmp_path: Path) -> None:
     assert decision.similarity > 0.99
 
 
+@pytest.mark.smoke
 def test_smoke_logger_and_fps_meter(tmp_path: Path) -> None:
     """Kiểm tra setup_logger và FPSMeter hoạt động chính xác."""
     log_file = tmp_path / "smoke.log"
@@ -79,4 +86,3 @@ def test_smoke_logger_and_fps_meter(tmp_path: Path) -> None:
     assert fps_meter.fps == 0.0
     val = fps_meter.update()
     assert val == 0.0
-
