@@ -38,7 +38,8 @@
 
 #### Yêu cầu 2: Thay đổi độ tương phản
 - Tăng hoặc giảm độ tương phản bằng cách **nhân mỗi điểm ảnh với một hằng số** `α`: `g(x, y) = α · f(x, y)`.
-- Nhận xét: `α > 1` làm ảnh tương phản mạnh hơn, `0 < α < 1` làm ảnh "bạc màu" hơn.
+- Nhận xét: trước clipping, `α > 1` tăng chênh lệch cường độ, `0 < α < 1` giảm chênh lệch và làm ảnh tối hơn; phép nhân không co giá trị về một mốc xám trung bình. Clip kết quả về `[0, 255]`.
+- Trình bày trong notebook: ngay sau cell chỉnh tương phản, vẽ histogram RGB dạng cột cho ảnh gốc và hai hệ số đang khảo sát. Giữ chung trục X, để trục Y riêng và hiển thị đủ cột mức 255; quan sát phân bố co/giãn và hiện tượng bão hòa.
 
 #### Yêu cầu 3: Biến đổi âm bản (Negative)
 - Đảo ngược giá trị điểm ảnh: `g(x, y) = 255 − f(x, y)` (với ảnh `uint8`).

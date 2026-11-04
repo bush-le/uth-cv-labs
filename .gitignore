@@ -143,3 +143,8 @@ desktop.ini
 !.env.example
 *.pem
 *.key
+
+# Superpowers & Agent Specs
+.superpowers/
+docs/superpowers/
+

@@ -96,12 +96,36 @@ for image in [gaussian_noisy, bilateral, salt_noisy, median]:
     255,
 ).astype(np.uint8)
 equalized = cv2.equalizeHist(low_contrast)
+clahe_limit = config[&quot;preprocessing&quot;][&quot;low_contrast&quot;].get(&quot;clahe_clip_limit&quot;, 2.0)
+clahe_grid = tuple(config[&quot;preprocessing&quot;][&quot;low_contrast&quot;].get(&quot;clahe_tile_grid_size&quot;, [8, 8]))
+clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=clahe_grid)
+clahe_img = clahe.apply(low_contrast)
 contrast_edges = []
-for image in [low_contrast, equalized]:
+for image in [low_contrast, equalized, clahe_img]:
     blurred = cv2.GaussianBlur(image, (ksize, ksize), sigma)
     contrast_edges.append(
         cv2.Canny(blurred, low, high, apertureSize=aperture, L2gradient=l2_gradient)
-    )</code></pre><p class="code-note">Cell 23 của notebook; trích phần thực hiện, bỏ lời gọi in/vẽ cấp ngoài. Các biến được chuẩn bị ở cell trước.</p><pre><code class="language-python">texture = data.brick()
+    )
+fig, axes = plt.subplots(1, 3, figsize=(12, 3.2))
+axes[0].hist(low_contrast.ravel(), bins=256, range=[0, 256], color=&quot;gray&quot;, alpha=0.85)
+axes[0].set_title(&quot;1. Tương phản thấp (dải 100-163)&quot;)
+axes[0].set_xlim([0, 256])
+axes[0].set_xlabel(&quot;Mức xám&quot;)
+axes[0].set_ylabel(&quot;Số lượng pixel&quot;)
+axes[0].grid(axis=&quot;y&quot;, linestyle=&quot;--&quot;, alpha=0.4)
+axes[1].hist(equalized.ravel(), bins=256, range=[0, 256], color=&quot;salmon&quot;, alpha=0.85)
+axes[1].set_title(&quot;2. EqualizeHist (Kéo giãn quá đà)&quot;)
+axes[1].set_xlim([0, 256])
+axes[1].set_xlabel(&quot;Mức xám&quot;)
+axes[1].grid(axis=&quot;y&quot;, linestyle=&quot;--&quot;, alpha=0.4)
+axes[2].hist(clahe_img.ravel(), bins=256, range=[0, 256], color=&quot;teal&quot;, alpha=0.85)
+axes[2].set_title(&quot;3. CLAHE (Cân đối, mịn màng)&quot;)
+axes[2].set_xlim([0, 256])
+axes[2].set_xlabel(&quot;Mức xám&quot;)
+axes[2].grid(axis=&quot;y&quot;, linestyle=&quot;--&quot;, alpha=0.4)
+fig.tight_layout()
+plt.show()
+plt.close(fig)</code></pre><p class="code-note">Cell 23 của notebook; trích phần thực hiện, bỏ lời gọi in/vẽ cấp ngoài. Các biến được chuẩn bị ở cell trước.</p><pre><code class="language-python">texture = data.brick()
 texture_filtered = cv2.bilateralFilter(texture, **settings[&quot;bilateral&quot;])
 texture_edges = []
 for image in [texture, texture_filtered]:
