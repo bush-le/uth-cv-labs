@@ -17,11 +17,13 @@ Repository này chứa toàn bộ mã nguồn, dữ liệu thực nghiệm, pipe
 | **Lab 01** | **Xử lý ảnh cơ bản & Không gian màu** (OpenCV, Pillow, BGR/RGB/HSV/LAB, ROI, Annotations) | ✅ **100%** | [`lab_01.ipynb`](notebooks/labs/lab_01.ipynb) | [`lab01_pipeline.py`](src/pipelines/lab01_pipeline.py) | [Markdown](docs/labs/lab01/LAB_01_REPORT.md) · [HTML](docs/labs/lab01/LAB_01_REPORT.html) | 10 passed |
 | **Lab 02** | **Toán tử điểm ảnh & Lọc không gian** (Brightness/Contrast/Negative, Gaussian, Sobel/Prewitt, Bilateral/Median) | ✅ **100%** | [`lab_02.ipynb`](notebooks/labs/lab_02.ipynb) | [`lab02_pipeline.py`](src/pipelines/lab02_pipeline.py) | [Markdown](docs/labs/lab02/LAB_02_REPORT.md) · [HTML](docs/labs/lab02/LAB_02_REPORT.html) | 17 passed |
 | **Lab 03** | **Canny Edge Detector Chuyên sâu** (5-stage Canny, Noise Robustness, Pratt FOM, Hough Shapes, Segmentation) | ✅ **100%** | [`lab_03.ipynb`](notebooks/labs/lab_03.ipynb) | [`lab03_pipeline.py`](src/pipelines/lab03_pipeline.py) | [Markdown](docs/labs/lab03/LAB_03_REPORT.md) · [HTML](docs/labs/lab03/LAB_03_REPORT.html) | 16 passed |
-| **Lab 04** | **So sánh tương đồng ảnh dùng Wavelet Hashing** (2D DWT Haar/db4, Quantization, ROC/PR Curves, Top-k Retrieval, MIH) | ✅ **100%** | [`lab_04.ipynb`](notebooks/labs/lab_04.ipynb) | [`lab04_pipeline.py`](src/pipelines/lab04_pipeline.py) | [Markdown](docs/labs/lab04/LAB_04_REPORT.md) · [HTML](docs/labs/lab04/LAB_04_REPORT.html) | 8 passed |
+| **Lab 04** | **So sánh tương đồng ảnh dùng Wavelet Hashing** (2D DWT Haar/db4, Quantization, ROC/PR Curves, Top-k Retrieval, MIH) | ✅ **100%** | [`lab_04.ipynb`](notebooks/labs/lab_04.ipynb) | [`lab04_pipeline.py`](src/pipelines/lab04_pipeline.py) | [Markdown](docs/labs/lab04/LAB_04_REPORT.md) · [HTML](docs/labs/lab04/LAB_04_REPORT.html) | 33 passed |
+| **Lab 05** | **Nhận diện khuôn mặt thời gian thực** (MTCNN 3-Stage Cascaded CNN, FaceNet 512-D, Cosine Similarity &gt; 0.70, Webcam OSD + Batch Fallback) | ✅ **100%** | [`lab_05.ipynb`](notebooks/labs/lab_05.ipynb) | [`lab05_pipeline.py`](src/pipelines/lab05_pipeline.py) | [Markdown](docs/labs/lab05/LAB_05_DESCRIPTION.md) · [HTML](docs/labs/lab05/LAB_05_REPORT.html) | 17 passed |
 
 - **Lab 03 Report Tool**: Chạy `python scripts/lab03/render_report.py` để tạo lại báo cáo HTML theo sơ đồ thực nghiệm Canny.
 - **Lab 04 Report Tool**: Chạy `python scripts/lab04/run_notebook.py` để thực thi notebook và `python scripts/lab04/render_report.py` để tạo báo cáo HTML theo sơ đồ luồng Wavelet Hash.
-- **Master Presentation Deck**: Chạy `python scripts/render_visual_reports.py --lab all` để kết xuất toàn bộ slide presentation 100vh cho Labs 01-04 và báo cáo tổng kết.
+- **Lab 05 Report Tool**: Chạy `python scripts/lab05/render_report.py` để tạo báo cáo HTML theo sơ đồ MTCNN & FaceNet.
+- **Master Presentation Deck**: Chạy `python scripts/render_visual_reports.py --lab all` để kết xuất toàn bộ slide presentation 100vh cho Labs 01-05 và báo cáo tổng kết.
 
 ---
 
@@ -47,33 +49,38 @@ Repository này chứa toàn bộ mã nguồn, dữ liệu thực nghiệm, pipe
 │       ├── image-2.jpg                # Ảnh mẫu cho Lab 01 & Lab 02
 │       ├── sample_traffic.jpg         # Ảnh giao thông cho Lab 01
 │       ├── lab03/                     # 6 ảnh mẫu kiểm chuẩn đặc thù cho Lab 03
-│       └── lab04/                     # Dữ liệu ảnh Chihuahua/Muffin & Mèo/Kem
+│       ├── lab04/                     # Dữ liệu ảnh Chihuahua/Muffin & Mèo/Kem
+│       └── lab05/                     # Dữ liệu ảnh khuôn mặt mẫu & faces_db
 ├── docs/                              # Tài liệu & Báo cáo lab
-│   ├── assets/                        # Hình ảnh trích xuất cho báo cáo (lab03, lab04)
+│   ├── assets/                        # Sơ đồ kiến trúc & hình ảnh trích xuất (lab03, lab04, lab05)
 │   └── labs/                          # Báo cáo kỹ thuật chi tiết của từng bài Lab
 │       ├── lab01/                     # Markdown & HTML Report Lab 01
 │       ├── lab02/                     # Markdown & HTML Report Lab 02
 │       ├── lab03/                     # Markdown & HTML Report Lab 03
-│       └── lab04/                     # Markdown & HTML Report Lab 04
+│       ├── lab04/                     # Markdown & HTML Report Lab 04
+│       └── lab05/                     # Markdown & HTML Report Lab 05
 ├── notebooks/                         # Jupyter Notebooks tương tác trực tiếp
 │   └── labs/
 │       ├── lab_01.ipynb
 │       ├── lab_02.ipynb
 │       ├── lab_03.ipynb
-│       └── lab_04.ipynb
+│       ├── lab_04.ipynb
+│       └── lab_05.ipynb
 ├── experiments/                       # Nơi lưu trữ artifacts (Ignored by Git)
 │   ├── logs/                          # Metrics summary JSON
 │   └── predictions/                   # Biểu đồ và ảnh đầu ra của từng lab
 │       ├── lab01/
 │       ├── lab02/
 │       ├── lab03/
-│       └── lab04/
+│       ├── lab04/
+│       └── lab05/
 ├── requirements/                      # Quản lý dependencies theo môi trường
 │   ├── base.txt                       # OpenCV, NumPy, Matplotlib, Pillow, Scikit-Image, SciPy, PyWavelets
 │   └── dev.txt                        # Pytest, Ruff, Pre-commit
 ├── scripts/                           # Shell scripts tự động hóa
-│   ├── run_lab.sh                     # Script chạy lab tự động (1, 2, 3, 4, all)
-│   └── lab04/                         # Scripts phụ trợ cho Lab 04
+│   ├── run_lab.sh                     # Script chạy lab tự động (1, 2, 3, 4, 5, all)
+│   ├── lab04/                         # Scripts phụ trợ cho Lab 04
+│   └── lab05/                         # Scripts chạy webcam và kết xuất báo cáo Lab 05
 ├── src/                               # Package mã nguồn chính (Clean Architecture)
 │   ├── common/                        # Tiện ích dùng chung (Logger, Visualizers, Metrics)
 │   ├── data/                          # Xử lý dữ liệu (Transforms, Filters, Pairs)
@@ -108,8 +115,9 @@ bash scripts/run_lab.sh 1
 bash scripts/run_lab.sh 2
 bash scripts/run_lab.sh 3
 bash scripts/run_lab.sh 4
+bash scripts/run_lab.sh 5
 
-# Chạy toàn bộ tất cả bài lab (Lab 1 đến Lab 4):
+# Chạy toàn bộ tất cả bài lab (Lab 1 đến Lab 5):
 bash scripts/run_lab.sh all
 ```
 
@@ -120,5 +128,5 @@ bash scripts/run_lab.sh all
 pytest tests/
 
 # Kiểm tra chất lượng mã nguồn với linter
-ruff check src tests
+ruff check src tests scripts
 ```
