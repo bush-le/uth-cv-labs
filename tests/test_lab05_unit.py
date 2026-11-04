@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import pytest
 import torch
@@ -195,3 +197,20 @@ def test_webcam_manager_raises_when_camera_unavailable() -> None:
     manager = WebcamManager(camera_index=99, capture_backend=BrokenCapture())
     with pytest.raises(RuntimeError, match="Không thể mở Webcam"):
         manager.open()
+
+
+def test_run_lab05_pipeline_batch_mode(tmp_path: Path) -> None:
+    """Kiểm tra run_lab05_pipeline chạy chế độ batch mô phỏng và xuất artifacts."""
+    from src.pipelines.lab05_pipeline import run_lab05_pipeline
+
+    results = run_lab05_pipeline(
+        config_path="configs/experiment/lab05_facenet.yaml",
+        mode="batch",
+        output_dir=tmp_path / "predictions",
+        log_dir=tmp_path / "logs",
+    )
+    assert results["status"] == "success"
+    assert results["mode"] == "batch"
+    assert results["faces_registered"] >= 0
+    assert (tmp_path / "predictions").exists()
+
