@@ -106,12 +106,18 @@ def main() -> None:
         "Bắt đầu nhận diện trên Webcam (Ngưỡng Cosine Similarity > %.2f -> Matched)...",
         matcher.similarity_threshold,
     )
-    pipeline.run_webcam(
-        webcam_manager=webcam_manager,
-        window_name=webcam_cfg["window_name"],
-        mirror_display=bool(webcam_cfg["mirror_display"]),
-        output_dir=exp_cfg["output_dir"],
-    )
+    try:
+        pipeline.run_webcam(
+            webcam_manager=webcam_manager,
+            window_name=webcam_cfg["window_name"],
+            mirror_display=bool(webcam_cfg["mirror_display"]),
+            output_dir=exp_cfg["output_dir"],
+        )
+    except RuntimeError as err:
+        logger.error(
+            "Lỗi khởi tạo Webcam: %s. Hãy kiểm tra kết nối camera hoặc quyền truy cập.",
+            err,
+        )
 
 
 if __name__ == "__main__":

@@ -8,6 +8,7 @@
 #   bash scripts/run_lab.sh 2
 #   bash scripts/run_lab.sh 3
 #   bash scripts/run_lab.sh 4
+#   bash scripts/run_lab.sh 5
 #   bash scripts/run_lab.sh all
 # ==============================================================================
 
@@ -53,8 +54,13 @@ case "${LAB}" in
         ${PYTHON} -m src.pipelines.lab04_pipeline
         echo "Lab 4 execution complete! Artifacts saved to experiments/predictions/lab04/"
         ;;
+    5|"05"|"lab5"|"lab05"|"lab-05")
+        echo "Executing Lab 5 Pipeline (Real-Time Face Recognition with MTCNN & FaceNet)..."
+        ${PYTHON} -m src.pipelines.lab05_pipeline --mode auto
+        echo "Lab 5 execution complete! Artifacts saved to experiments/predictions/lab05/"
+        ;;
     all|"ALL"|"labs")
-        echo "Executing all completed labs (Lab 1 -> Lab 4)..."
+        echo "Executing all completed labs (Lab 1 -> Lab 5)..."
         echo "--- Running Lab 1 ---"
         ${PYTHON} -m src.pipelines.lab01_pipeline
         echo "--- Running Lab 2 ---"
@@ -63,12 +69,14 @@ case "${LAB}" in
         ${PYTHON} -m src.pipelines.lab03_pipeline
         echo "--- Running Lab 4 ---"
         ${PYTHON} -m src.pipelines.lab04_pipeline
+        echo "--- Running Lab 5 ---"
+        ${PYTHON} -m src.pipelines.lab05_pipeline --mode batch
         echo "=================================================="
-        echo "All labs (1 - 4) executed successfully!"
+        echo "All labs (1 - 5) executed successfully!"
         echo "=================================================="
         ;;
     *)
-        echo "Error: Lab '${LAB}' is unrecognized. Valid options: 1, 2, 3, 4, all"
+        echo "Error: Lab '${LAB}' is unrecognized. Valid options: 1, 2, 3, 4, 5, all"
         exit 1
         ;;
 esac
