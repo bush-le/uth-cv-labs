@@ -14,6 +14,8 @@ import numpy as np
 import torch
 import yaml
 
+from src.common.logger import get_logger
+
 
 @dataclass(frozen=True)
 class RecognitionResult:
@@ -56,31 +58,9 @@ def setup_logger(
     level: str = "INFO",
     log_file: str | Path | None = None,
 ) -> logging.Logger:
-    """Thiết lập logger chuẩn ghi ra console và file log."""
-    logger = logging.getLogger(name)
-    numeric_level = getattr(logging, level.upper(), logging.INFO)
-    logger.setLevel(numeric_level)
-
-    if logger.handlers:
-        return logger
-
-    formatter = logging.Formatter(
-        fmt="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
-
-    if log_file is not None:
-        log_path = Path(log_file)
-        log_path.parent.mkdir(parents=True, exist_ok=True)
-        file_handler = logging.FileHandler(log_path, encoding="utf-8")
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
-
-    return logger
+    """Thiết lập logger chuẩn ghi ra console và file log, kế thừa từ common.logger."""
+    numeric_level = getattr(logging, level.upper(), logging.INFO) if isinstance(level, str) else level
+    return get_logger(name=name, level=numeric_level, log_file=log_file)
 
 
 class FPSMeter:

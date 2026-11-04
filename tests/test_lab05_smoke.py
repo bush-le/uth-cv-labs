@@ -6,7 +6,13 @@ from pathlib import Path
 
 import numpy as np
 
-from src.common.lab05_utils import FaceVisualizer, RecognitionResult, load_yaml_config
+from src.common.lab05_utils import (
+    FaceVisualizer,
+    FPSMeter,
+    RecognitionResult,
+    load_yaml_config,
+    setup_logger,
+)
 from src.data.face_database import FaceDatabase, l2_normalize_numpy
 from src.data.face_preprocessing import preprocess_face, validate_and_clip_bbox
 from src.models.similarity_matcher import SimilarityMatcher
@@ -59,3 +65,18 @@ def test_smoke_database_and_matcher_end_to_end(tmp_path: Path) -> None:
     assert decision.status == "Matched"
     assert decision.identity == "Person_A"
     assert decision.similarity > 0.99
+
+
+def test_smoke_logger_and_fps_meter(tmp_path: Path) -> None:
+    """Kiểm tra setup_logger và FPSMeter hoạt động chính xác."""
+    log_file = tmp_path / "smoke.log"
+    logger = setup_logger("lab05_test", level="DEBUG", log_file=log_file)
+    assert logger.name == "lab05_test"
+    logger.info("Test message from smoke test")
+    assert log_file.exists()
+
+    fps_meter = FPSMeter(alpha=0.8)
+    assert fps_meter.fps == 0.0
+    val = fps_meter.update()
+    assert val == 0.0
+
