@@ -1,8 +1,6 @@
 """Tests for Lab 05 FaceNet & MTCNN atomic modules."""
 
 import numpy as np
-import pytest
-import torch
 
 from src.labs.lab05_facenet import (
     face_database,

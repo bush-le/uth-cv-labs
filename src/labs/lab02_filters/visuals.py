@@ -16,7 +16,8 @@ def plot_point_ops_grid(
     figsize: tuple[int, int] = (14, 10),
 ) -> plt.Figure:
     """Plot comparison grid for point operations."""
-    to_rgb = lambda im: cv2.cvtColor(im, cv2.COLOR_BGR2RGB) if (im.ndim == 3 and im.shape[2] == 3) else im
+    def to_rgb(im: np.ndarray) -> np.ndarray:
+        return cv2.cvtColor(im, cv2.COLOR_BGR2RGB) if (im.ndim == 3 and im.shape[2] == 3) else im
 
     n_plots = 5 if threshold is not None else 4
     cols = 2

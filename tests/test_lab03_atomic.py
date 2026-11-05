@@ -1,12 +1,10 @@
 """Tests for Lab 03 Canny edge detection atomic modules."""
 
 import numpy as np
-import pytest
 
 from src.labs.lab03_canny import (
     canny_advanced,
     canny_core,
-    canny_downstream,
     canny_metrics,
     canny_wrappers,
     visuals,

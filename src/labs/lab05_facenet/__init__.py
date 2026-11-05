@@ -25,8 +25,8 @@ from src.labs.lab05_facenet.facenet_extractor import FaceNetExtractor
 from src.labs.lab05_facenet.mtcnn_detector import MTCNNDetector
 from src.labs.lab05_facenet.similarity_matcher import SimilarityMatcher
 from src.labs.lab05_facenet.visuals import (
-    FPSMeter,
     FaceVisualizer,
+    FPSMeter,
     RecognitionResult,
     plot_detection_result,
     plot_similarity_matrix,

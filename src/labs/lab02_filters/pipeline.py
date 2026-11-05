@@ -20,7 +20,6 @@ from src.labs.lab02_filters.edge_filters import (
 )
 from src.labs.lab02_filters.filter_utils import find_project_root
 from src.labs.lab02_filters.linear_filters import (
-    apply_custom_filter,
     apply_gaussian_filter,
     apply_mean_filter,
     apply_sharpen_filter,

@@ -6,7 +6,6 @@ from src.labs.lab04_wavelet import (
     wavelet_distance,
     wavelet_distortions,
     wavelet_evaluation,
-    wavelet_hash,
     wavelet_pairs,
 )
 from src.labs.lab04_wavelet.wavelet_core import (

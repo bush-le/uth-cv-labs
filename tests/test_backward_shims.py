@@ -1,11 +1,10 @@
 """Tests for backward compatibility shims."""
 
-import pytest
 
 
 def test_legacy_transforms_and_filters_shims():
-    from src.data.transforms import bgr_to_grayscale, crop_roi, load_image_cv
     from src.data.filters import adjust_brightness, apply_sobel, get_mean_kernel
+    from src.data.transforms import bgr_to_grayscale, crop_roi, load_image_cv
 
     assert callable(bgr_to_grayscale)
     assert callable(crop_roi)
@@ -17,9 +16,9 @@ def test_legacy_transforms_and_filters_shims():
 
 def test_legacy_models_shims():
     from src.models.classical.canny import custom_canny_pipeline, run_opencv_canny
-    from src.models.classical.wavelet_hash import wavelet_hash, hamming_distance
-    from src.models.deep.mtcnn_detector import MTCNNDetector
+    from src.models.classical.wavelet_hash import hamming_distance, wavelet_hash
     from src.models.deep.facenet_extractor import FaceNetExtractor
+    from src.models.deep.mtcnn_detector import MTCNNDetector
     from src.models.similarity_matcher import SimilarityMatcher
 
     assert callable(custom_canny_pipeline)

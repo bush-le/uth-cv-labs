@@ -7,8 +7,6 @@ import numpy as np
 import pywt
 from PIL import Image
 
-from src.labs.lab04_wavelet.wavelet_distance import hamming_distance
-
 
 def _load_image_grayscale(image_input: str | np.ndarray | Image.Image) -> np.ndarray:
     """Normalize various image input formats into a 2D float32 grayscale NumPy array.

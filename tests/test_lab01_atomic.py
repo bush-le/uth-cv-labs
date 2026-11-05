@@ -1,10 +1,8 @@
 """Tests for Lab 01 atomic modules."""
 
-from pathlib import Path
 import numpy as np
-import pytest
 
-from src.labs.lab01_basics import color, geometry, drawing, io, visuals
+from src.labs.lab01_basics import color, drawing, geometry, visuals
 
 
 def test_color_conversions():

@@ -1,14 +1,11 @@
 """Tests for Lab 04 Wavelet Image Hashing atomic modules."""
 
 import numpy as np
-import pytest
 
 from src.labs.lab04_wavelet import (
     wavelet_core,
     wavelet_distance,
     wavelet_distortions,
-    wavelet_hash,
-    visuals,
 )
 
 

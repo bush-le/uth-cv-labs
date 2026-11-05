@@ -1,11 +1,9 @@
 """Tests for Lab 02 atomic filtering modules."""
 
 import numpy as np
-import pytest
 
 from src.labs.lab02_filters import (
     edge_filters,
-    filter_utils,
     linear_filters,
     nonlinear_filters,
     point_ops,

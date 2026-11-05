@@ -10,10 +10,24 @@ import PIL
 
 from src.common.logger import get_logger
 from src.labs.lab01_basics.color import bgr_to_grayscale, bgr_to_hsv, bgr_to_lab
-from src.labs.lab01_basics.drawing import draw_circle, draw_line, draw_rectangle, draw_text
-from src.labs.lab01_basics.geometry import crop_roi, resize_by_dimensions, resize_by_scale
-from src.labs.lab01_basics.io import convert_image_format, load_image_cv, load_image_pil, save_image_cv
-from src.labs.lab01_basics.visuals import plot_color_spaces, plot_side_by_side
+from src.labs.lab01_basics.drawing import (
+    draw_circle,
+    draw_line,
+    draw_rectangle,
+    draw_text,
+)
+from src.labs.lab01_basics.geometry import (
+    crop_roi,
+    resize_by_dimensions,
+    resize_by_scale,
+)
+from src.labs.lab01_basics.io import (
+    convert_image_format,
+    load_image_cv,
+    load_image_pil,
+    save_image_cv,
+)
+from src.labs.lab01_basics.visuals import plot_color_spaces
 
 logger = get_logger(__name__)
 

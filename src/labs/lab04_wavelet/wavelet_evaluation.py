@@ -59,7 +59,6 @@ def evaluate_ground_truth_pairs(
         tp = int(np.sum((preds == 1) & (gt_arr == 1)))
         fp = int(np.sum((preds == 1) & (gt_arr == 0)))
         tn = int(np.sum((preds == 0) & (gt_arr == 0)))
-        fn = int(np.sum((preds == 0) & (gt_arr == 1)))
 
         tpr = tp / pos_count if pos_count > 0 else 0.0
         fpr = fp / neg_count if neg_count > 0 else 0.0

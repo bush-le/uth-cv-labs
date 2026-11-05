@@ -14,7 +14,7 @@ from src.labs.lab05_facenet.face_preprocessing import preprocess_face
 from src.labs.lab05_facenet.facenet_extractor import FaceNetExtractor
 from src.labs.lab05_facenet.mtcnn_detector import MTCNNDetector
 from src.labs.lab05_facenet.similarity_matcher import SimilarityMatcher
-from src.labs.lab05_facenet.visuals import FPSMeter, FaceVisualizer, RecognitionResult
+from src.labs.lab05_facenet.visuals import FaceVisualizer, FPSMeter, RecognitionResult
 
 logger = logging.getLogger("lab05.webcam")
 

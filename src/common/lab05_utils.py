@@ -15,8 +15,8 @@ import yaml
 from src.common.device import resolve_device as _resolve_device
 from src.common.logger import get_logger
 from src.labs.lab05_facenet.visuals import (
-    FPSMeter,
     FaceVisualizer,
+    FPSMeter,
     RecognitionResult,
 )
 
