@@ -36,41 +36,41 @@ echo "=================================================="
 case "${LAB}" in
     1|"01"|"lab1"|"lab01"|"lab-01")
         echo "Executing Lab 1 Pipeline (Basic Image Processing & Color Spaces)..."
-        ${PYTHON} -m src.pipelines.lab01_pipeline
+        ${PYTHON} -m src.labs.lab01_basics.pipeline
         echo "Lab 1 execution complete! Artifacts saved to experiments/predictions/lab01/"
         ;;
     2|"02"|"lab2"|"lab02"|"lab-02")
         echo "Executing Lab 2 Pipeline (Point Operations & Linear/Non-linear Filtering)..."
-        ${PYTHON} -m src.pipelines.lab02_pipeline
+        ${PYTHON} -m src.labs.lab02_filters.pipeline
         echo "Lab 2 execution complete! Artifacts saved to experiments/predictions/lab02/"
         ;;
     3|"03"|"lab3"|"lab03"|"lab-03")
         echo "Executing Lab 3 Pipeline (Canny Edge Detector & Morphological Segmentation)..."
-        ${PYTHON} -m src.pipelines.lab03_pipeline
+        ${PYTHON} -m src.labs.lab03_canny.pipeline
         echo "Lab 3 execution complete! Artifacts saved to experiments/predictions/lab03/"
         ;;
     4|"04"|"lab4"|"lab04"|"lab-04")
         echo "Executing Lab 4 Pipeline (Wavelet Image Hashing & Similarity Retrieval)..."
-        ${PYTHON} -m src.pipelines.lab04_pipeline
+        ${PYTHON} -m src.labs.lab04_wavelet.pipeline
         echo "Lab 4 execution complete! Artifacts saved to experiments/predictions/lab04/"
         ;;
     5|"05"|"lab5"|"lab05"|"lab-05")
         echo "Executing Lab 5 Pipeline (Real-Time Face Recognition with MTCNN & FaceNet)..."
-        ${PYTHON} -m src.pipelines.lab05_pipeline --mode auto
+        ${PYTHON} -m src.labs.lab05_facenet.pipeline --mode auto
         echo "Lab 5 execution complete! Artifacts saved to experiments/predictions/lab05/"
         ;;
     all|"ALL"|"labs")
         echo "Executing all completed labs (Lab 1 -> Lab 5)..."
         echo "--- Running Lab 1 ---"
-        ${PYTHON} -m src.pipelines.lab01_pipeline
+        ${PYTHON} -m src.labs.lab01_basics.pipeline
         echo "--- Running Lab 2 ---"
-        ${PYTHON} -m src.pipelines.lab02_pipeline
+        ${PYTHON} -m src.labs.lab02_filters.pipeline
         echo "--- Running Lab 3 ---"
-        ${PYTHON} -m src.pipelines.lab03_pipeline
+        ${PYTHON} -m src.labs.lab03_canny.pipeline
         echo "--- Running Lab 4 ---"
-        ${PYTHON} -m src.pipelines.lab04_pipeline
+        ${PYTHON} -m src.labs.lab04_wavelet.pipeline
         echo "--- Running Lab 5 ---"
-        ${PYTHON} -m src.pipelines.lab05_pipeline --mode batch
+        ${PYTHON} -m src.labs.lab05_facenet.pipeline --mode batch
         echo "=================================================="
         echo "All labs (1 - 5) executed successfully!"
         echo "=================================================="

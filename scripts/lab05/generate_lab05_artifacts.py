@@ -3,14 +3,20 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 import cv2
 import numpy as np
 
-from src.common.lab05_utils import FaceVisualizer, RecognitionResult, setup_logger
-from src.data.face_database import FaceDatabase, l2_normalize_numpy
-from src.models.similarity_matcher import SimilarityMatcher
+from src.common.logger import setup_logger
+from src.labs.lab05_facenet.face_database import FaceDatabase, l2_normalize_numpy
+from src.labs.lab05_facenet.similarity_matcher import SimilarityMatcher
+from src.labs.lab05_facenet.visuals import FaceVisualizer, RecognitionResult
 
 
 def main() -> None:

@@ -5,11 +5,9 @@ from src.labs.lab02_filters import (
     filter_utils,
     linear_filters,
     nonlinear_filters,
-    pipeline,
     point_ops,
     visuals,
 )
-from src.labs.lab02_filters.pipeline import run_lab02
 
 __all__ = [
     "edge_filters",
@@ -18,6 +16,4 @@ __all__ = [
     "nonlinear_filters",
     "point_ops",
     "visuals",
-    "pipeline",
-    "run_lab02",
 ]

@@ -1,4 +1,4 @@
-"""Lab 03 Canny Edge Detection Package: Core 5-Stage, Wrappers, Advanced, Downstream, Metrics, and Pipeline."""
+"""Lab 03 Canny Edge Detection Package: Core 5-Stage, Wrappers, Advanced, Downstream, Metrics, and Visuals."""
 
 from src.labs.lab03_canny import (
     canny_advanced,
@@ -6,7 +6,6 @@ from src.labs.lab03_canny import (
     canny_downstream,
     canny_metrics,
     canny_wrappers,
-    pipeline,
     visuals,
 )
 from src.labs.lab03_canny.canny_advanced import (
@@ -34,7 +33,6 @@ from src.labs.lab03_canny.canny_wrappers import (
     run_skimage_canny,
     run_sobel,
 )
-from src.labs.lab03_canny.pipeline import Lab03Pipeline
 
 __all__ = [
     "canny_advanced",
@@ -43,7 +41,6 @@ __all__ = [
     "canny_metrics",
     "canny_wrappers",
     "visuals",
-    "pipeline",
     "custom_canny_pipeline",
     "run_opencv_canny",
     "run_skimage_canny",
@@ -61,5 +58,4 @@ __all__ = [
     "calculate_pratt_fom",
     "calculate_hausdorff_distance",
     "calculate_edge_f1_score",
-    "Lab03Pipeline",
 ]

@@ -49,3 +49,18 @@ def get_logger(
             logger.addHandler(file_handler)
 
     return logger
+
+
+def setup_logger(
+    name: str = "uth_cv",
+    level: str | int = logging.INFO,
+    log_file: Path | str | None = None,
+) -> logging.Logger:
+    """Convenience wrapper for get_logger supporting string or integer log levels."""
+    numeric_level = (
+        getattr(logging, level.upper(), logging.INFO)
+        if isinstance(level, str)
+        else level
+    )
+    return get_logger(name=name, level=numeric_level, log_file=log_file)
+

@@ -6,7 +6,6 @@ from src.labs.lab05_facenet import (
     face_registration,
     facenet_extractor,
     mtcnn_detector,
-    pipeline,
     similarity_matcher,
     visuals,
     webcam_recognition,
@@ -24,7 +23,6 @@ from src.labs.lab05_facenet.face_registration import (
 )
 from src.labs.lab05_facenet.facenet_extractor import FaceNetExtractor
 from src.labs.lab05_facenet.mtcnn_detector import MTCNNDetector
-from src.labs.lab05_facenet.pipeline import run_lab05
 from src.labs.lab05_facenet.similarity_matcher import SimilarityMatcher
 from src.labs.lab05_facenet.visuals import (
     FPSMeter,
@@ -47,7 +45,6 @@ __all__ = [
     "face_registration",
     "webcam_recognition",
     "visuals",
-    "pipeline",
     "MTCNNDetector",
     "FaceNetExtractor",
     "SimilarityMatcher",
@@ -66,5 +63,4 @@ __all__ = [
     "RecognitionResult",
     "plot_detection_result",
     "plot_similarity_matrix",
-    "run_lab05",
 ]

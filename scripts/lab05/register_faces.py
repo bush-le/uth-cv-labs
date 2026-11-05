@@ -3,16 +3,23 @@
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 import cv2
 
-from src.common.lab05_utils import load_yaml_config, resolve_device, setup_logger
-from src.data.face_database import FaceDatabase
-from src.models.deep.facenet_extractor import FaceNetExtractor
-from src.models.deep.mtcnn_detector import MTCNNDetector
-from src.pipelines.lab05_face_registration import FaceRegistrationPipeline
-from src.pipelines.lab05_webcam_recognition import WebcamManager
+from src.common.device import resolve_device
+from src.common.logger import setup_logger
+from src.labs.lab05_facenet.face_database import FaceDatabase
+from src.labs.lab05_facenet.face_registration import FaceRegistrationPipeline
+from src.labs.lab05_facenet.facenet_extractor import FaceNetExtractor
+from src.labs.lab05_facenet.mtcnn_detector import MTCNNDetector
+from src.labs.lab05_facenet.pipeline import load_yaml_config
+from src.labs.lab05_facenet.webcam_recognition import WebcamManager
 
 
 def capture_from_webcam(

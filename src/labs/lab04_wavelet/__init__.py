@@ -1,7 +1,6 @@
-"""Lab 04 Wavelet Package: 2D DWT, Perceptual Hashes, Distance Metrics, Evaluation, and Pipeline."""
+"""Lab 04 Wavelet Package: 2D DWT, Perceptual Hashes, Distance Metrics, Evaluation, and Visuals."""
 
 from src.labs.lab04_wavelet import (
-    pipeline,
     visuals,
     wavelet_core,
     wavelet_distance,
@@ -10,7 +9,6 @@ from src.labs.lab04_wavelet import (
     wavelet_hash,
     wavelet_pairs,
 )
-from src.labs.lab04_wavelet.pipeline import Lab04Pipeline
 from src.labs.lab04_wavelet.wavelet_core import (
     average_hash,
     difference_hash,
@@ -47,7 +45,6 @@ __all__ = [
     "wavelet_pairs",
     "wavelet_evaluation",
     "visuals",
-    "pipeline",
     "wavelet_hash",
     "wavelet_hash_color",
     "wavelet_hash_slide17",
@@ -67,5 +64,4 @@ __all__ = [
     "retrieve_top_k",
     "measure_robustness",
     "load_pair_dataset",
-    "Lab04Pipeline",
 ]
