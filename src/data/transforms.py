@@ -1,12 +1,11 @@
 """Image processing and transformation facade for Computer Vision tasks.
 
-Consolidates and re-exports modular image I/O, color space conversions,
-geometric transformations, and annotation primitives.
+Backward-compatibility shim re-exporting from src.labs.lab01_basics.
 """
 
 from __future__ import annotations
 
-from src.data.color_spaces import (
+from src.labs.lab01_basics.color import (
     bgr_to_grayscale,
     bgr_to_hsv,
     bgr_to_lab,
@@ -15,13 +14,13 @@ from src.data.color_spaces import (
     pil_to_hsv,
     rgb_to_bgr,
 )
-from src.data.drawing import (
+from src.labs.lab01_basics.drawing import (
     draw_circle,
     draw_line,
     draw_rectangle,
     draw_text,
 )
-from src.data.geometric import (
+from src.labs.lab01_basics.geometry import (
     crop_roi,
     crop_roi_pil,
     resize_by_dimensions,
@@ -29,7 +28,7 @@ from src.data.geometric import (
     resize_pil_by_dimensions,
     resize_pil_by_scale,
 )
-from src.data.image_io import (
+from src.labs.lab01_basics.io import (
     convert_image_format,
     load_image_cv,
     load_image_pil,
@@ -59,7 +58,7 @@ __all__ = [
     "resize_by_dimensions",
     "resize_pil_by_scale",
     "resize_pil_by_dimensions",
-    # Drawing & Annotations
+    # Drawing Primitives
     "draw_line",
     "draw_rectangle",
     "draw_circle",

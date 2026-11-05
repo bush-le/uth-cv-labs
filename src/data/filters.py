@@ -1,12 +1,11 @@
 """Point operators and spatial filtering facade for Computer Vision.
 
-Consolidates and re-exports modular point operations, linear convolution filters,
-edge detection derivatives, non-linear denoising, and kernel inspection tools.
+Backward-compatibility shim re-exporting from src.labs.lab02_filters.
 """
 
 from __future__ import annotations
 
-from src.data.edge_filters import (
+from src.labs.lab02_filters.edge_filters import (
     apply_laplacian,
     apply_prewitt,
     apply_sobel,
@@ -14,12 +13,12 @@ from src.data.edge_filters import (
     get_sobel_kernels,
     gradient_magnitude,
 )
-from src.data.filter_utils import (
+from src.labs.lab02_filters.filter_utils import (
     _validate_image,
     _validate_kernel_size,
     find_project_root,
 )
-from src.data.linear_filters import (
+from src.labs.lab02_filters.linear_filters import (
     apply_custom_filter,
     apply_gaussian_filter,
     apply_mean_filter,
@@ -30,12 +29,12 @@ from src.data.linear_filters import (
     get_sharpen_kernel,
     kernel_sum,
 )
-from src.data.nonlinear_filters import (
+from src.labs.lab02_filters.nonlinear_filters import (
     add_salt_pepper_noise,
     apply_bilateral_filter,
     apply_median_filter,
 )
-from src.data.point_ops import (
+from src.labs.lab02_filters.point_ops import (
     adjust_brightness,
     adjust_contrast,
     apply_threshold,
@@ -48,7 +47,7 @@ __all__ = [
     "adjust_contrast",
     "negative_transform",
     "apply_threshold",
-    # Linear Filters & Kernels
+    # Linear Filters
     "get_mean_kernel",
     "get_gaussian_kernel",
     "get_sharpen_kernel",
@@ -58,19 +57,19 @@ __all__ = [
     "apply_gaussian_filter",
     "apply_sharpen_filter",
     "kernel_sum",
-    # Edge Detection Operators
+    # Edge Detection Filters
     "get_sobel_kernels",
     "get_prewitt_kernels",
     "apply_sobel",
     "apply_prewitt",
     "apply_laplacian",
     "gradient_magnitude",
-    # Non-linear Filters & Noise
+    # Non-linear Filters
     "apply_median_filter",
     "apply_bilateral_filter",
     "add_salt_pepper_noise",
-    # Helpers
-    "find_project_root",
+    # Validation Utilities
     "_validate_image",
     "_validate_kernel_size",
+    "find_project_root",
 ]

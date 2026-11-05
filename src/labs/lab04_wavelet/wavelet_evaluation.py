@@ -90,22 +90,33 @@ def evaluate_ground_truth_pairs(
     sorted_indices = np.argsort(fpr_list)
     fpr_sorted = np.array(fpr_list)[sorted_indices]
     tpr_sorted = np.array(tpr_list)[sorted_indices]
-    auc_roc = float(np.trapezoid(tpr_sorted, fpr_sorted)) if hasattr(np, "trapezoid") else float(np.trapz(tpr_sorted, fpr_sorted))
+    fpr_anchored = np.concatenate([[0.0], fpr_sorted, [1.0]])
+    tpr_anchored = np.concatenate([[0.0], tpr_sorted, [1.0]])
+    auc_val = float(np.trapezoid(tpr_anchored, fpr_anchored))
+
+    opt_idx = int(np.where(thresh_list == best_thresh_f1)[0][0])
 
     return {
         "thresholds": thresh_list.tolist(),
-        "tpr": tpr_list,
         "fpr": fpr_list,
+        "tpr": tpr_list,
+        "auc": float(np.clip(auc_val, 0.0, 1.0)),
+        "auc_roc": float(np.clip(auc_val, 0.0, 1.0)),
         "precision": precision_list,
         "recall": recall_list,
         "specificity": specificity_list,
         "accuracy": accuracy_list,
         "f1": f1_list,
-        "auc_roc": auc_roc,
-        "optimal_threshold_youden": best_thresh_j,
         "optimal_threshold_f1": best_thresh_f1,
-        "best_youden_j": best_j,
-        "best_f1_score": best_f1,
+        "optimal_threshold_youden": best_thresh_j,
+        "optimal_metrics": {
+            "threshold": best_thresh_f1,
+            "accuracy": accuracy_list[opt_idx],
+            "recall": recall_list[opt_idx],
+            "specificity": specificity_list[opt_idx],
+            "precision": precision_list[opt_idx],
+            "f1": f1_list[opt_idx],
+        },
     }
 
 
