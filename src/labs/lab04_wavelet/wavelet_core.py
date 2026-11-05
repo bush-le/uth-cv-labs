@@ -7,6 +7,8 @@ import numpy as np
 import pywt
 from PIL import Image
 
+from src.labs.lab04_wavelet.wavelet_distance import hamming_distance
+
 
 def _load_image_grayscale(image_input: str | np.ndarray | Image.Image) -> np.ndarray:
     """Normalize various image input formats into a 2D float32 grayscale NumPy array.
@@ -162,6 +164,8 @@ def wavelet_hash_slide17(
     wavelet: str = "db4",
     level: int = 3,
     step: float = 2.0,
+    image_size: tuple[int, int] = (64, 64),
+    **kwargs,
 ) -> list[int]:
     """Calculate wavelet hash following the exact literal implementation in Slide 17.
 
@@ -173,12 +177,15 @@ def wavelet_hash_slide17(
         wavelet: Wavelet type (default 'db4').
         level: Decomposition level (default 3).
         step: Step size for coefficient quantization.
+        image_size: Target image size tuple (width, height).
+        **kwargs: Additional ignored parameters for interface compatibility.
 
     Returns:
         list[int]: List of integer bits {0, 1}.
     """
     img_gray = _load_image_grayscale(image)
-    img_resized = cv2.resize(img_gray, (64, 64), interpolation=cv2.INTER_AREA)
+    target_size = (image_size[0], image_size[1]) if isinstance(image_size, (tuple, list)) else (64, 64)
+    img_resized = cv2.resize(img_gray, target_size, interpolation=cv2.INTER_AREA)
 
     coeffs = pywt.wavedec2(img_resized, wavelet=wavelet, level=level, mode="symmetric")
 

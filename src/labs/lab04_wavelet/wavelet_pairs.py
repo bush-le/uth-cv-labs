@@ -213,7 +213,10 @@ def main() -> None:
         "--config", type=Path, default=Path("configs/dataset/lab04_pairs.yaml")
     )
     args = parser.parse_args()
-    root = Path(__file__).resolve().parents[2]
+    root = next(
+        p for p in (Path.cwd(), *Path(__file__).resolve().parents)
+        if (p / "pyproject.toml").is_file()
+    )
     path = args.config if args.config.is_absolute() else root / args.config
     summary = prepare_pairs(yaml.safe_load(path.read_text(encoding="utf-8")), root)
     logger.info("Lab04 dataset prepared: %s", summary)
