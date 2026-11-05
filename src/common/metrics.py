@@ -7,16 +7,16 @@ from __future__ import annotations
 
 import numpy as np
 
-from src.models.classical.canny_metrics import (
+from src.labs.lab03_canny.canny_metrics import (
     calculate_edge_f1_score,
     calculate_hausdorff_distance,
     calculate_pratt_fom,
 )
-from src.models.classical.wavelet_distance import (
+from src.labs.lab04_wavelet.wavelet_distance import (
     hamming_distance,
     normalized_hamming_distance,
 )
-from src.models.classical.wavelet_evaluation import (
+from src.labs.lab04_wavelet.wavelet_evaluation import (
     evaluate_ground_truth_pairs,
 )
 

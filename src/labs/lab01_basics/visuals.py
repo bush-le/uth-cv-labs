@@ -121,12 +121,20 @@ def plot_annotated_image(
     image: np.ndarray,
     title: str = "Ảnh sau khi vẽ và chú thích",
     figsize: tuple[int, int] = (10, 8),
+    is_bgr: bool = True,
 ) -> plt.Figure:
-    """Plot an annotated image converted to RGB."""
-    img_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) if image.ndim == 3 else image
+    """Plot an annotated or single image converted to RGB."""
+    img_rgb = (
+        cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        if (is_bgr and image.ndim == 3 and image.shape[2] == 3)
+        else image
+    )
     fig, ax = plt.subplots(figsize=figsize)
-    ax.imshow(img_rgb)
-    ax.set_title(title, fontsize=12)
+    ax.imshow(img_rgb, cmap="gray" if img_rgb.ndim == 2 else None)
+    ax.set_title(title, fontsize=12, fontweight="bold")
     ax.axis("off")
     plt.tight_layout()
     return fig
+
+
+plot_single_image = plot_annotated_image

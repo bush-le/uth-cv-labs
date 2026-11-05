@@ -38,7 +38,6 @@ from src.labs.lab04_wavelet.wavelet_pairs import load_pair_dataset
 
 __all__ = [
     "wavelet_core",
-    "wavelet_hash",
     "wavelet_distance",
     "wavelet_distortions",
     "wavelet_pairs",

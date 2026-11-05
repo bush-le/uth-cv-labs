@@ -135,7 +135,7 @@ def plot_threshold_sweep(
     labels: np.ndarray, distances: np.ndarray, threshold: float
 ) -> None:
     """Visualize calibration Recall, Specificity and Youden J versus threshold."""
-    from src.pipelines.lab04_evaluation import score_pairs
+    from src.labs.lab04_wavelet.wavelet_evaluation import score_pairs
 
     candidates = np.unique(distances)
     scores = [score_pairs(labels, distances, float(t)) for t in candidates]

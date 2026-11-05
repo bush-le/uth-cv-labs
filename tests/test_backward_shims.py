@@ -42,3 +42,29 @@ def test_legacy_pipelines_shims():
     assert Lab03Pipeline is not None
     assert Lab04Pipeline is not None
     assert callable(run_lab05_pipeline)
+
+
+def test_granular_data_and_models_shims():
+    from src.data.color_spaces import bgr_to_grayscale
+    from src.data.drawing import draw_line
+    from src.data.geometric import crop_roi
+    from src.data.image_io import load_image_cv
+    from src.data.lab04_pairs import load_pair_dataset
+    from src.data.linear_filters import get_mean_kernel
+    from src.data.point_ops import adjust_brightness
+    from src.models.classical.canny_core import custom_canny_pipeline
+    from src.models.classical.wavelet_core import wavelet_hash
+    from src.pipelines.lab04_evaluation import score_pairs
+    from src.pipelines.lab04_visuals import plot_pair_examples
+
+    assert callable(bgr_to_grayscale)
+    assert callable(draw_line)
+    assert callable(crop_roi)
+    assert callable(load_image_cv)
+    assert callable(get_mean_kernel)
+    assert callable(adjust_brightness)
+    assert callable(custom_canny_pipeline)
+    assert callable(wavelet_hash)
+    assert callable(load_pair_dataset)
+    assert callable(score_pairs)
+    assert callable(plot_pair_examples)

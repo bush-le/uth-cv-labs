@@ -16,7 +16,9 @@ from typing import Any
 import cv2
 import numpy as np
 
-from src.common.lab05_utils import load_yaml_config, resolve_device, setup_logger
+from src.common.config import load_yaml_config
+from src.common.device import resolve_device
+from src.common.logger import setup_logger
 from src.labs.lab05_facenet.face_database import FaceDatabase, l2_normalize_numpy
 from src.labs.lab05_facenet.facenet_extractor import FaceNetExtractor
 from src.labs.lab05_facenet.mtcnn_detector import MTCNNDetector

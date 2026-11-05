@@ -57,3 +57,6 @@ def test_visuals_creation():
 
     fig2 = visuals.plot_roi_and_resize(dummy, dummy, dummy, dummy)
     assert fig2 is not None
+
+    fig3 = visuals.plot_single_image(dummy)
+    assert fig3 is not None
