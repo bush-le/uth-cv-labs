@@ -106,8 +106,9 @@ def main():
             support.append(f'<div id="{ident}">'+details(title, body)+'</div>')
     aliases = ''.join(f'<span id="{ident}"></span>' for ident in result_groups)
     nav = '<a href="#flow">Sơ đồ</a>'+''.join(f'<a href="#{stage[0]}">{i+1:02d} · {html.escape(stage[1])}</a>' for i, stage in enumerate(config['stages']))+'<a href="#support">Chi tiết</a><button type="button" onclick="window.print()">In / PDF</button>'
-    css = (folder/'report.css').read_text(encoding='utf-8')
-    js = (folder/'report.js').read_text(encoding='utf-8')
+    common = root/'scripts/common'
+    css = (common/'report.css').read_text(encoding='utf-8')
+    js = (common/'report.js').read_text(encoding='utf-8')
     diagram = make_map(config['nodes'], config['paths'], config['description'])
     output = '<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+f'<title>Lab {lab} — Báo cáo theo flow</title><style>{css}</style></head><body><main><header><div class="eyebrow">COMPUTER VISION / LAB {lab}</div><h1>{html.escape(config["hero"])}</h1><p>{html.escape(config["subtitle"])}</p><div class="links"><a href="../../../notebooks/labs/lab_{lab}.ipynb">Notebook thực hành ↗</a><a href="LAB_{lab}_REPORT.md">Báo cáo Markdown ↗</a></div></header><nav aria-label="Lộ trình">{nav}</nav><section class="flow-map" id="flow"><div class="eyebrow">SƠ ĐỒ THÍ NGHIỆM</div><h2>{html.escape(config["map_title"])}</h2><p>{html.escape(config["description"])}</p><div class="map-scroll" tabindex="0" aria-label="Sơ đồ; cuộn ngang trên màn hình nhỏ">{diagram}</div></section>'+aliases+''.join(stages)+'<section class="support" id="support"><h2>Lý thuyết, quy trình & tài liệu đối chiếu</h2>'+''.join(support)+'</section><footer>Hình và số liệu giữ từ báo cáo hiện có; không chạy lại thí nghiệm. Code được trích từ notebook khi tạo HTML.</footer></main><dialog id="viewer" aria-label="Xem ảnh lớn"><button type="button">Đóng ×</button><img alt=""></dialog>'+f'<script>{js}</script></body></html>'
     report.with_suffix('.html').write_text(output, encoding='utf-8')
