@@ -8,7 +8,7 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from src.data.lab04_pairs import prepare_pairs
+from src.labs.lab04_wavelet.wavelet_pairs import prepare_pairs
 
 
 @pytest.fixture

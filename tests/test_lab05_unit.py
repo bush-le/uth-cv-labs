@@ -8,12 +8,12 @@ import numpy as np
 import pytest
 import torch
 
-from src.data.face_database import FaceDatabase, l2_normalize_numpy
-from src.data.face_preprocessing import preprocess_face, validate_and_clip_bbox
-from src.models.deep.mtcnn_detector import DetectedFace
-from src.models.similarity_matcher import SimilarityMatcher
-from src.pipelines.lab05_face_registration import FaceRegistrationPipeline
-from src.pipelines.lab05_webcam_recognition import (
+from src.labs.lab05_facenet.face_database import FaceDatabase, l2_normalize_numpy
+from src.labs.lab05_facenet.face_preprocessing import preprocess_face, validate_and_clip_bbox
+from src.labs.lab05_facenet.face_registration import FaceRegistrationPipeline
+from src.labs.lab05_facenet.mtcnn_detector import DetectedFace
+from src.labs.lab05_facenet.similarity_matcher import SimilarityMatcher
+from src.labs.lab05_facenet.webcam_recognition import (
     RealtimeRecognitionPipeline,
     WebcamManager,
 )
@@ -204,7 +204,7 @@ def test_webcam_manager_raises_when_camera_unavailable() -> None:
 
 def test_run_lab05_pipeline_batch_mode(tmp_path: Path) -> None:
     """Kiểm tra run_lab05_pipeline chạy chế độ batch mô phỏng và xuất artifacts."""
-    from src.pipelines.lab05_pipeline import run_lab05_pipeline
+    from src.labs.lab05_facenet.pipeline import run_lab05_pipeline
 
     results = run_lab05_pipeline(
         config_path="configs/experiment/lab05_facenet.yaml",

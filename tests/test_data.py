@@ -5,19 +5,19 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from src.data.color_spaces import bgr_to_grayscale, bgr_to_hsv, bgr_to_lab, bgr_to_rgb
-from src.data.drawing import draw_circle, draw_line, draw_rectangle, draw_text
-from src.data.edge_filters import apply_sobel, get_sobel_kernels
-from src.data.geometric import crop_roi, resize_by_dimensions, resize_by_scale
-from src.data.linear_filters import (
+from src.common.color import bgr_to_grayscale, bgr_to_hsv, bgr_to_lab, bgr_to_rgb
+from src.labs.lab01_basics.drawing import draw_circle, draw_line, draw_rectangle, draw_text
+from src.labs.lab01_basics.geometry import crop_roi, resize_by_dimensions, resize_by_scale
+from src.labs.lab02_filters.edge_filters import apply_sobel, get_sobel_kernels
+from src.labs.lab02_filters.linear_filters import (
     apply_gaussian_filter,
     apply_mean_filter,
     get_gaussian_kernel,
     get_mean_kernel,
     kernel_sum,
 )
-from src.data.nonlinear_filters import add_salt_pepper_noise, apply_median_filter
-from src.data.point_ops import (
+from src.labs.lab02_filters.nonlinear_filters import add_salt_pepper_noise, apply_median_filter
+from src.labs.lab02_filters.point_ops import (
     adjust_brightness,
     adjust_contrast,
     apply_threshold,

@@ -8,22 +8,22 @@ from src.common.metrics import (
     calculate_binary_confusion_matrix,
     calculate_classification_metrics,
 )
-from src.models.classical.canny_advanced import (
+from src.labs.lab03_canny.canny_advanced import (
     run_auto_canny,
     run_otsu_canny,
 )
-from src.models.classical.canny_core import custom_canny_pipeline
-from src.models.classical.canny_metrics import (
+from src.labs.lab03_canny.canny_core import custom_canny_pipeline
+from src.labs.lab03_canny.canny_metrics import (
     calculate_edge_f1_score,
     calculate_pratt_fom,
 )
-from src.models.classical.wavelet_core import (
+from src.labs.lab04_wavelet.wavelet_core import (
     average_hash,
     difference_hash,
     phash_dct,
     wavelet_hash,
 )
-from src.models.classical.wavelet_distance import (
+from src.labs.lab04_wavelet.wavelet_distance import (
     calculate_pairwise_hamming_matrix,
     hamming_distance,
     normalized_hamming_distance,

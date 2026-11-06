@@ -6,28 +6,34 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from src.data.transforms import (
+from src.common.color import (
     bgr_to_grayscale,
     bgr_to_hsv,
     bgr_to_lab,
     bgr_to_rgb,
+    pil_to_grayscale,
+    pil_to_hsv,
+    rgb_to_bgr,
+)
+from src.common.io import (
     convert_image_format,
-    crop_roi,
-    crop_roi_pil,
+    load_image_cv,
+    load_image_pil,
+    save_image_cv,
+)
+from src.labs.lab01_basics.drawing import (
     draw_circle,
     draw_line,
     draw_rectangle,
     draw_text,
-    load_image_cv,
-    load_image_pil,
-    pil_to_grayscale,
-    pil_to_hsv,
+)
+from src.labs.lab01_basics.geometry import (
+    crop_roi,
+    crop_roi_pil,
     resize_by_dimensions,
     resize_by_scale,
     resize_pil_by_dimensions,
     resize_pil_by_scale,
-    rgb_to_bgr,
-    save_image_cv,
 )
 
 

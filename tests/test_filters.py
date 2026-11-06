@@ -3,28 +3,34 @@
 import numpy as np
 import pytest
 
-from src.data.filters import (
-    add_salt_pepper_noise,
-    adjust_brightness,
-    adjust_contrast,
-    apply_bilateral_filter,
+from src.labs.lab02_filters.edge_filters import (
+    apply_laplacian,
+    apply_prewitt,
+    apply_sobel,
+    get_prewitt_kernels,
+    get_sobel_kernels,
+    gradient_magnitude,
+)
+from src.labs.lab02_filters.linear_filters import (
     apply_custom_filter,
     apply_gaussian_filter,
-    apply_laplacian,
     apply_mean_filter,
-    apply_median_filter,
-    apply_prewitt,
     apply_sharpen_filter,
-    apply_sobel,
-    apply_threshold,
     get_gaussian_kernel,
     get_laplacian_kernel,
     get_mean_kernel,
-    get_prewitt_kernels,
     get_sharpen_kernel,
-    get_sobel_kernels,
-    gradient_magnitude,
     kernel_sum,
+)
+from src.labs.lab02_filters.nonlinear_filters import (
+    add_salt_pepper_noise,
+    apply_bilateral_filter,
+    apply_median_filter,
+)
+from src.labs.lab02_filters.point_ops import (
+    adjust_brightness,
+    adjust_contrast,
+    apply_threshold,
     negative_transform,
 )
 

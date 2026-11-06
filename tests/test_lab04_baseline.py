@@ -5,12 +5,14 @@ import numpy as np
 import pytest
 import pywt
 
-from src.models.classical.wavelet_hash import (
-    hamming_distance,
+from src.labs.lab04_wavelet.wavelet_core import (
     wavelet_hash,
     wavelet_hash_color,
 )
-from src.pipelines.lab04_evaluation import (
+from src.labs.lab04_wavelet.wavelet_distance import (
+    hamming_distance,
+)
+from src.labs.lab04_wavelet.wavelet_evaluation import (
     compare_hash_methods,
     score_pairs,
     select_threshold,

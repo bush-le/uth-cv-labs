@@ -10,22 +10,28 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from src.models.classical.canny import (
+from src.labs.lab03_canny.canny_advanced import (
+    run_auto_canny,
+    run_di_zenzo_gradient,
+    run_multichannel_canny,
+    run_otsu_canny,
+)
+from src.labs.lab03_canny.canny_core import custom_canny_pipeline
+from src.labs.lab03_canny.canny_downstream import (
     TemporalEdgeFilter,
+    classify_polygon_contours,
+    segment_via_morphology_and_holes,
+)
+from src.labs.lab03_canny.canny_metrics import (
     calculate_edge_f1_score,
     calculate_hausdorff_distance,
     calculate_pratt_fom,
-    classify_polygon_contours,
-    custom_canny_pipeline,
-    run_auto_canny,
-    run_di_zenzo_gradient,
+)
+from src.labs.lab03_canny.canny_wrappers import (
     run_laplacian,
-    run_multichannel_canny,
     run_opencv_canny,
-    run_otsu_canny,
     run_skimage_canny,
     run_sobel,
-    segment_via_morphology_and_holes,
 )
 
 # ==============================================================================

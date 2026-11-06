@@ -10,19 +10,25 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from src.models.classical.wavelet_hash import (
-    apply_geometric_distortion,
-    apply_photometric_distortion,
+from src.labs.lab04_wavelet.wavelet_core import (
     average_hash,
-    calculate_pairwise_hamming_matrix,
     difference_hash,
-    evaluate_ground_truth_pairs,
-    find_top_k_similar,
-    hamming_distance,
-    normalized_hamming_distance,
     phash_dct,
     wavelet_hash,
     wavelet_hash_slide17,
+)
+from src.labs.lab04_wavelet.wavelet_distance import (
+    calculate_pairwise_hamming_matrix,
+    find_top_k_similar,
+    hamming_distance,
+    normalized_hamming_distance,
+)
+from src.labs.lab04_wavelet.wavelet_distortions import (
+    apply_geometric_distortion,
+    apply_photometric_distortion,
+)
+from src.labs.lab04_wavelet.wavelet_evaluation import (
+    evaluate_ground_truth_pairs,
 )
 
 # ==============================================================================

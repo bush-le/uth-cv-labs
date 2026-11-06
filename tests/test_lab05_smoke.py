@@ -7,16 +7,16 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from src.common.lab05_utils import (
+from src.common.config import load_yaml_config
+from src.common.logger import setup_logger
+from src.labs.lab05_facenet.face_database import FaceDatabase, l2_normalize_numpy
+from src.labs.lab05_facenet.face_preprocessing import preprocess_face, validate_and_clip_bbox
+from src.labs.lab05_facenet.similarity_matcher import SimilarityMatcher
+from src.labs.lab05_facenet.visuals import (
     FaceVisualizer,
     FPSMeter,
     RecognitionResult,
-    load_yaml_config,
-    setup_logger,
 )
-from src.data.face_database import FaceDatabase, l2_normalize_numpy
-from src.data.face_preprocessing import preprocess_face, validate_and_clip_bbox
-from src.models.similarity_matcher import SimilarityMatcher
 
 
 @pytest.mark.smoke
