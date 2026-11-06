@@ -81,35 +81,32 @@ Repository này chứa toàn bộ mã nguồn, dữ liệu thực nghiệm, pipe
 │   ├── run_lab.sh                     # Script chạy lab tự động (1, 2, 3, 4, 5, all)
 │   ├── lab04/                         # Scripts phụ trợ cho Lab 04
 │   └── lab05/                         # Scripts chạy webcam và kết xuất báo cáo Lab 05
-├── src/                               # Package mã nguồn chính (Lab-Centric Atomic Architecture)
-│   ├── common/                        # Tiện ích dùng chung (device, logger, visualizers, metrics)
-│   ├── labs/                          # Các gói thực hành tự trị & độc lập theo từng bài lab
-│   │   ├── lab01_basics/              # Lab 1: io, color, geometry, drawing, visuals, pipeline
-│   │   ├── lab02_filters/             # Lab 2: point_ops, linear_filters, nonlinear_filters, edge_filters, visuals, pipeline
-│   │   ├── lab03_canny/               # Lab 3: canny_core, canny_wrappers, canny_advanced, canny_downstream, canny_metrics, visuals, pipeline
-│   │   ├── lab04_wavelet/             # Lab 4: wavelet_core, wavelet_distance, wavelet_distortions, wavelet_pairs, wavelet_evaluation, visuals, pipeline
-│   │   └── lab05_facenet/             # Lab 5: mtcnn_detector, facenet_extractor, similarity_matcher, face_database, face_preprocessing, visuals, pipeline
-│   ├── data/                          # Shims tương thích ngược (Transforms, Filters, Face Database)
-│   ├── models/                        # Shims tương thích ngược (Canny, Wavelet Hash, MTCNN, FaceNet)
-│   └── pipelines/                     # Shims CLI runners tương thích ngược
-├── tests/                             # Bộ kiểm thử unit tests (119 test cases)
+├── src/                               # Package mã nguồn chính (Ponytail Zero-Bloat Architecture)
+│   ├── common/                        # Tiện ích dùng chung (io, color, device, logger, visualizers, metrics, config)
+│   └── labs/                          # Các gói thực hành tự trị theo từng bài lab (Single Source of Truth)
+│       ├── lab01_basics/              # Lab 1: geometry, drawing, visuals, pipeline (tái sử dụng common io & color)
+│       ├── lab02_filters/             # Lab 2: point_ops, linear_filters, nonlinear_filters, edge_filters, visuals, pipeline
+│       ├── lab03_canny/               # Lab 3: canny_core, canny_wrappers, canny_advanced, canny_downstream, canny_metrics, visuals, pipeline
+│       ├── lab04_wavelet/             # Lab 4: wavelet_core, wavelet_distance, wavelet_distortions, wavelet_pairs, wavelet_evaluation, visuals, pipeline
+│       └── lab05_facenet/             # Lab 5: mtcnn_detector, facenet_extractor, similarity_matcher, face_database, face_preprocessing, visuals, pipeline
+├── tests/                             # Bộ kiểm thử unit tests (120 test cases, 100% pass)
 └── README.md
 ```
 
 ---
 
-## 🏛️ Kiến Trúc Module Hóa Tự Trị (Lab-Centric Atomic Architecture)
+## 🏛️ Kiến Trúc Module Hóa Tối Giản (Ponytail Zero-Bloat Architecture)
 
-Toàn bộ codebase của dự án đã được tái cấu trúc triệt để theo kiến trúc **Lab-Centric Atomic Modules**:
+Toàn bộ codebase của dự án đã được tinh gọn triệt để theo triết lý **Ponytail DRY**:
 
 1. **Phân tách Atomic Module rõ ràng**: Mọi logic tính toán, giải thuật xử lý ảnh, biến đổi ma trận và trích xuất đặc trưng được tách biệt thành các file Python độc lập trong `src/labs/lab0X_.../`:
-   - `lab01_basics`: `io.py`, `color.py`, `geometry.py`, `drawing.py`, `visuals.py`, `pipeline.py`.
+   - `lab01_basics`: `geometry.py`, `drawing.py`, `visuals.py`, `pipeline.py` (sử dụng `src.common.io` và `src.common.color`).
    - `lab02_filters`: `filter_utils.py`, `point_ops.py`, `linear_filters.py`, `nonlinear_filters.py`, `edge_filters.py`, `visuals.py`, `pipeline.py`.
    - `lab03_canny`: `canny_core.py`, `canny_wrappers.py`, `canny_advanced.py`, `canny_downstream.py`, `canny_metrics.py`, `visuals.py`, `pipeline.py`.
    - `lab04_wavelet`: `wavelet_core.py`, `wavelet_distance.py`, `wavelet_distortions.py`, `wavelet_pairs.py`, `wavelet_evaluation.py`, `visuals.py`, `pipeline.py`.
    - `lab05_facenet`: `mtcnn_detector.py`, `facenet_extractor.py`, `similarity_matcher.py`, `face_database.py`, `face_preprocessing.py`, `face_registration.py`, `webcam_recognition.py`, `visuals.py`, `pipeline.py`.
-2. **Jupyter Notebooks là Tầng Trình Diễn Mỏng (Thin Presentation Layer)**: Toàn bộ code trong `notebooks/labs/lab_01.ipynb` đến `lab_05.ipynb` đã được tinh gọn, không chứa code thuật toán tự viết dài dòng mà chỉ import module từ `src.labs` và gọi hàm hiển thị từ `visuals.py` (lịch sử notebook gốc được lưu trữ và truy vết đầy đủ qua Git commit).
-3. **Tương thích ngược 100% (Backward Compatibility Shims)**: Các module tại `src/data/`, `src/models/`, `src/pipelines/` và `src/common/lab05_utils.py` được duy trì dưới dạng shim re-export, đảm bảo 119 unit test và các công cụ xuất báo cáo HTML (`render_report.py`, `run_notebook.py`) hoạt động hoàn hảo không bị gián đoạn.
+2. **Jupyter Notebooks là Tầng Trình Diễn Mỏng (Thin Presentation Layer)**: Toàn bộ code trong `notebooks/labs/lab_01.ipynb` đến `lab_05.ipynb` đã được tinh gọn, không chứa code thuật toán tự viết dài dòng mà chỉ import module từ `src.labs` và gọi hàm hiển thị từ `visuals.py`.
+3. **Zero Bloat & Tái sử dụng Tối đa**: Toàn bộ 38 files shim cũ đã được xóa sạch hoàn toàn. Các tiện ích nền tảng (`src/common/io.py`, `src/common/color.py`, `src/common/metrics.py`, `src/common/device.py`, `src/common/logger.py`) đóng vai trò Single Source of Truth dùng chung cho toàn bộ các bài Lab và Scripts.
 4. **Chuẩn Mực Mã Nguồn**: 100% NumPy vectorization (không lặp pixel bằng for-loop Python), PEP 484 Type Hints đầy đủ, Docstrings chuẩn Google-style, logging có cấu trúc qua `src/common/logger.py`.
 
 ---

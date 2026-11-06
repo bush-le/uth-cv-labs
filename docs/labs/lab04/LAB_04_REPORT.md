@@ -14,7 +14,7 @@ Bài làm chọn baseline đó làm cấu hình tham chiếu của project. Note
 
 Môi trường thực thi: python 3.13.15, opencv 5.0.0, numpy 2.5.3, pywavelets 1.8.0, scipy 1.18.1, sklearn 1.9.1. Tất cả chạy CPU.
 
-Cài `requirements/base.txt` và `jupyter nbformat nbclient ipykernel markdown`. Từ thư mục project, chạy `python -m src.data.lab04_pairs` để tạo dữ liệu từ 26 ảnh đã cung cấp, rồi mở notebook và chọn **Restart Kernel → Run All**. Có thể dùng `python scripts/lab04/run_notebook.py` để chạy và xuất hình/số liệu. Report Markdown là nguồn chỉnh sửa báo cáo; `python scripts/lab04/render_report.py` xuất bản HTML tương ứng. Lần chạy notebook không tự sửa ảnh nguồn hoặc tự thay dữ liệu khi thiếu CSV.
+Cài `requirements/base.txt` và `jupyter nbformat nbclient ipykernel markdown`. Từ thư mục project, chạy `python -m src.labs.lab04_wavelet.wavelet_pairs` để tạo dữ liệu từ 26 ảnh đã cung cấp, rồi mở notebook và chọn **Restart Kernel → Run All**. Có thể dùng `python scripts/lab04/run_notebook.py` để chạy và xuất hình/số liệu. Report Markdown là nguồn chỉnh sửa báo cáo; `python scripts/lab04/render_report.py` xuất bản HTML tương ứng. Lần chạy notebook không tự sửa ảnh nguồn hoặc tự thay dữ liệu khi thiếu CSV.
 
 Seed 42 được dùng khi chia nguồn và sinh nhiễu. Cấu hình dữ liệu ở `configs/dataset/lab04_pairs.yaml`; cấu hình hash/notebook ở `configs/experiment/lab04_wavelet.yaml`. Dependencies đặt phiên bản tối thiểu, nên cần ghi lại môi trường nếu kết quả khác. Thời gian xử lý bên dưới là một lần đo trên các ảnh đã nạp vào RAM, không gồm đọc file.
 
@@ -344,7 +344,7 @@ DTCWT là hướng nghiên cứu để có tính chọn hướng và độ ổn 
 
 ### 7.1. Audit
 
-- **Kiến trúc:** dữ liệu và cặp do `src/data/lab04_pairs.py` chuẩn bị; hash ở `src/models/classical/wavelet_hash.py`; chọn ngưỡng/chấm cặp ở `src/pipelines/lab04_evaluation.py`; phần vẽ dài ở `src/pipelines/lab04_visuals.py` để notebook tập trung vào từng bước tính toán.
+- **Kiến trúc:** dữ liệu và cặp do `src/labs/lab04_wavelet/wavelet_pairs.py` chuẩn bị; hash ở `src/labs/lab04_wavelet/wavelet_core.py`; chọn ngưỡng/chấm cặp ở `src/labs/lab04_wavelet/wavelet_evaluation.py`; phần vẽ dài ở `src/labs/lab04_wavelet/visuals.py` để notebook tập trung vào từng bước tính toán.
 - **Đúng phạm vi:** đủ các bước cơ bản, hai bài nâng cao và khảo sát độ bền được ghi rõ là bổ sung. Không gán baseline RGB–LL–median–192 bit thành yêu cầu slide.
 - **Quy chuẩn CV:** đường dẫn theo project root, không ghi đè ảnh nguồn; NumPy RGB `(H,W,3)`, hash `(192,)` uint8; seed nhiễu/split cố định. Các vòng lặp theo ảnh/cặp/thí nghiệm, không lặp từng pixel. Hàm có type hints và docstring. Bài CPU nên không có quy trình GPU/training.
 - **Phạm vi code:** chỉ giữ các hàm phục vụ notebook hiện tại; đã bỏ pipeline mẫu cũ, bộ vẽ trùng và các thuật toán băm bổ sung chưa dùng. Các hướng mở rộng được thảo luận trong report không đồng nghĩa đã có triển khai.

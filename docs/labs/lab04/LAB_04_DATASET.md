@@ -43,7 +43,7 @@ Chia theo file ảnh nguồn chưa bảo đảm chia theo cá thể động vậ
 ## File và cách chạy lại
 
 - [Cấu hình](../../../configs/dataset/lab04_pairs.yaml): ánh xạ loại ảnh, seed, số ảnh chọn ngưỡng và tham số biến đổi.
-- [Module chuẩn bị](../../../src/data/lab04_pairs.py): chạy từ thư mục project bằng `python -m src.data.lab04_pairs`.
+- [Module chuẩn bị](../../../src/labs/lab04_wavelet/wavelet_pairs.py): chạy từ thư mục project bằng `python -m src.labs.lab04_wavelet.wavelet_pairs`.
 - Đầu ra sinh tự động nằm tại `data/processed/lab04_pairs/`, được Git ignore theo quy tắc project.
 
 Các file đầu ra:

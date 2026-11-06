@@ -45,11 +45,11 @@ docs/labs/
 
 | Lab | Tên Chủ Đề Thực Hành | Trạng Thái | Thư Mục Tài Liệu | Pipeline Điều Phối | Test Suite |
 | :---: | :--- | :---: | :--- | :--- | :--- |
-| **Lab 1** | **Xử lý ảnh cơ bản với OpenCV & Pillow** | ✅ **Hoàn thành** (10 Tests) | [`lab01/`](lab01/LAB_01_REPORT.md) · [`HTML`](lab01/LAB_01_REPORT.html) | [`lab01_pipeline.py`](../../src/pipelines/lab01_pipeline.py) | [`test_transforms.py`](../../tests/test_transforms.py) |
-| **Lab 2** | **Toán tử điểm ảnh & Lọc không gian (Tuyến tính / Phi tuyến)** | ✅ **Hoàn thành** (17 Tests) | [`lab02/`](lab02/LAB_02_REPORT.md) · [`HTML`](lab02/LAB_02_REPORT.html) | [`lab02_pipeline.py`](../../src/pipelines/lab02_pipeline.py) | [`test_filters.py`](../../tests/test_filters.py) |
-| **Lab 3** | **Canny Edge Detector & Phân đoạn hình thái học** | ✅ **Hoàn thành** (16 Tests) | [`lab03/`](lab03/LAB_03_REPORT.md) · [`HTML`](lab03/LAB_03_REPORT.html) | [`lab03_pipeline.py`](../../src/pipelines/lab03_pipeline.py) | [`test_canny.py`](../../tests/test_canny.py) |
-| **Lab 4** | **So sánh tương đồng ảnh dùng Wavelet Hashing (DWT 2D)** | ✅ **Hoàn thành** (33 Tests) | [`lab04/`](lab04/LAB_04_DESCRIPTION.md) · [`HTML`](lab04/LAB_04_REPORT.html) | [`lab04_pipeline.py`](../../src/pipelines/lab04_pipeline.py) | [`test_wavelet_hash.py`](../../tests/test_wavelet_hash.py) |
-| **Lab 5** | **Nhận diện khuôn mặt thời gian thực với MTCNN & FaceNet** | ✅ **Hoàn thành** (17 Tests) | [`lab05/`](lab05/LAB_05_DESCRIPTION.md) · [`HTML`](lab05/LAB_05_REPORT.html) | [`lab05_pipeline.py`](../../src/pipelines/lab05_pipeline.py) | [`test_lab05_unit.py`](../../tests/test_lab05_unit.py) |
+| **Lab 1** | **Xử lý ảnh cơ bản với OpenCV & Pillow** | ✅ **Hoàn thành** (10 Tests) | [`lab01/`](lab01/LAB_01_REPORT.md) · [`HTML`](lab01/LAB_01_REPORT.html) | [`lab01/pipeline.py`](../../src/labs/lab01_basics/pipeline.py) | [`test_transforms.py`](../../tests/test_transforms.py) |
+| **Lab 2** | **Toán tử điểm ảnh & Lọc không gian (Tuyến tính / Phi tuyến)** | ✅ **Hoàn thành** (17 Tests) | [`lab02/`](lab02/LAB_02_REPORT.md) · [`HTML`](lab02/LAB_02_REPORT.html) | [`lab02/pipeline.py`](../../src/labs/lab02_filters/pipeline.py) | [`test_filters.py`](../../tests/test_filters.py) |
+| **Lab 3** | **Canny Edge Detector & Phân đoạn hình thái học** | ✅ **Hoàn thành** (16 Tests) | [`lab03/`](lab03/LAB_03_REPORT.md) · [`HTML`](lab03/LAB_03_REPORT.html) | [`lab03/pipeline.py`](../../src/labs/lab03_canny/pipeline.py) | [`test_canny.py`](../../tests/test_canny.py) |
+| **Lab 4** | **So sánh tương đồng ảnh dùng Wavelet Hashing (DWT 2D)** | ✅ **Hoàn thành** (33 Tests) | [`lab04/`](lab04/LAB_04_DESCRIPTION.md) · [`HTML`](lab04/LAB_04_REPORT.html) | [`lab04/pipeline.py`](../../src/labs/lab04_wavelet/pipeline.py) | [`test_wavelet_hash.py`](../../tests/test_wavelet_hash.py) |
+| **Lab 5** | **Nhận diện khuôn mặt thời gian thực với MTCNN & FaceNet** | ✅ **Hoàn thành** (17 Tests) | [`lab05/`](lab05/LAB_05_DESCRIPTION.md) · [`HTML`](lab05/LAB_05_REPORT.html) | [`lab05/pipeline.py`](../../src/labs/lab05_facenet/pipeline.py) | [`test_lab05_unit.py`](../../tests/test_lab05_unit.py) |
 
 ---
 
