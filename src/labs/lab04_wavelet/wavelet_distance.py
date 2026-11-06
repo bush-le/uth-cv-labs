@@ -6,47 +6,10 @@ from collections.abc import Sequence
 
 import numpy as np
 
-
-def hamming_distance(
-    hash1: Sequence[int] | np.ndarray, hash2: Sequence[int] | np.ndarray
-) -> int:
-    """Calculate the exact Hamming distance between two binary hash codes.
-
-    Args:
-        hash1: First binary hash code of length B.
-        hash2: Second binary hash code of length B.
-
-    Returns:
-        int: Total number of bit positions where hash1 and hash2 differ.
-    """
-    h1 = np.asarray(hash1)
-    h2 = np.asarray(hash2)
-
-    if h1.shape != h2.shape:
-        raise ValueError(f"Hash lengths mismatch: {h1.shape} vs {h2.shape}")
-    if h1.ndim != 1 or not h1.size:
-        raise ValueError("Hashes must be nonempty one-dimensional arrays.")
-    if not np.isin(h1, [0, 1]).all() or not np.isin(h2, [0, 1]).all():
-        raise ValueError("Hashes must contain only binary values.")
-
-    return int(np.count_nonzero(h1 != h2))
-
-
-def normalized_hamming_distance(
-    hash1: Sequence[int] | np.ndarray, hash2: Sequence[int] | np.ndarray
-) -> float:
-    """Calculate the normalized Hamming distance in range [0.0, 1.0].
-
-    Args:
-        hash1: First binary hash code.
-        hash2: Second binary hash code.
-
-    Returns:
-        float: Normalized distance (Hamming Distance / Bit Length).
-    """
-    h1 = np.asarray(hash1)
-    dist = hamming_distance(h1, hash2)
-    return float(dist / len(h1))
+from src.common.metrics import (
+    hamming_distance,
+    normalized_hamming_distance,
+)
 
 
 def calculate_pairwise_hamming_matrix(
@@ -84,3 +47,11 @@ def find_top_k_similar(
     distances = [hamming_distance(query_hash, cand) for cand in database_hashes]
     sorted_pairs = sorted(enumerate(distances), key=lambda x: x[1])
     return sorted_pairs[:k]
+
+
+__all__ = [
+    "hamming_distance",
+    "normalized_hamming_distance",
+    "calculate_pairwise_hamming_matrix",
+    "find_top_k_similar",
+]
