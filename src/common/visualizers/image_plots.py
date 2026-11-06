@@ -13,7 +13,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from src.common.logger import get_logger
-from src.data.transforms import bgr_to_rgb
+from src.common.color import bgr_to_rgb
 
 logger = get_logger(__name__)
 
