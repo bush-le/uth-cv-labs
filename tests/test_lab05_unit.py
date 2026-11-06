@@ -9,7 +9,10 @@ import pytest
 import torch
 
 from src.labs.lab05_facenet.face_database import FaceDatabase, l2_normalize_numpy
-from src.labs.lab05_facenet.face_preprocessing import preprocess_face, validate_and_clip_bbox
+from src.labs.lab05_facenet.face_preprocessing import (
+    preprocess_face,
+    validate_and_clip_bbox,
+)
 from src.labs.lab05_facenet.face_registration import FaceRegistrationPipeline
 from src.labs.lab05_facenet.mtcnn_detector import DetectedFace
 from src.labs.lab05_facenet.similarity_matcher import SimilarityMatcher

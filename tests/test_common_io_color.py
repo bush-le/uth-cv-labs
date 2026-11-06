@@ -1,5 +1,5 @@
 import numpy as np
-import pytest
+
 from src.common.color import (
     bgr_to_grayscale,
     bgr_to_hsv,

@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from src.common.metrics import (
     calculate_binary_confusion_matrix,
     calculate_classification_metrics,

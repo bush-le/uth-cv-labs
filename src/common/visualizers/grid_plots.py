@@ -12,8 +12,8 @@ import numpy as np
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from src.common.logger import get_logger
 from src.common.color import bgr_to_rgb
+from src.common.logger import get_logger
 
 logger = get_logger(__name__)
 

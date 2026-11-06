@@ -7,10 +7,10 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from src.common.logger import get_logger
-from src.common.visualizer import plot_filter_grid, plot_histogram, plot_side_by_side
 from src.common.color import bgr_to_grayscale
 from src.common.io import load_image_cv, save_image_cv
+from src.common.logger import get_logger
+from src.common.visualizer import plot_filter_grid, plot_histogram, plot_side_by_side
 from src.labs.lab02_filters.edge_filters import (
     apply_prewitt,
     apply_sobel,
