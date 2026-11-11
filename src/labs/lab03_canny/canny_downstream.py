@@ -12,19 +12,60 @@ def segment_via_morphology_and_holes(
     kernel_size: tuple[int, int] = (3, 3),
     closing_iterations: int = 2,
     dilation_iterations: int = 1,
-) -> tuple[np.ndarray, np.ndarray]:
+    *,
+    low_threshold: float | None = None,
+    high_threshold: float | None = None,
+    gaussian_ksize: tuple[int, int] | None = None,
+    gaussian_sigma: float | None = None,
+    morph_kernel_size: tuple[int, int] | None = None,
+) -> tuple[np.ndarray, np.ndarray] | dict[str, np.ndarray]:
     """Segment image regions from Canny edges using morphology and hole filling.
 
+    Can operate either directly on an edge map returning a (closed, mask) tuple,
+    or on a grayscale image with Canny threshold parameters returning a dictionary
+    containing 'edges', 'closed', 'mask', and 'segmented' result.
+
     Args:
-        edges: Binary edge map of shape (H, W) uint8 {0, 255}.
+        edges: Binary edge map of shape (H, W) or grayscale image if low_threshold is passed.
         kernel_size: Morphological structuring element shape.
         closing_iterations: Number of morphological closing iterations.
         dilation_iterations: Number of dilation iterations.
+        low_threshold: Optional lower threshold for Canny edge detection.
+        high_threshold: Optional higher threshold for Canny edge detection.
+        gaussian_ksize: Optional Gaussian kernel size before Canny.
+        gaussian_sigma: Optional Gaussian sigma before Canny.
+        morph_kernel_size: Alias for kernel_size.
 
     Returns:
-        tuple[np.ndarray, np.ndarray]: (closed_edges, filled_mask) uint8 {0, 255}.
+        tuple[np.ndarray, np.ndarray] | dict[str, np.ndarray]:
+            Tuple (closed_edges, filled_mask) or dictionary with segmented components.
     """
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, kernel_size)
+    k_size = morph_kernel_size if morph_kernel_size is not None else kernel_size
+
+    if low_threshold is not None and high_threshold is not None:
+        img_gray = edges.copy()
+        if gaussian_ksize is not None and gaussian_sigma is not None:
+            blurred = cv2.GaussianBlur(img_gray, gaussian_ksize, gaussian_sigma)
+        else:
+            blurred = img_gray
+        edge_map = cv2.Canny(blurred, int(low_threshold), int(high_threshold))
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, k_size)
+        closed = cv2.morphologyEx(
+            edge_map, cv2.MORPH_CLOSE, kernel, iterations=closing_iterations
+        )
+        if dilation_iterations > 0:
+            closed = cv2.dilate(closed, kernel, iterations=dilation_iterations)
+        filled = scipy.ndimage.binary_fill_holes(closed > 0)
+        filled_uint8 = (filled.astype(np.uint8)) * 255
+        segmented = cv2.bitwise_and(img_gray, img_gray, mask=filled_uint8)
+        return {
+            "edges": edge_map,
+            "closed": closed,
+            "mask": filled_uint8,
+            "segmented": segmented,
+        }
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, k_size)
     closed = cv2.morphologyEx(
         edges, cv2.MORPH_CLOSE, kernel, iterations=closing_iterations
     )
@@ -84,31 +125,37 @@ def detect_hough_lines(
 
 def detect_hough_circles(
     image_gray: np.ndarray,
-    rgb_canvas: np.ndarray,
+    rgb_canvas: np.ndarray | None = None,
     dp: float = 1.2,
     min_dist: float = 40.0,
     param1: float = 100.0,
     param2: float = 25.0,
     min_radius: int = 15,
     max_radius: int = 80,
-) -> tuple[np.ndarray, int]:
+    *,
+    blur_ksize: tuple[int, int] = (9, 9),
+    blur_sigma: float = 2.0,
+) -> tuple[np.ndarray, int] | dict[str, object]:
     """Detect circular features using Hough Circle Transform.
 
     Args:
         image_gray: Grayscale image (H, W).
-        rgb_canvas: Canvas image (H, W, 3) RGB.
+        rgb_canvas: Optional canvas image (H, W, 3) RGB/BGR. If None, produces a dictionary.
         dp: Inverse ratio of accumulator resolution to image resolution.
         min_dist: Minimum distance between detected circle centers.
         param1: Upper threshold for internal Canny detector.
         param2: Accumulator threshold for circle centers.
         min_radius: Minimum circle radius.
         max_radius: Maximum circle radius.
+        blur_ksize: Gaussian blur kernel size prior to circle Hough transform.
+        blur_sigma: Gaussian blur standard deviation.
 
     Returns:
-        tuple[np.ndarray, int]: (annotated_canvas, circle_count).
+        tuple[np.ndarray, int] | dict[str, object]:
+            If rgb_canvas is provided: (annotated_canvas, circle_count).
+            If rgb_canvas is None: dictionary with 'annotated_bgr', 'circles', and 'count'.
     """
-    canvas = rgb_canvas.copy()
-    blurred = cv2.GaussianBlur(image_gray, (9, 9), 2.0)
+    blurred = cv2.GaussianBlur(image_gray, blur_ksize, blur_sigma)
     circles = cv2.HoughCircles(
         blurred,
         cv2.HOUGH_GRADIENT,
@@ -120,6 +167,35 @@ def detect_hough_circles(
         maxRadius=max_radius,
     )
 
+    if rgb_canvas is None:
+        circle_result = cv2.cvtColor(image_gray, cv2.COLOR_GRAY2BGR)
+        circle_count = 0
+        if circles is not None:
+            found_circles = np.rint(circles[0]).astype(int)
+            found_circles = found_circles[
+                np.lexsort((found_circles[:, 0], found_circles[:, 1]))
+            ]
+            circle_count = len(found_circles)
+            for number, (x, y, r) in enumerate(found_circles, start=1):
+                cv2.circle(circle_result, (x, y), r, (0, 0, 255), 2)
+                cv2.circle(circle_result, (x, y), 2, (0, 255, 0), -1)
+                cv2.putText(
+                    circle_result,
+                    str(number),
+                    (x - 8, y + 5),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.45,
+                    (0, 255, 0),
+                    1,
+                    cv2.LINE_AA,
+                )
+        return {
+            "annotated_bgr": circle_result,
+            "circles": circles,
+            "count": circle_count,
+        }
+
+    canvas = rgb_canvas.copy()
     count = 0
     if circles is not None:
         circles_flat = np.around(circles).reshape(-1, 3)
