@@ -28,8 +28,14 @@ from src.labs.lab05_facenet.visuals import (
     FaceVisualizer,
     FPSMeter,
     RecognitionResult,
+    plot_biometric_verification_suite,
     plot_detection_result,
+    plot_feature_signature_profile,
+    plot_gallery_probe_matrix,
+    plot_hyperspherical_tsne_clusters,
+    plot_margin_sensitivity_curve,
     plot_similarity_matrix,
+    visualize_mtcnn_alignment_and_margin,
 )
 from src.labs.lab05_facenet.webcam_recognition import (
     RealtimeRecognitionPipeline,
@@ -63,4 +69,10 @@ __all__ = [
     "RecognitionResult",
     "plot_detection_result",
     "plot_similarity_matrix",
+    "visualize_mtcnn_alignment_and_margin",
+    "plot_gallery_probe_matrix",
+    "plot_biometric_verification_suite",
+    "plot_hyperspherical_tsne_clusters",
+    "plot_feature_signature_profile",
+    "plot_margin_sensitivity_curve",
 ]
