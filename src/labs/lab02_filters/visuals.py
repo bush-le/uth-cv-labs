@@ -155,22 +155,8 @@ def plot_point_op_transfer_curves(
     ax.axhline(255, color="gray", linestyle=":", alpha=0.5)
     ax.axhline(0, color="gray", linestyle=":", alpha=0.5)
     # Highlight saturation shelves
-    ax.fill_between(
-        x[x >= 205],
-        255,
-        255,
-        color="red",
-        alpha=0.2,
-        label="Vùng bão hòa (x >= 205)",
-    )
-    ax.fill_between(
-        x[x <= 50],
-        0,
-        0,
-        color="blue",
-        alpha=0.2,
-        label="Vùng cắt tối (x <= 50)",
-    )
+    ax.axvspan(205, 255, color="red", alpha=0.15, label="Vùng bão hòa (x >= 205)")
+    ax.axvspan(0, 50, color="blue", alpha=0.15, label="Vùng cắt tối (x <= 50)")
     ax.set_title("1. Đường cong Độ sáng: g(x) = clip(x + Beta, 0, 255)", fontsize=11)
     ax.set_xlabel("Mức xám vào f(x, y)")
     ax.set_ylabel("Mức xám ra g(x, y)")
@@ -465,7 +451,7 @@ def plot_fft_filter_spectra(
     # Compute 2D FFT and radial profiles
     mags_2d = []
     radial_profiles = []
-    max_radius = 0
+    max_radius = min(min(g.shape) // 2 for g in gray_imgs)
 
     for g_img in gray_imgs:
         f_shift = np.fft.fftshift(np.fft.fft2(g_img))
@@ -476,17 +462,20 @@ def plot_fft_filter_spectra(
         cy, cx = h // 2, w // 2
         y, x = np.ogrid[:h, :w]
         r_grid = np.sqrt((x - cx) ** 2 + (y - cy) ** 2).astype(int)
-        r_max = min(cy, cx)
-        if max_radius == 0:
-            max_radius = r_max
 
-        # Compute radial average power profile P(r)
+        # Vectorized radial average power spectrum P(r) using np.bincount
         power_spectrum = np.abs(f_shift) ** 2
-        r_profile = np.zeros(r_max, dtype=np.float32)
-        for r_val in range(r_max):
-            mask = r_grid == r_val
-            if np.any(mask):
-                r_profile[r_val] = np.mean(power_spectrum[mask])
+        r_flat = r_grid.ravel()
+        p_flat = power_spectrum.ravel()
+        valid = r_flat < max_radius
+        r_valid = r_flat[valid]
+        p_valid = p_flat[valid]
+
+        counts = np.bincount(r_valid, minlength=max_radius)
+        sums = np.bincount(r_valid, weights=p_valid, minlength=max_radius)
+        r_profile = np.zeros(max_radius, dtype=np.float32)
+        nonzero = counts > 0
+        r_profile[nonzero] = sums[nonzero] / counts[nonzero]
         radial_profiles.append(r_profile)
 
     # Layout: Top row for 2D spectra, bottom row for 1D radial profile curve
@@ -567,12 +556,12 @@ def plot_gradient_vector_field(
     v = gy[0:ph:step, 0:pw:step]
     m_sub = mag[0:ph:step, 0:pw:step]
 
-    # Invert v for display coordinates (y points downwards)
+    # Matplotlib quiver with angles="xy", scale_units="xy" evaluates vectors in data coordinates
     q = ax1.quiver(
         x_coords + 0.5,
         y_coords + 0.5,
         u,
-        -v,
+        v,
         m_sub,
         cmap="autumn",
         scale=None,
@@ -677,9 +666,8 @@ def plot_kernel_sum_dc_characteristics(
     # Highlight saturation shelf for sum = 2.0
     ax.axhline(255, color="magenta", linestyle=":", alpha=0.5)
     ax.axvline(127.5, color="magenta", linestyle=":", alpha=0.5)
-    ax.fill_between(
-        c[c >= 127.5],
-        255,
+    ax.axvspan(
+        127.5,
         255,
         color="magenta",
         alpha=0.15,
