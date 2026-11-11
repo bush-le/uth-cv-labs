@@ -43,6 +43,9 @@ def apply_custom_filter(
     return cv2.filter2D(image, ddepth, kernel)
 
 
+apply_filter2d = apply_custom_filter
+
+
 def apply_mean_filter(image: np.ndarray, ksize: int = 3) -> np.ndarray:
     """Blur an image with a normalized mean (box) kernel."""
     return apply_custom_filter(image, get_mean_kernel(ksize))
