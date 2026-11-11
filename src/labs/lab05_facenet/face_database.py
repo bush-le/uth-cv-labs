@@ -77,7 +77,9 @@ class FaceDatabase:
                 vectors.append(vec)
             # Nếu một người có nhiều ảnh đăng ký, bổ sung thêm vector trung bình (centroid) đã chuẩn hóa L2
             if len(samples) > 1:
-                centroid = l2_normalize_numpy(np.mean(np.stack(samples, axis=0), axis=0))
+                centroid = l2_normalize_numpy(
+                    np.mean(np.stack(samples, axis=0), axis=0)
+                )
                 labels.append(identity)
                 vectors.append(centroid)
 

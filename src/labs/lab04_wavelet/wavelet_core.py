@@ -182,7 +182,11 @@ def wavelet_hash_slide17(
         list[int]: List of integer bits {0, 1}.
     """
     img_gray = _load_image_grayscale(image)
-    target_size = (image_size[0], image_size[1]) if isinstance(image_size, (tuple, list)) else (64, 64)
+    target_size = (
+        (image_size[0], image_size[1])
+        if isinstance(image_size, (tuple, list))
+        else (64, 64)
+    )
     img_resized = cv2.resize(img_gray, target_size, interpolation=cv2.INTER_AREA)
 
     coeffs = pywt.wavedec2(img_resized, wavelet=wavelet, level=level, mode="symmetric")

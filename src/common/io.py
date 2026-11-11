@@ -61,7 +61,9 @@ def load_image_pil(image_path: str | Path, to_rgb: bool = True) -> Image.Image:
         image.load()
         if to_rgb and image.mode != "RGB":
             image = image.convert("RGB")
-        logger.debug("Loaded image via PIL with size %s and mode %s", image.size, image.mode)
+        logger.debug(
+            "Loaded image via PIL with size %s and mode %s", image.size, image.mode
+        )
         return image
     except Exception as exc:
         logger.error("Pillow failed to open image %s: %s", path, exc)
@@ -80,7 +82,9 @@ def save_image_pil(
     path = Path(output_path)
     path.parent.mkdir(parents=True, exist_ok=True)
 
-    target_format = (image_format or path.suffix.lstrip(".").upper()).replace("JPG", "JPEG")
+    target_format = (image_format or path.suffix.lstrip(".").upper()).replace(
+        "JPG", "JPEG"
+    )
     to_save = image
     if target_format in {"JPEG", "BMP"} and image.mode in {"RGBA", "P"}:
         to_save = image.convert("RGB")

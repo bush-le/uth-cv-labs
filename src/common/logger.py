@@ -63,4 +63,3 @@ def setup_logger(
         else level
     )
     return get_logger(name=name, level=numeric_level, log_file=log_file)
-

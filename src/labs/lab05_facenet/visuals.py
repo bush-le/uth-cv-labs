@@ -39,7 +39,9 @@ class FPSMeter:
                 if self._fps == 0.0:
                     self._fps = instant_fps
                 else:
-                    self._fps = self.alpha * self._fps + (1.0 - self.alpha) * instant_fps
+                    self._fps = (
+                        self.alpha * self._fps + (1.0 - self.alpha) * instant_fps
+                    )
         self._last_time = now
         return self._fps
 
@@ -119,7 +121,9 @@ class FaceVisualizer:
             label_y2 = label_y1 + text_h + baseline + 6
             label_x2 = min(width - 1, x1 + text_w + 10)
 
-            cv2.rectangle(canvas, (x1, label_y1), (label_x2, label_y2), box_color, thickness=-1)
+            cv2.rectangle(
+                canvas, (x1, label_y1), (label_x2, label_y2), box_color, thickness=-1
+            )
             cv2.putText(
                 canvas,
                 label,

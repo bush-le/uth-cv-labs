@@ -36,5 +36,7 @@ def test_wavelet_hash_generation():
 
 def test_wavelet_distortions():
     img = np.full((32, 32, 3), 100, dtype=np.uint8)
-    noisy = wavelet_distortions.apply_photometric_distortion(img, "gaussian_noise", 15.0)
+    noisy = wavelet_distortions.apply_photometric_distortion(
+        img, "gaussian_noise", 15.0
+    )
     assert noisy.shape == img.shape

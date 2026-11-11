@@ -43,7 +43,9 @@ class FaceNetExtractor:
                     f"Không tìm thấy file trọng số FaceNet tại: {ckpt_file}"
                 )
             self.model = InceptionResnetV1(pretrained=None, classify=False)
-            state_dict = torch.load(ckpt_file, map_location=self.device, weights_only=True)
+            state_dict = torch.load(
+                ckpt_file, map_location=self.device, weights_only=True
+            )
             # Loại bỏ trọng số tầng phân loại logits nếu có trong state_dict gốc
             filtered_state = {
                 k: v for k, v in state_dict.items() if not k.startswith("logits.")

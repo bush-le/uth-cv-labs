@@ -62,8 +62,14 @@ def crop_face_with_margin(
 ) -> np.ndarray:
     """Crop face region from BGR image with an optional margin."""
     h, w = frame_bgr.shape[:2]
-    int_margin = int(margin * min(w, h)) if isinstance(margin, float) and margin < 1.0 else int(margin)
-    clipped = validate_and_clip_bbox(bbox, frame_width=w, frame_height=h, margin=int_margin)
+    int_margin = (
+        int(margin * min(w, h))
+        if isinstance(margin, float) and margin < 1.0
+        else int(margin)
+    )
+    clipped = validate_and_clip_bbox(
+        bbox, frame_width=w, frame_height=h, margin=int_margin
+    )
     if clipped is None:
         raise ValueError(f"Invalid bounding box: {bbox}")
     x1, y1, x2, y2 = clipped
@@ -93,7 +99,9 @@ def preprocess_face(
     h, w = frame_bgr.shape[:2]
     clipped = validate_and_clip_bbox(bbox, frame_width=w, frame_height=h, margin=0)
     if clipped is None:
-        raise ValueError(f"Bounding box không hợp lệ: {bbox} trên khung hình ({w}x{h}).")
+        raise ValueError(
+            f"Bounding box không hợp lệ: {bbox} trên khung hình ({w}x{h})."
+        )
 
     x1, y1, x2, y2 = clipped
     face_crop_bgr = frame_bgr[y1:y2, x1:x2]

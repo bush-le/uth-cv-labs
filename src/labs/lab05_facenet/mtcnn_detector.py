@@ -90,7 +90,9 @@ class MTCNNDetector:
 
         # Sắp xếp ưu tiên khuôn mặt có diện tích lớn nhất lên đầu
         detected_list.sort(
-            key=lambda item: (item.bbox[2] - item.bbox[0]) * (item.bbox[3] - item.bbox[1]),
+            key=lambda item: (
+                (item.bbox[2] - item.bbox[0]) * (item.bbox[3] - item.bbox[1])
+            ),
             reverse=True,
         )
         return detected_list

@@ -18,7 +18,9 @@ def resolve_device(device_pref: str = "auto") -> str:
     if pref in ("cuda", "gpu"):
         return "cuda" if torch.cuda.is_available() else "cpu"
     if pref == "mps":
-        mps_available = hasattr(torch.backends, "mps") and torch.backends.mps.is_available()
+        mps_available = (
+            hasattr(torch.backends, "mps") and torch.backends.mps.is_available()
+        )
         return "mps" if mps_available else "cpu"
     if pref == "cpu":
         return "cpu"

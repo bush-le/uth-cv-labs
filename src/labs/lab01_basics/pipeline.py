@@ -119,16 +119,24 @@ def run_lab01(
     artifacts["scaled"] = save_image_cv(scaled_img, trans_dir / "scaled_50_percent.jpg")
 
     fixed_img = resize_by_dimensions(img_cv, target_width=300, target_height=300)
-    artifacts["fixed_size"] = save_image_cv(fixed_img, trans_dir / "resized_300x300.jpg")
+    artifacts["fixed_size"] = save_image_cv(
+        fixed_img, trans_dir / "resized_300x300.jpg"
+    )
 
     # 5. Drawing and annotations
     logger.info("[Yêu cầu 5] Vẽ hình học cơ bản và chú thích văn bản...")
     draw_dir = base_out / "annotations"
     annotated = img_cv.copy()
 
-    annotated = draw_rectangle(annotated, (50, 50), (250, 200), (0, 255, 0), thickness=3)
-    annotated = draw_circle(annotated, (400, 150), radius=60, color=(255, 0, 0), thickness=-1)
-    annotated = draw_line(annotated, (0, 0), (width - 1, height - 1), (0, 0, 255), thickness=2)
+    annotated = draw_rectangle(
+        annotated, (50, 50), (250, 200), (0, 255, 0), thickness=3
+    )
+    annotated = draw_circle(
+        annotated, (400, 150), radius=60, color=(255, 0, 0), thickness=-1
+    )
+    annotated = draw_line(
+        annotated, (0, 0), (width - 1, height - 1), (0, 0, 255), thickness=2
+    )
     annotated = draw_text(
         annotated,
         "Lab 1: OpenCV Basics",

@@ -109,7 +109,9 @@ class FaceRegistrationPipeline:
 
                 if self.register_single_frame(identity=identity, frame_bgr=img_bgr):
                     accepted += 1
-                    logger.info("Đã đăng ký thành công: %s <- %s", identity, img_path.name)
+                    logger.info(
+                        "Đã đăng ký thành công: %s <- %s", identity, img_path.name
+                    )
                 else:
                     rejected += 1
 

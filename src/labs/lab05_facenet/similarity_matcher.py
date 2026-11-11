@@ -13,8 +13,8 @@ from src.labs.lab05_facenet.face_database import FaceDatabase, l2_normalize_nump
 class MatchDecision:
     """Kết quả đối sánh một vector khuôn mặt từ camera với cơ sở dữ liệu."""
 
-    status: str      # "Matched" hoặc "Unknown"
-    identity: str    # Tên danh tính nếu Matched, hoặc "Unknown"
+    status: str  # "Matched" hoặc "Unknown"
+    identity: str  # Tên danh tính nếu Matched, hoặc "Unknown"
     similarity: float
 
 
@@ -29,7 +29,9 @@ class SimilarityMatcher:
 
     def __init__(self, similarity_threshold: float = 0.7) -> None:
         if not (-1.0 <= similarity_threshold <= 1.0):
-            raise ValueError("Ngưỡng Cosine Similarity phải nằm trong khoảng [-1.0, 1.0].")
+            raise ValueError(
+                "Ngưỡng Cosine Similarity phải nằm trong khoảng [-1.0, 1.0]."
+            )
         self.similarity_threshold = float(similarity_threshold)
 
     @staticmethod
@@ -53,12 +55,16 @@ class SimilarityMatcher:
         norm_a = float(np.linalg.norm(a))
         norm_b = float(np.linalg.norm(b))
         if norm_a < 1e-12 or norm_b < 1e-12:
-            raise ValueError("Không thể tính Cosine Similarity cho vector không (zero vector).")
+            raise ValueError(
+                "Không thể tính Cosine Similarity cho vector không (zero vector)."
+            )
 
         sim = float(np.dot(a, b) / (norm_a * norm_b))
         return float(np.clip(sim, -1.0, 1.0))
 
-    def evaluate_threshold(self, similarity: float, candidate_identity: str) -> MatchDecision:
+    def evaluate_threshold(
+        self, similarity: float, candidate_identity: str
+    ) -> MatchDecision:
         """Áp dụng điều kiện ngưỡng nghiêm ngặt > 0.7 của giảng viên."""
         if similarity > self.similarity_threshold:
             return MatchDecision(
@@ -72,7 +78,9 @@ class SimilarityMatcher:
             similarity=float(similarity),
         )
 
-    def match(self, query_embedding: np.ndarray, database: FaceDatabase) -> MatchDecision:
+    def match(
+        self, query_embedding: np.ndarray, database: FaceDatabase
+    ) -> MatchDecision:
         """So sánh embedding thu từ webcam với toàn bộ cơ sở dữ liệu đã đăng ký."""
         query = np.asarray(query_embedding, dtype=np.float32).reshape(-1)
         if query.size == 0:

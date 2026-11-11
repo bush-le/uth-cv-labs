@@ -16,11 +16,15 @@ def plot_side_by_side(
 ) -> plt.Figure:
     """Plot two images side by side for visual comparison."""
     fig, axes = plt.subplots(1, 2, figsize=figsize)
-    axes[0].imshow(img1 if img1.ndim == 3 else img1, cmap=None if img1.ndim == 3 else "gray")
+    axes[0].imshow(
+        img1 if img1.ndim == 3 else img1, cmap=None if img1.ndim == 3 else "gray"
+    )
     axes[0].set_title(title1, fontsize=12)
     axes[0].axis("off")
 
-    axes[1].imshow(img2 if img2.ndim == 3 else img2, cmap=None if img2.ndim == 3 else "gray")
+    axes[1].imshow(
+        img2 if img2.ndim == 3 else img2, cmap=None if img2.ndim == 3 else "gray"
+    )
     axes[1].set_title(title2, fontsize=12)
     axes[1].axis("off")
 
@@ -91,26 +95,46 @@ def plot_roi_and_resize(
     figsize: tuple[int, int] = (14, 10),
 ) -> plt.Figure:
     """Plot original, ROI, scale-resized, and fixed-dim resized images."""
-    orig_rgb = cv2.cvtColor(original, cv2.COLOR_BGR2RGB) if original.ndim == 3 else original
+    orig_rgb = (
+        cv2.cvtColor(original, cv2.COLOR_BGR2RGB) if original.ndim == 3 else original
+    )
     roi_rgb = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB) if roi.ndim == 3 else roi
-    scale_rgb = cv2.cvtColor(resized_scale, cv2.COLOR_BGR2RGB) if resized_scale.ndim == 3 else resized_scale
-    dims_rgb = cv2.cvtColor(resized_dims, cv2.COLOR_BGR2RGB) if resized_dims.ndim == 3 else resized_dims
+    scale_rgb = (
+        cv2.cvtColor(resized_scale, cv2.COLOR_BGR2RGB)
+        if resized_scale.ndim == 3
+        else resized_scale
+    )
+    dims_rgb = (
+        cv2.cvtColor(resized_dims, cv2.COLOR_BGR2RGB)
+        if resized_dims.ndim == 3
+        else resized_dims
+    )
 
     fig, axes = plt.subplots(2, 2, figsize=figsize)
     axes[0, 0].imshow(orig_rgb)
-    axes[0, 0].set_title(f"Ảnh gốc ({original.shape[1]}x{original.shape[0]})", fontsize=11)
+    axes[0, 0].set_title(
+        f"Ảnh gốc ({original.shape[1]}x{original.shape[0]})", fontsize=11
+    )
     axes[0, 0].axis("off")
 
     axes[0, 1].imshow(roi_rgb)
-    axes[0, 1].set_title(f"Vùng ROI trích xuất ({roi.shape[1]}x{roi.shape[0]})", fontsize=11)
+    axes[0, 1].set_title(
+        f"Vùng ROI trích xuất ({roi.shape[1]}x{roi.shape[0]})", fontsize=11
+    )
     axes[0, 1].axis("off")
 
     axes[1, 0].imshow(scale_rgb)
-    axes[1, 0].set_title(f"Thu nhỏ tỷ lệ ({resized_scale.shape[1]}x{resized_scale.shape[0]})", fontsize=11)
+    axes[1, 0].set_title(
+        f"Thu nhỏ tỷ lệ ({resized_scale.shape[1]}x{resized_scale.shape[0]})",
+        fontsize=11,
+    )
     axes[1, 0].axis("off")
 
     axes[1, 1].imshow(dims_rgb)
-    axes[1, 1].set_title(f"Kích thước cố định ({resized_dims.shape[1]}x{resized_dims.shape[0]})", fontsize=11)
+    axes[1, 1].set_title(
+        f"Kích thước cố định ({resized_dims.shape[1]}x{resized_dims.shape[0]})",
+        fontsize=11,
+    )
     axes[1, 1].axis("off")
 
     plt.tight_layout()

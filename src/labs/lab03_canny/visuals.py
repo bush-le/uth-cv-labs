@@ -27,7 +27,11 @@ def plot_canny_comparison(
         if i < n:
             im = images[i]
             cmap = "gray" if im.ndim == 2 else None
-            disp = cv2.cvtColor(im, cv2.COLOR_BGR2RGB) if (im.ndim == 3 and im.shape[2] == 3) else im
+            disp = (
+                cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+                if (im.ndim == 3 and im.shape[2] == 3)
+                else im
+            )
             axes_flat[i].imshow(disp, cmap=cmap)
             axes_flat[i].set_title(titles[i], fontsize=11)
             axes_flat[i].axis("off")

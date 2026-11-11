@@ -214,7 +214,8 @@ def main() -> None:
     )
     args = parser.parse_args()
     root = next(
-        p for p in (Path.cwd(), *Path(__file__).resolve().parents)
+        p
+        for p in (Path.cwd(), *Path(__file__).resolve().parents)
         if (p / "pyproject.toml").is_file()
     )
     path = args.config if args.config.is_absolute() else root / args.config

@@ -31,7 +31,9 @@ def test_similarity_matcher_metrics():
 
 def test_face_preprocessing_crop():
     img = np.zeros((100, 100, 3), dtype=np.uint8)
-    cropped = face_preprocessing.crop_face_with_margin(img, (20, 20, 60, 60), margin=0.1)
+    cropped = face_preprocessing.crop_face_with_margin(
+        img, (20, 20, 60, 60), margin=0.1
+    )
     assert cropped.ndim == 3
     assert cropped.shape[0] > 0 and cropped.shape[1] > 0
 

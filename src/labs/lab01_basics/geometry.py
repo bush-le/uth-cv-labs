@@ -22,7 +22,9 @@ def crop_roi(image: np.ndarray, *args) -> np.ndarray:
     elif len(args) == 4:
         box = args
     else:
-        raise ValueError("crop_roi expects either a box tuple (x1, y1, x2, y2) or 4 coordinates x1, y1, x2, y2")
+        raise ValueError(
+            "crop_roi expects either a box tuple (x1, y1, x2, y2) or 4 coordinates x1, y1, x2, y2"
+        )
 
     x1, y1, x2, y2 = box
     height, width = image.shape[:2]
@@ -42,7 +44,9 @@ def crop_roi_pil(image: Image.Image, *args) -> Image.Image:
     elif len(args) == 4:
         box = args
     else:
-        raise ValueError("crop_roi_pil expects either a box tuple (x1, y1, x2, y2) or 4 coordinates x1, y1, x2, y2")
+        raise ValueError(
+            "crop_roi_pil expects either a box tuple (x1, y1, x2, y2) or 4 coordinates x1, y1, x2, y2"
+        )
 
     x1, y1, x2, y2 = box
     width, height = image.size
@@ -65,7 +69,9 @@ def resize_by_scale(
     if fy is None:
         fy = fx
     if fx <= 0 or fy <= 0:
-        raise ValueError(f"Scale factors fx and fy must be positive, got fx={fx}, fy={fy}")
+        raise ValueError(
+            f"Scale factors fx and fy must be positive, got fx={fx}, fy={fy}"
+        )
 
     return cv2.resize(image, dsize=(0, 0), fx=fx, fy=fy, interpolation=interpolation)
 
@@ -95,7 +101,9 @@ def resize_pil_by_scale(
     if fy is None:
         fy = fx
     if fx <= 0 or fy <= 0:
-        raise ValueError(f"Scale factors fx and fy must be positive, got fx={fx}, fy={fy}")
+        raise ValueError(
+            f"Scale factors fx and fy must be positive, got fx={fx}, fy={fy}"
+        )
 
     new_width = max(1, int(round(image.width * fx)))
     new_height = max(1, int(round(image.height * fy)))

@@ -14,14 +14,18 @@ logger = get_logger(__name__)
 def bgr_to_rgb(image: np.ndarray) -> np.ndarray:
     """Convert an image from OpenCV BGR color space to RGB color space."""
     if image.ndim != 3 or image.shape[2] != 3:
-        raise ValueError(f"Expected 3-channel image for BGR->RGB conversion, got shape {image.shape}")
+        raise ValueError(
+            f"Expected 3-channel image for BGR->RGB conversion, got shape {image.shape}"
+        )
     return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
 
 def rgb_to_bgr(image: np.ndarray) -> np.ndarray:
     """Convert an image from RGB color space to OpenCV BGR color space."""
     if image.ndim != 3 or image.shape[2] != 3:
-        raise ValueError(f"Expected 3-channel image for RGB->BGR conversion, got shape {image.shape}")
+        raise ValueError(
+            f"Expected 3-channel image for RGB->BGR conversion, got shape {image.shape}"
+        )
     return cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
 

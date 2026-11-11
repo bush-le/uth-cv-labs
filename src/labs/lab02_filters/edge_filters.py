@@ -28,9 +28,7 @@ def gradient_magnitude(grad_x: np.ndarray, grad_y: np.ndarray) -> np.ndarray:
         raise ValueError(
             f"Gradient shapes must match, got {grad_x.shape} and {grad_y.shape}"
         )
-    magnitude = np.sqrt(
-        grad_x.astype(np.float64) ** 2 + grad_y.astype(np.float64) ** 2
-    )
+    magnitude = np.sqrt(grad_x.astype(np.float64) ** 2 + grad_y.astype(np.float64) ** 2)
     return cv2.convertScaleAbs(magnitude)
 
 
@@ -79,8 +77,12 @@ def apply_prewitt(
         gradient = cv2.filter2D(image.astype(np.float32), cv2.CV_32F, prewitt_y)
         return cv2.convertScaleAbs(gradient)
 
-    gx = cv2.convertScaleAbs(cv2.filter2D(image.astype(np.float32), cv2.CV_32F, prewitt_x))
-    gy = cv2.convertScaleAbs(cv2.filter2D(image.astype(np.float32), cv2.CV_32F, prewitt_y))
+    gx = cv2.convertScaleAbs(
+        cv2.filter2D(image.astype(np.float32), cv2.CV_32F, prewitt_x)
+    )
+    gy = cv2.convertScaleAbs(
+        cv2.filter2D(image.astype(np.float32), cv2.CV_32F, prewitt_y)
+    )
     mag = gradient_magnitude(gx, gy)
     return gx, gy, mag
 
