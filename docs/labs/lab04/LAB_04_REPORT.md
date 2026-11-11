@@ -141,9 +141,13 @@ Mỗi LL của ảnh minh họa có kích thước **131×131**, sau chuẩn hó
 
 *Hình 3. LL, LL 8×8 và ma trận bit của từng kênh màu.*
 
-![Hình 4. LL và ba thành phần chi tiết trên kênh R; các panel dùng thang hiển thị riêng.](../../assets/lab04/wavelet_bands.png)
+![Hình 4. Bố cục 4 góc phần tư Mallat và biểu đồ tập trung năng lượng Frobenius các dải sóng 2D DWT.](../../assets/lab04/dwt_energy_analysis.png)
 
-*Hình 4. LL và ba thành phần chi tiết trên kênh R; các panel dùng thang hiển thị riêng.*
+*Hình 4. Bố cục 4 góc phần tư Mallat và biểu đồ tập trung năng lượng Frobenius các dải sóng 2D DWT.*
+
+![Hình 4b. Phân phối trung vị 64 hệ số LL và bản đồ nhiệt vi sai bit 8×8 (Bất biến tri giác vs Phân biệt lớp).](../../assets/lab04/bit_quantization.png)
+
+*Hình 4b. Phân phối trung vị 64 hệ số LL và bản đồ nhiệt vi sai bit 8×8 (Bất biến tri giác vs Phân biệt lớp).*
 
 Ảnh nguồn không được phân loại thành chó/bánh bởi ma trận bit. Bit chỉ ghi quan hệ hệ số với ngưỡng, không mang nhãn ngữ nghĩa. Phần chi tiết được hiển thị để hiểu DWT nhưng không đưa vào baseline LL.
 
@@ -170,9 +174,9 @@ for p in sample_pairs:
 
 *Hình 5. Đóng góp Hamming của ba kênh ở bốn cặp minh họa.*
 
-![Hình 6. Ma trận Hamming RGB giữa 26 ảnh nguồn.](../../assets/lab04/hamming_matrix.png)
+![Hình 6. Ma trận khoảng cách Hamming đôi một với phân vùng ranh giới danh mục giữa 26 ảnh nguồn.](../../assets/lab04/annotated_distance_matrix.png)
 
-*Hình 6. Ma trận Hamming RGB giữa 26 ảnh nguồn.*
+*Hình 6. Ma trận khoảng cách Hamming đôi một với phân vùng ranh giới danh mục giữa 26 ảnh nguồn.*
 
 **calibration:**
 
@@ -233,13 +237,17 @@ Kết quả giữ nguyên ngưỡng calibration:
 - **calibration:** τ=18; TP=48, TN=18, FP=0, FN=0; Accuracy=1.0000, Recall=1.0000, Specificity=1.0000; Precision=1.0000, F1=1.0000, AUC=1.0000.
 - **evaluation:** τ=18; TP=55, TN=25, FP=0, FN=1; Accuracy=0.9877, Recall=0.9821, Specificity=1.0000; Precision=1.0000, F1=0.9910, AUC=1.0000.
 
-![Hình 8. Recall, Specificity và Youden J theo ngưỡng calibration; đường đứt là ngưỡng chọn.](../../assets/lab04/threshold_selection.png)
+![Hình 8. Quét toàn diện các chỉ số (Accuracy, Recall, Specificity, F1, Youden J) và dải ngưỡng tối ưu không lỗi [18, 48].](../../assets/lab04/comprehensive_metric_sweep.png)
 
-*Hình 8. Recall, Specificity và Youden J theo ngưỡng calibration; đường đứt là ngưỡng chọn.*
+*Hình 8. Quét toàn diện các chỉ số (Accuracy, Recall, Specificity, F1, Youden J) và dải ngưỡng tối ưu không lỗi [18, 48].*
 
-![Hình 9. ROC, phân bố khoảng cách evaluation và confusion matrix tại ngưỡng đã chọn.](../../assets/lab04/roc_evaluation.png)
+![Hình 9a. Phân bố khoảng cách nhị phân kép (Cặp cùng nguồn vs Cặp khác lớp) đối chiếu phân phối Gauss ngẫu nhiên N(96, 48) với biên an toàn Δ.](../../assets/lab04/dual_distance_distribution.png)
 
-*Hình 9. ROC, phân bố khoảng cách evaluation và confusion matrix tại ngưỡng đã chọn.*
+*Hình 9a. Phân bố khoảng cách nhị phân kép (Cặp cùng nguồn vs Cặp khác lớp) đối chiếu phân phối Gauss ngẫu nhiên N(96, 48) với biên an toàn Δ.*
+
+![Hình 9b. Đường cong ROC (AUC=1.000) và Precision-Recall (PR) với các đường đồng mức Iso-F1.](../../assets/lab04/roc_pr_isof1.png)
+
+*Hình 9b. Đường cong ROC (AUC=1.000) và Precision-Recall (PR) với các đường đồng mức Iso-F1.*
 
 Phân tích riêng theo chủ đề trên evaluation với cùng ngưỡng:
 
@@ -300,6 +308,10 @@ visual.plot_retrieval(query_rgb, candidates, top_results, rgb_images, threshold)
 ![Hình 12. Ảnh truy vấn và Top-3 kết quả hiển thị RGB, xếp theo Hamming của hash màu.](../../assets/lab04/top_k.png)
 
 *Hình 12. Ảnh truy vấn và Top-3 kết quả hiển thị RGB, xếp theo Hamming của hash màu.*
+
+![Hình 12b. Biểu đồ xếp hạng truy vấn Top-k CBIR và vực sâu khoảng cách 82 bit (Distance Dropoff Cliff).](../../assets/lab04/cbir_rank_dropoff.png)
+
+*Hình 12b. Biểu đồ xếp hạng truy vấn Top-k CBIR và vực sâu khoảng cách 82 bit (Distance Dropoff Cliff).*
 
 Truy vấn hiện tại: `chihua_muffin_doi_tuong_02__jpeg`. Kết quả:
 

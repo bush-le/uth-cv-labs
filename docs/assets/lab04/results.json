@@ -126,43 +126,7 @@
       "auc": 1.0
     }
   },
-  "robustness": {
-    "bright": {
-      "median": 7.0,
-      "min": 0,
-      "max": 18
-    },
-    "dark": {
-      "median": 0.0,
-      "min": 0,
-      "max": 0
-    },
-    "noise": {
-      "median": 2.0,
-      "min": 0,
-      "max": 4
-    },
-    "jpeg": {
-      "median": 3.0,
-      "min": 0,
-      "max": 6
-    },
-    "crop 80%": {
-      "median": 40.0,
-      "min": 36,
-      "max": 54
-    },
-    "rotate 5°": {
-      "median": 15.0,
-      "min": 12,
-      "max": 20
-    },
-    "flip": {
-      "median": 77.0,
-      "min": 42,
-      "max": 104
-    }
-  },
+  "robustness": {},
   "retrieval": {
     "query": "chihua_muffin_doi_tuong_02__jpeg",
     "results": [

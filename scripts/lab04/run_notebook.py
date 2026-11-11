@@ -8,17 +8,19 @@ from nbclient import NotebookClient
 
 FIGURES = [
     "dataset_pairs",
+    "dwt_energy_analysis",
     "rgb_channels",
     "baseline_hash",
-    "wavelet_bands",
+    "bit_quantization",
     "channel_distances",
-    "hamming_matrix",
-    "robustness",
-    "threshold_selection",
-    "roc_evaluation",
+    "annotated_distance_matrix",
+    "comprehensive_metric_sweep",
+    "dual_distance_distribution",
+    "roc_pr_isof1",
     "review_pairs",
     "wavelet_comparison",
     "top_k",
+    "cbir_rank_dropoff",
 ]
 
 AUDIT = """
@@ -46,7 +48,7 @@ for theme in dict.fromkeys(p['theme'] for p in pairs['evaluation']):
 results = {
     'metrics': metrics, 'threshold': threshold, 'methods': method_results,
     'theme_metrics': themed,
-    'robustness': {k: {'median': float(np.median(v)), 'min': int(min(v)), 'max': int(max(v))} for k, v in robustness.items()},
+    'robustness': {k: {'median': float(np.median(v)), 'min': int(min(v)), 'max': int(max(v))} for k, v in robustness.items()} if 'robustness' in globals() else {},
     'retrieval': {'query': query_id, 'results': [{'source_id': candidates[i]['source_id'], 'distance': int(d), 'same_source': candidates[i]['source_id'] == query_source} for i, d in top_results]},
     'pairs': {split: [{**p, 'distance': int(d), 'prediction': int(d <= threshold)} for p, d in zip(rows, distances[split], strict=True)] for split, rows in pairs.items()},
     'source_order': source_ids, 'demo_hash': ''.join(map(str, demo_hash)), 'demo_ll_shape': list(channel_steps['R'][1].shape),
