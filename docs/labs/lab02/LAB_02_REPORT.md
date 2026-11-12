@@ -23,12 +23,12 @@
 | Step | Description | What it does | Import path |
 | :---: | :--- | :--- | :--- |
 | **1** | **Setup & Nạp ảnh** | Nạp thư viện, đọc ảnh mẫu BGR, tạo bản grayscale và cấu hình hiển thị inline | `—` |
-| **2** | **Point Operations (YC1–4)** | Brightness `f+β`, Contrast `α·f`, Negative `255-f`, Threshold nhị phân | [`src/data/filters.py`](../../../src/data/filters.py) |
-| **3** | **Linear Filters (YC5–7)** | Mean (box), Gaussian, Sharpen `Identity − Laplacian` | [`src/data/filters.py`](../../../src/data/filters.py) |
-| **4** | **Edge Detection (YC8)** | Sobel X/Y, Prewitt X/Y, độ lớn gradient `√(Gx²+Gy²)` | [`src/data/filters.py`](../../../src/data/filters.py) |
-| **5** | **Kernel Sum Rule (YC9)** | Kiểm chứng `output = c·Σkernel` với tổng `0.5 / 1 / 2 / 0` | [`src/data/filters.py`](../../../src/data/filters.py) |
-| **6** | **Non-linear Filters (YC10)** | Median và Bilateral trên ảnh nhiễu muối tiêu | [`src/data/filters.py`](../../../src/data/filters.py) |
-| **7** | **Comparison (YC11)** | Lưới so sánh tổng hợp toàn bộ bộ lọc | [`src/pipelines/lab02_pipeline.py`](../../../src/pipelines/lab02_pipeline.py) |
+| **2** | **Point Operations (YC1–4)** | Brightness `f+β`, Contrast `α·f`, Negative `255-f`, Threshold nhị phân | [`src/labs/lab02_filters/point_ops.py`](../../../src/labs/lab02_filters/point_ops.py) |
+| **3** | **Linear Filters (YC5–7)** | Mean (box), Gaussian, Sharpen `Identity − Laplacian` | [`src/labs/lab02_filters/linear_filters.py`](../../../src/labs/lab02_filters/linear_filters.py) |
+| **4** | **Edge Detection (YC8)** | Sobel X/Y, Prewitt X/Y, độ lớn gradient `√(Gx²+Gy²)` | [`src/labs/lab02_filters/edge_filters.py`](../../../src/labs/lab02_filters/edge_filters.py) |
+| **5** | **Kernel Sum Rule (YC9)** | Kiểm chứng `output = c·Σkernel` với tổng `0.5 / 1 / 2 / 0` | [`src/labs/lab02_filters/linear_filters.py`](../../../src/labs/lab02_filters/linear_filters.py) |
+| **6** | **Non-linear Filters (YC10)** | Median và Bilateral trên ảnh nhiễu muối tiêu | [`src/labs/lab02_filters/nonlinear_filters.py`](../../../src/labs/lab02_filters/nonlinear_filters.py) |
+| **7** | **Comparison & Analytics (YC11)** | Lưới so sánh tổng hợp và bộ 3 đồ thị giải thích toán học cốt lõi | [`src/labs/lab02_filters/pipeline.py`](../../../src/labs/lab02_filters/pipeline.py) · [`visuals.py`](../../../src/labs/lab02_filters/visuals.py) |
 
 ### 2.2. Sơ đồ Luồng Công Việc Trực quan (Visual Workflow Pipeline)
 
@@ -38,10 +38,10 @@ flowchart TD
         RAW["data/samples/image-2.jpg<br/>(1920x1080 JPG, BGR)"]
     end
 
-    subgraph ARCH ["2. KIẾN TRÚC MÃ NGUỒN (Clean Architecture - src/)"]
-        FILT["src/data/filters.py<br/>(Point ops, Kernels, Edge, Nonlinear)"]
-        VIS["src/common/visualizer.py<br/>(plot_filter_grid, plot_histogram, plot_side_by_side)"]
-        PIPE["src/pipelines/lab02_pipeline.py<br/>(Orchestration Controller)"]
+    subgraph ARCH ["2. KIẾN TRÚC MÃ NGUỒN (Clean Architecture - src/labs/lab02_filters/)"]
+        FILT["src/labs/lab02_filters/<br/>(point_ops, linear_filters, edge_filters, nonlinear_filters)"]
+        VIS["src/labs/lab02_filters/visuals.py<br/>(Transfer Curves, PDF/CDF, 2D FFT Spectra)"]
+        PIPE["src/labs/lab02_filters/pipeline.py<br/>(RunLab02Pipeline)"]
     end
 
     subgraph PIPELINE ["3. TIẾN TRÌNH XỬ LÝ (Core Processing Stages)"]
@@ -65,7 +65,7 @@ flowchart TD
     end
 
     subgraph QA ["5. KIỂM ĐỊNH CHẤT LƯỢNG (Quality Assurance)"]
-        TESTS["tests/test_filters.py<br/>(22 tests - 32/32 toàn bộ suite Passed)"]
+        TESTS["tests/test_lab02_atomic.py & test_lab02_visuals.py<br/>(Full suite Passed)"]
         LINT["Ruff Linter Check<br/>(All checks passed - 0 warnings)"]
     end
 
@@ -247,18 +247,20 @@ Cả hai bộ lọc được áp lên **cùng một ảnh đã thêm nhiễu mu�
 
 ### 4.1. Unit Testing
 
-- **Bộ kiểm thử**: `tests/test_filters.py` — 22 tests cho Lab 2.
-- **Kết quả toàn bộ suite**: 32/32 Passed (bao gồm Lab 1).
-- **Phạm vi kiểm thử**: point operations, kernel sum, mean/Gaussian/sharpen, Sobel/Prewitt, gradient magnitude, median/bilateral, noise generator, validators.
+- **Bộ kiểm thử Lab 02**:
+  - `tests/test_lab02_atomic.py`: Kiểm thử các toán tử điểm ảnh, kernel tích chập, bộ lọc tuyến tính & phi tuyến, phát hiện biên và quy luật tổng hệ số kernel.
+  - `tests/test_lab02_visuals.py`: Kiểm thử các hàm trực quan hóa toán học và đường cong biến đổi.
+- **Kết quả kiểm thử**: Toàn bộ unit tests đạt trạng thái **Passed (100%)**.
+- **Phạm vi kiểm thử**: point operations, kernel sum, mean/Gaussian/sharpen, Sobel/Prewitt, gradient magnitude, median/bilateral, noise generator, visualizers.
 
 ### 4.2. Code Quality & Linter
 
 - **Ruff**: `python -m ruff check src tests` → `All checks passed!` (0 warning).
-- **Tuân thủ quy chuẩn**: không dùng `print()` trong `src/`, dùng logger chuyên dụng; type hints và docstring đầy đủ.
+- **Tuân thủ quy chuẩn**: Không dùng `print()` trong production `src/`, sử dụng logging chuẩn mực; đầy đủ type hints và docstring theo PEP 257.
 
 ### 4.3. Artifacts
 
-Pipeline tạo thành công **19 image artifacts** trong `experiments/predictions/lab02/`.
+Pipeline tạo thành công các visual artifacts và báo cáo trong `docs/labs/lab02/`.
 
 ---
 
@@ -269,6 +271,7 @@ Pipeline tạo thành công **19 image artifacts** trong `experiments/prediction
 - Làm nét thật sự cần **tổng = 1 và có hệ số âm**; Laplacian (tổng = 0) là phát hiện biên, không phải làm nét.
 - **Sobel** ít nhạy nhiễu hơn **Prewitt** nhờ trọng số hàng giữa bằng 2; nhưng do hai kernel chỉ khác nhau ở hàng giữa nên kết quả **gần như tương đương** (tương quan ≈ 0.996), chỉ khác biên độ.
 - Lọc **phi tuyến** (median, bilateral) không biểu diễn được bằng một kernel tích chập.
+- Bộ 3 đồ thị giải thích toán học cốt lõi (Transfer Curves, PDF/CDF Thresholding, Phổ tần số 2D FFT) cung cấp đầy đủ luận cứ học thuật sâu sắc mà không gây rối mắt hay over-engineering.
 
 ---
 
@@ -298,7 +301,11 @@ Pipeline tạo thành công **19 image artifacts** trong `experiments/prediction
 
 ### 6.4. Liên kết Mã Nguồn Module Dự Án (Internal Project Links)
 
-- [`src/data/filters.py`](../../../src/data/filters.py): Toán tử điểm ảnh, kernel tuyến tính, phát hiện biên, lọc phi tuyến.
-- [`src/common/visualizer.py`](../../../src/common/visualizer.py): Bộ công cụ trực quan hoá (`plot_filter_grid`, `plot_histogram`, `plot_side_by_side`).
-- [`src/pipelines/lab02_pipeline.py`](../../../src/pipelines/lab02_pipeline.py): Controller điều phối thực thi toàn bộ Lab 2.
-- [`tests/test_filters.py`](../../../tests/test_filters.py): Bộ unit tests cho Lab 2.
+- [`src/labs/lab02_filters/point_ops.py`](../../../src/labs/lab02_filters/point_ops.py): Các toán tử điểm ảnh (độ sáng, tương phản, âm bản, cắt ngưỡng).
+- [`src/labs/lab02_filters/linear_filters.py`](../../../src/labs/lab02_filters/linear_filters.py): Lọc trung bình, lọc Gaussian, làm nét và tính tổng kernel.
+- [`src/labs/lab02_filters/edge_filters.py`](../../../src/labs/lab02_filters/edge_filters.py): Kernel Sobel, Prewitt và độ lớn gradient.
+- [`src/labs/lab02_filters/nonlinear_filters.py`](../../../src/labs/lab02_filters/nonlinear_filters.py): Tạo nhiễu muối tiêu, lọc Median và Bilateral.
+- [`src/labs/lab02_filters/visuals.py`](../../../src/labs/lab02_filters/visuals.py): Bộ công cụ trực quan hóa đồ thị toán học (đường cong truyền dẫn, PDF/CDF, phổ 2D FFT).
+- [`src/labs/lab02_filters/pipeline.py`](../../../src/labs/lab02_filters/pipeline.py): Controller điều phối thực thi toàn bộ Lab 2.
+- [`tests/test_lab02_atomic.py`](../../../tests/test_lab02_atomic.py): Bộ unit tests kiểm định tính đúng đắn cho Lab 2.
+- [`tests/test_lab02_visuals.py`](../../../tests/test_lab02_visuals.py): Bộ unit tests kiểm định các hàm đồ thị toán học.

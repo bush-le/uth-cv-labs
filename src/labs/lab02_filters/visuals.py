@@ -438,9 +438,10 @@ def plot_edge_step_response_profile(
 def plot_fft_filter_spectra(
     images: list[np.ndarray],
     titles: list[str],
-    figsize: tuple[int, int] = (15, 8),
+    include_radial_profile: bool = False,
+    figsize: tuple[int, int] | None = None,
 ) -> plt.Figure:
-    """Plot 2D FFT magnitude spectrum and 1D radial average power curve P(r)."""
+    """Plot 2D FFT magnitude spectra for filter comparison (optionally with 1D radial power curve)."""
 
     def to_gray(im: np.ndarray) -> np.ndarray:
         return cv2.cvtColor(im, cv2.COLOR_BGR2GRAY) if im.ndim == 3 else im
@@ -448,22 +449,40 @@ def plot_fft_filter_spectra(
     n_imgs = len(images)
     gray_imgs = [to_gray(im).astype(np.float32) for im in images]
 
-    # Compute 2D FFT and radial profiles
+    # Compute 2D FFT magnitude spectra
     mags_2d = []
-    radial_profiles = []
-    max_radius = min(min(g.shape) // 2 for g in gray_imgs)
-
     for g_img in gray_imgs:
         f_shift = np.fft.fftshift(np.fft.fft2(g_img))
         mag = np.log1p(np.abs(f_shift))
         mags_2d.append(mag)
 
+    if not include_radial_profile:
+        # Clean 1-row layout: only 2D FFT magnitude spectra
+        fig_size = figsize or (4.2 * n_imgs, 3.8)
+        fig, axes = plt.subplots(1, n_imgs, figsize=fig_size)
+        axes = np.atleast_1d(axes).ravel()
+
+        for idx, (ax, mag_2d, title) in enumerate(zip(axes, mags_2d, titles, strict=False)):
+            im = ax.imshow(mag_2d, cmap="inferno")
+            ax.set_title(f"Phổ 2D FFT: {title}", fontsize=11, fontweight="bold")
+            ax.axis("off")
+            fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+
+        plt.tight_layout()
+        return fig
+
+    # Full layout with 1D Radial Profile (if explicitly requested)
+    fig_size = figsize or (15, 8)
+    radial_profiles = []
+    max_radius = min(min(g.shape) // 2 for g in gray_imgs)
+
+    for g_img, mag_2d in zip(gray_imgs, mags_2d, strict=False):
+        f_shift = np.fft.fftshift(np.fft.fft2(g_img))
         h, w = g_img.shape
         cy, cx = h // 2, w // 2
         y, x = np.ogrid[:h, :w]
         r_grid = np.sqrt((x - cx) ** 2 + (y - cy) ** 2).astype(int)
 
-        # Vectorized radial average power spectrum P(r) using np.bincount
         power_spectrum = np.abs(f_shift) ** 2
         r_flat = r_grid.ravel()
         p_flat = power_spectrum.ravel()
@@ -478,11 +497,9 @@ def plot_fft_filter_spectra(
         r_profile[nonzero] = sums[nonzero] / counts[nonzero]
         radial_profiles.append(r_profile)
 
-    # Layout: Top row for 2D spectra, bottom row for 1D radial profile curve
-    fig = plt.figure(figsize=figsize)
+    fig = plt.figure(figsize=fig_size)
     gs = fig.add_gridspec(2, n_imgs)
 
-    # Row 1: 2D FFT spectra
     for idx, (mag_2d, title) in enumerate(zip(mags_2d, titles, strict=False)):
         ax = fig.add_subplot(gs[0, idx])
         im = ax.imshow(mag_2d, cmap="inferno")
@@ -490,13 +507,11 @@ def plot_fft_filter_spectra(
         ax.axis("off")
         fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
 
-    # Row 2: 1D Radial Average Power Spectrum
     ax_rad = fig.add_subplot(gs[1, :])
     r_axis = np.arange(max_radius)
 
     colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"]
     for idx, (r_prof, title) in enumerate(zip(radial_profiles, titles, strict=False)):
-        # Normalize and plot on log scale
         log_prof = np.log1p(r_prof[:max_radius])
         ax_rad.plot(
             r_axis,
