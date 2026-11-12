@@ -58,6 +58,7 @@ Tuân thủ quy tắc trung thực kỹ thuật: chỉ đánh dấu **PASS** cho
    ```
 
 3. Tải trọng số và đăng ký khuôn mặt của bạn qua Webcam:
+$env:PYTHONPATH="."
 python scripts/lab05/download_lab05_weights.py
 python scripts/lab05/register_faces.py --mode capture --identity "Hanh_Nguyen" --num-samples 4
 
