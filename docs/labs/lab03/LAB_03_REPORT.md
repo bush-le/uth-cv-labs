@@ -177,9 +177,11 @@ show_grid(threshold_images, [f"T thấp={a}; T cao={b}" for a, b in pairs], ncol
 
 ![Biên ảnh nhiễu](../../assets/lab03/yc3_noise_edges.png)
 
-**Tương phản thấp:** tạo bằng `100 + 0.25 × ảnh`, sau ép uint8 có khoảng 100–163. Dùng `cv2.equalizeHist` toàn cục. Số pixel biên **0 → 13.897**. Cân bằng giúp lộ lại thay đổi cường độ nhưng cũng có thể làm nhiễu/texture rõ hơn. Notebook không dùng CLAHE.
+**Tương phản thấp:** tạo bằng `100 + 0.25 × ảnh`, sau ép uint8 có khoảng 100–163. Đối chiếu hai phương pháp tiền xử lý: (1) Cân bằng toàn cục `cv2.equalizeHist` (kéo dãn quá đà làm nhiễu nền, số pixel biên tăng vọt lên **13.897 px**); (2) Cân bằng cục bộ thích ứng `CLAHE` (`clipLimit=2.0, tileGridSize=(8, 8)`) khống chế độ dốc histogram giúp giữ nét người và máy ảnh sạch sẽ (**5.648 px** chuẩn).
 
-![Tương phản](../../assets/lab03/yc3_contrast.png)
+![Tương phản — So sánh Canny với EqualizeHist và CLAHE](../../assets/lab03/yc3_contrast.png)
+
+![Histogram phân bố mức xám: Tương phản thấp, EqualizeHist và CLAHE](../../assets/lab03/yc3_contrast_histograms.png)
 
 **Nhiều chi tiết:** ảnh brick qua bilateral cùng cấu hình, số pixel biên **18.750 → 9.319**. Quan sát đường ron còn liên tục và texture giảm tới đâu; ít biên hơn không tự động nghĩa là tốt hơn.
 
