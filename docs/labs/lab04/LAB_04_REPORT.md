@@ -145,10 +145,6 @@ Mỗi LL của ảnh minh họa có kích thước **131×131**, sau chuẩn hó
 
 *Hình 4. Bố cục 4 góc phần tư Mallat và biểu đồ tập trung năng lượng Frobenius các dải sóng 2D DWT.*
 
-![Hình 4b. Phân phối trung vị 64 hệ số LL và bản đồ nhiệt vi sai bit 8×8 (Bất biến tri giác vs Phân biệt lớp).](../../assets/lab04/bit_quantization.png)
-
-*Hình 4b. Phân phối trung vị 64 hệ số LL và bản đồ nhiệt vi sai bit 8×8 (Bất biến tri giác vs Phân biệt lớp).*
-
 Ảnh nguồn không được phân loại thành chó/bánh bởi ma trận bit. Bit chỉ ghi quan hệ hệ số với ngưỡng, không mang nhãn ngữ nghĩa. Phần chi tiết được hiển thị để hiểu DWT nhưng không đưa vào baseline LL.
 
 ### 4.2. YC2 — So sánh Hamming

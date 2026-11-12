@@ -58,14 +58,6 @@
       "Cố định ngưỡng đã chọn"
     ],
     [
-      30,
-      306,
-      280,
-      "robustness",
-      "YC3 · Độ bền",
-      "Bổ sung · calibration"
-    ],
-    [
       400,
       306,
       280,
@@ -130,15 +122,6 @@
         22
       ],
       "Evaluation: 55 TP, 25 TN, 0 FP, 1 FN tại ngưỡng 18. AUC = 1 vẫn có thể đi cùng một cặp bị bỏ sót tại ngưỡng này."
-    ],
-    [
-      "robustness",
-      "YC3 · Độ bền bổ sung",
-      "Ảnh calibration → biến đổi → hash → Hamming với ảnh nguồn",
-      "Thử sáng, tối, nhiễu, JPEG, crop, xoay và lật. Đây là nhánh khảo sát riêng.",
-      "43-yc3-khao-sat-o-ben-bo-sung",
-      [],
-      "Hash ổn định hơn với một số biến đổi sáng, nhiễu và JPEG; crop, xoay và lật có thể tăng khoảng cách mạnh."
     ],
     [
       "methods",
